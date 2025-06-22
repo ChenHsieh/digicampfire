@@ -428,7 +428,7 @@ ${selectedWhisper}`;
                   padding: '8px',
                   borderRadius: '50%',
                   background: colors.background,
-                  border: `1px solid rgba(34, 197, 94, 0.3)`,
+                  border: `1px solid ${colors.border}`,
                   cursor: loadingAnchors ? 'not-allowed' : 'pointer',
                   opacity: loadingAnchors ? 0.5 : 1,
                   backdropFilter: 'blur(10px)',
@@ -437,7 +437,7 @@ ${selectedWhisper}`;
               >
                 <RefreshCw 
                   size={16} 
-                  color="#22C55E"
+                  color={colors.primary}
                   style={{
                     animation: loadingAnchors ? 'spin 1s linear infinite' : 'none'
                   }}
@@ -461,9 +461,9 @@ ${selectedWhisper}`;
                   whileTap={{ scale: 0.95 }}
                   animate={selectedAnchor === word ? {
                     background: [
-                      'rgba(34, 197, 94, 0.2)',
-                      'rgba(34, 197, 94, 0.4)',
-                      'rgba(34, 197, 94, 0.2)'
+                      `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.2)`,
+                      `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.4)`,
+                      `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.2)`
                     ]
                   } : {}}
                   transition={{ 
@@ -472,14 +472,14 @@ ${selectedWhisper}`;
                   }}
                   style={{
                     padding: '16px 24px',
-                    border: `3px solid ${selectedAnchor === word ? colors.text : 'rgba(34, 197, 94, 0.4)'}`,
+                    border: `3px solid ${selectedAnchor === word ? colors.text : colors.border}`,
                     borderRadius: '50px',
                     background: selectedAnchor === word ? 
-                      'rgba(34, 197, 94, 0.2)' : 
+                      `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.2)` : 
                       colors.background,
                     cursor: 'pointer',
                     boxShadow: selectedAnchor === word ? 
-                      '0 8px 24px rgba(34, 197, 94, 0.4), 0 0 0 1px rgba(34, 197, 94, 0.2)' : 
+                      `0 8px 24px rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.4), 0 0 0 1px rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.2)` : 
                       colors.shadow,
                     backdropFilter: 'blur(15px)',
                     transition: 'all 0.3s ease',

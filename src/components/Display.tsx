@@ -135,6 +135,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
             padding: '8px 16px',
             borderRadius: '20px',
             marginBottom: '40px',
+            marginLeft: '80px', // Add left margin to avoid nav bubble overlap
             background: colors.background,
             border: `1px solid ${colors.border}`,
             cursor: 'pointer',

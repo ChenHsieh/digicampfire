@@ -40,13 +40,11 @@ const NavigationBubble: React.FC<NavigationBubbleProps> = ({
         transition={{ duration: 0.3, ease: 'easeInOut' }}
         style={{
           background: isDarkMode 
-            ? 'rgba(229, 229, 229, 0.08)' 
-            : 'rgba(26, 26, 26, 0.08)',
+            ? 'linear-gradient(135deg, rgba(229, 229, 229, 0.1) 0%, rgba(234, 88, 12, 0.05) 100%)'
+            : 'linear-gradient(135deg, rgba(26, 26, 26, 0.1) 0%, rgba(234, 88, 12, 0.08) 100%)',
           backdropFilter: 'blur(20px)',
           borderRadius: '24px',
-          border: `1px solid ${isDarkMode 
-            ? 'rgba(234, 88, 12, 0.2)' 
-            : 'rgba(234, 88, 12, 0.3)'}`,
+          border: 'none',
           boxShadow: isDarkMode
             ? '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(234, 88, 12, 0.1)'
             : '0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(234, 88, 12, 0.2)',
@@ -86,7 +84,7 @@ const NavigationBubble: React.FC<NavigationBubbleProps> = ({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              transition={{ duration: 0.2, delay: 0.1 }}
+              transition={{ duration: 0.3 }}
               style={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -105,8 +103,8 @@ const NavigationBubble: React.FC<NavigationBubbleProps> = ({
                   padding: '8px 12px',
                   borderRadius: '12px',
                   background: isDarkMode
-                    ? 'rgba(234, 88, 12, 0.1)'
-                    : 'rgba(234, 88, 12, 0.15)',
+                    ? 'linear-gradient(135deg, rgba(234, 88, 12, 0.15) 0%, rgba(234, 88, 12, 0.05) 100%)'
+                    : 'linear-gradient(135deg, rgba(234, 88, 12, 0.2) 0%, rgba(234, 88, 12, 0.1) 100%)',
                   border: 'none',
                   color: isDarkMode ? '#E5E5E5' : '#1a1a1a',
                   cursor: 'pointer',
@@ -115,7 +113,7 @@ const NavigationBubble: React.FC<NavigationBubbleProps> = ({
                   fontWeight: 500,
                   width: '100%',
                   justifyContent: 'flex-start',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.3s ease'
                 }}
               >
                 {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
@@ -134,7 +132,9 @@ const NavigationBubble: React.FC<NavigationBubbleProps> = ({
                   padding: '8px 12px',
                   borderRadius: '12px',
                   background: currentPage === 'about' 
-                    ? (isDarkMode ? 'rgba(234, 88, 12, 0.2)' : 'rgba(234, 88, 12, 0.25)')
+                    ? (isDarkMode 
+                        ? 'linear-gradient(135deg, rgba(234, 88, 12, 0.25) 0%, rgba(234, 88, 12, 0.15) 100%)'
+                        : 'linear-gradient(135deg, rgba(234, 88, 12, 0.3) 0%, rgba(234, 88, 12, 0.2) 100%)')
                     : 'transparent',
                   border: 'none',
                   color: currentPage === 'about' 
@@ -146,7 +146,7 @@ const NavigationBubble: React.FC<NavigationBubbleProps> = ({
                   fontWeight: 500,
                   width: '100%',
                   justifyContent: 'flex-start',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.3s ease'
                 }}
               >
                 <Info size={16} />
@@ -165,7 +165,9 @@ const NavigationBubble: React.FC<NavigationBubbleProps> = ({
                   padding: '8px 12px',
                   borderRadius: '12px',
                   background: currentPage === 'privacy' 
-                    ? (isDarkMode ? 'rgba(234, 88, 12, 0.2)' : 'rgba(234, 88, 12, 0.25)')
+                    ? (isDarkMode 
+                        ? 'linear-gradient(135deg, rgba(234, 88, 12, 0.25) 0%, rgba(234, 88, 12, 0.15) 100%)'
+                        : 'linear-gradient(135deg, rgba(234, 88, 12, 0.3) 0%, rgba(234, 88, 12, 0.2) 100%)')
                     : 'transparent',
                   border: 'none',
                   color: currentPage === 'privacy' 
@@ -177,7 +179,7 @@ const NavigationBubble: React.FC<NavigationBubbleProps> = ({
                   fontWeight: 500,
                   width: '100%',
                   justifyContent: 'flex-start',
-                  transition: 'all 0.2s ease'
+                  transition: 'all 0.3s ease'
                 }}
               >
                 <Shield size={16} />
