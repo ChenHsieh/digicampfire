@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Heart, Share2 } from 'lucide-react';
+import { ArrowLeft, Heart, Share2, Edit3 } from 'lucide-react';
 
 interface Poem {
   whisper: string;
@@ -16,6 +16,8 @@ interface DisplayProps {
 
 const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
   const [visibleLines, setVisibleLines] = useState(0);
+  const [showCuratorTweak, setShowCuratorTweak] = useState(false);
+  const [editedPoem, setEditedPoem] = useState(poem.text);
   const lines = poem.text.split('\n').filter(line => line.trim() !== '');
   
   useEffect(() => {
@@ -31,6 +33,11 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
     
     return () => clearInterval(timer);
   }, [lines.length]);
+
+  const handleSaveTweak = () => {
+    setShowCuratorTweak(false);
+    // Here you could update the poem state if needed
+  };
 
   return (
     <div style={{
@@ -211,35 +218,123 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             </div>
           </div>
           
-          <div style={{
-            background: 'rgba(254, 254, 254, 0.8)',
-            padding: '20px',
-            borderRadius: '12px',
-            border: '1px solid rgba(139, 125, 161, 0.15)',
-            backdropFilter: 'blur(10px)',
-            gridColumn: 'span 2'
-          }}>
+          {poem.feeling && (
             <div style={{
-              fontSize: '0.8rem',
-              color: '#8B7DA1',
-              marginBottom: '8px',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              fontFamily: "'Courier Prime', monospace"
+              background: 'rgba(254, 254, 254, 0.8)',
+              padding: '20px',
+              borderRadius: '12px',
+              border: '1px solid rgba(139, 125, 161, 0.15)',
+              backdropFilter: 'blur(10px)',
+              gridColumn: 'span 2'
             }}>
-              What you carried
+              <div style={{
+                fontSize: '0.8rem',
+                color: '#8B7DA1',
+                marginBottom: '8px',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.5px',
+                fontFamily: "'Courier Prime', monospace"
+              }}>
+                What you carried
+              </div>
+              <div style={{
+                fontSize: '1rem',
+                color: '#2D2D37',
+                fontFamily: "'EB Garamond', serif",
+                fontStyle: 'italic'
+              }}>
+                "{poem.feeling}"
+              </div>
             </div>
-            <div style={{
-              fontSize: '1rem',
+          )}
+        </motion.div>
+        
+        {/* Curator Tweak Section */}
+        {showCuratorTweak && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            style={{
+              background: 'rgba(254, 254, 254, 0.9)',
+              padding: '24px',
+              borderRadius: '16px',
+              border: '2px solid rgba(139, 125, 161, 0.2)',
+              backdropFilter: 'blur(15px)',
+              marginBottom: '40px'
+            }}
+          >
+            <h3 style={{
+              fontSize: '1.2rem',
+              marginBottom: '16px',
               color: '#2D2D37',
               fontFamily: "'EB Garamond', serif",
-              fontStyle: 'italic'
+              fontWeight: 500
             }}>
-              "{poem.feeling}"
+              Curator Tweak
+            </h3>
+            <textarea
+              value={editedPoem}
+              onChange={(e) => setEditedPoem(e.target.value)}
+              style={{
+                width: '100%',
+                minHeight: '200px',
+                padding: '16px',
+                border: '1px solid rgba(139, 125, 161, 0.3)',
+                borderRadius: '8px',
+                fontSize: '1rem',
+                lineHeight: 1.6,
+                resize: 'vertical',
+                background: 'rgba(254, 254, 254, 0.8)',
+                fontFamily: "'EB Garamond', serif",
+                color: '#2D2D37',
+                outline: 'none'
+              }}
+            />
+            <div style={{
+              display: 'flex',
+              gap: '12px',
+              marginTop: '16px',
+              justifyContent: 'flex-end'
+            }}>
+              <motion.button
+                onClick={() => setShowCuratorTweak(false)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  background: 'rgba(139, 125, 161, 0.1)',
+                  border: '1px solid rgba(139, 125, 161, 0.3)',
+                  color: '#8B7DA1',
+                  cursor: 'pointer',
+                  fontFamily: "'Courier Prime', monospace",
+                  fontSize: '0.9rem'
+                }}
+              >
+                Cancel
+              </motion.button>
+              <motion.button
+                onClick={handleSaveTweak}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  background: 'linear-gradient(135deg, #2D2D37 0%, #8B7DA1 100%)',
+                  border: 'none',
+                  color: '#FEFEFE',
+                  cursor: 'pointer',
+                  fontFamily: "'Courier Prime', monospace",
+                  fontSize: '0.9rem'
+                }}
+              >
+                Save Changes
+              </motion.button>
             </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        )}
         
         {/* Actions */}
         <motion.div
@@ -273,6 +368,29 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           >
             <Heart size={16} />
             Keep this close
+          </motion.button>
+          
+          <motion.button
+            onClick={() => setShowCuratorTweak(!showCuratorTweak)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 20px',
+              borderRadius: '25px',
+              background: 'rgba(139, 125, 161, 0.2)',
+              border: '1px solid rgba(139, 125, 161, 0.4)',
+              color: '#2D2D37',
+              cursor: 'pointer',
+              backdropFilter: 'blur(10px)',
+              fontFamily: "'Courier Prime', monospace",
+              fontSize: '0.9rem'
+            }}
+          >
+            <Edit3 size={16} />
+            Curator tweak
           </motion.button>
           
           <motion.button

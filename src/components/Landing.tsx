@@ -10,6 +10,16 @@ const anchorWords = [
   "become"
 ];
 
+const feelingPrompts = [
+  "I am holding...",
+  "Today I carry...",
+  "In my chest lives...",
+  "What weighs on me is...",
+  "I cannot shake...",
+  "My heart knows...",
+  "The silence holds..."
+];
+
 interface WhisperWithSource {
   poetic: string;
   headline: string;
@@ -28,6 +38,7 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isOrbHovered, setIsOrbHovered] = useState(false);
+  const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [whisperOptions, setWhisperOptions] = useState<WhisperWithSource[]>([
     {
       poetic: "The weight of unspoken words",
@@ -67,6 +78,16 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
   useEffect(() => {
     loadWhispers();
   }, []);
+
+  // Animate prompt rotation
+  useEffect(() => {
+    if (currentStep === 3) {
+      const interval = setInterval(() => {
+        setCurrentPromptIndex((prev) => (prev + 1) % feelingPrompts.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [currentStep]);
 
   const loadWhispers = async () => {
     setLoadingWhispers(true);
@@ -136,7 +157,7 @@ ${selectedWhisper}`;
     switch (currentStep) {
       case 1: return selectedWhisper !== '';
       case 2: return selectedAnchor !== '';
-      case 3: return feeling.trim() !== '';
+      case 3: return true; // Always allow proceeding from step 3 (feeling is optional)
       default: return false;
     }
   };
@@ -436,36 +457,70 @@ ${selectedWhisper}`;
               marginBottom: '32px',
               fontStyle: 'italic'
             }}>
-              A sentence, a sigh, a scream — write what you carry.
+              A sentence, a sigh, a scream — write what you carry. <span style={{ opacity: 0.7 }}>(or skip)</span>
             </p>
             
-            <textarea
-              value={feeling}
-              onChange={(e) => setFeeling(e.target.value)}
-              placeholder="I am holding..."
-              style={{
-                width: '100%',
-                minHeight: '120px',
-                padding: '24px',
-                border: '2px solid rgba(139, 125, 161, 0.2)',
-                borderRadius: '12px',
-                fontSize: '1.1rem',
-                lineHeight: 1.6,
-                resize: 'vertical',
-                background: 'rgba(254, 254, 254, 0.9)',
-                fontFamily: "'EB Garamond', serif",
-                backdropFilter: 'blur(10px)',
-                color: '#2D2D37',
-                outline: 'none',
-                transition: 'border-color 0.3s ease'
-              }}
-              onFocus={(e) => {
-                e.target.style.borderColor = '#8B7DA1';
-              }}
-              onBlur={(e) => {
-                e.target.style.borderColor = 'rgba(139, 125, 161, 0.2)';
-              }}
-            />
+            <div style={{ position: 'relative' }}>
+              <textarea
+                value={feeling}
+                onChange={(e) => setFeeling(e.target.value)}
+                style={{
+                  width: '100%',
+                  minHeight: '120px',
+                  padding: '24px',
+                  border: '2px solid rgba(139, 125, 161, 0.2)',
+                  borderRadius: '12px',
+                  fontSize: '1.1rem',
+                  lineHeight: 1.6,
+                  resize: 'vertical',
+                  background: 'rgba(254, 254, 254, 0.9)',
+                  fontFamily: "'EB Garamond', serif",
+                  backdropFilter: 'blur(10px)',
+                  color: '#2D2D37',
+                  outline: 'none',
+                  transition: 'border-color 0.3s ease'
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#8B7DA1';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = 'rgba(139, 125, 161, 0.2)';
+                }}
+              />
+              
+              {/* Animated placeholder when empty */}
+              {feeling === '' && (
+                <motion.div
+                  key={currentPromptIndex}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 0.6, y: 0 }}
+                  exit={{ opacity: 0, y: -5 }}
+                  transition={{ duration: 0.5 }}
+                  style={{
+                    position: 'absolute',
+                    top: '24px',
+                    left: '24px',
+                    fontSize: '1.1rem',
+                    color: '#8B7DA1',
+                    fontFamily: "'EB Garamond', serif",
+                    fontStyle: 'italic',
+                    pointerEvents: 'none'
+                  }}
+                >
+                  <AnimatePresence mode="wait">
+                    <motion.span
+                      key={currentPromptIndex}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 0.6 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.5 }}
+                    >
+                      {feelingPrompts[currentPromptIndex]}
+                    </motion.span>
+                  </AnimatePresence>
+                </motion.div>
+              )}
+            </div>
           </motion.div>
         );
       
