@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Heart, Share2, Edit3, Wand2, Volume2 } from 'lucide-react';
-import { auditPoemQuality, enhancePoemSound, validateSkinnyPoem } from '../utils/openai';
+import { ArrowLeft, Heart, Share2, Edit3, Copy, Check } from 'lucide-react';
+import { validateSkinnyPoem } from '../utils/openai';
 
 interface Poem {
   whisper: string;
@@ -20,9 +20,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
   const [showCuratorTweak, setShowCuratorTweak] = useState(false);
   const [editedPoem, setEditedPoem] = useState(poem.text);
   const [currentPoem, setCurrentPoem] = useState(poem.text);
-  const [showQualityControls, setShowQualityControls] = useState(false);
-  const [isEnhancing, setIsEnhancing] = useState(false);
-  const [enhancementType, setEnhancementType] = useState<'quality' | 'sound' | null>(null);
+  const [showShareOptions, setShowShareOptions] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
   
   const lines = currentPoem.split('\n').filter(line => line.trim() !== '');
   
@@ -53,55 +52,37 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
     setShowCuratorTweak(false);
   };
 
-  const handleQualityEnhancement = async () => {
-    setIsEnhancing(true);
-    setEnhancementType('quality');
+  const handleCopyToClipboard = async () => {
+    const shareText = `${currentPoem}\n\n— Created at Digital Campfire`;
     
     try {
-      const audit = await auditPoemQuality(currentPoem);
-      if (!audit.isGood && audit.suggestion) {
-        // Show the suggestion to user and let them decide
-        const userWantsToApply = confirm(`Quality suggestion: ${audit.suggestion}\n\nWould you like to regenerate the poem with this improvement?`);
-        if (userWantsToApply) {
-          // For now, just show the suggestion - in a full implementation, 
-          // you'd regenerate the poem with the suggestion
-          alert('Feature coming soon: Auto-regeneration with quality improvements');
-        }
-      } else {
-        alert('Your poem already maintains excellent coherence and imagery!');
-      }
+      await navigator.clipboard.writeText(shareText);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
     } catch (error) {
-      console.error('Error enhancing quality:', error);
-      alert('Unable to analyze poem quality at the moment.');
+      console.error('Failed to copy to clipboard:', error);
+      // Fallback for older browsers
+      const textArea = document.createElement('textarea');
+      textArea.value = shareText;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
     }
-    
-    setIsEnhancing(false);
-    setEnhancementType(null);
   };
 
-  const handleSoundEnhancement = async () => {
-    setIsEnhancing(true);
-    setEnhancementType('sound');
-    
-    try {
-      const enhancedPoem = await enhancePoemSound(currentPoem, poem.anchor);
-      
-      // Validate the enhanced poem still follows rules
-      const validation = await validateSkinnyPoem(enhancedPoem, poem.anchor);
-      
-      if (validation.isValid) {
-        setCurrentPoem(enhancedPoem);
-        setEditedPoem(enhancedPoem);
-      } else {
-        alert('Sound enhancement would break Skinny poem structure. Keeping original.');
-      }
-    } catch (error) {
-      console.error('Error enhancing sound:', error);
-      alert('Unable to enhance sound at the moment.');
-    }
-    
-    setIsEnhancing(false);
-    setEnhancementType(null);
+  const handleShareViaEmail = () => {
+    const subject = encodeURIComponent('A poem from Digital Campfire');
+    const body = encodeURIComponent(`${currentPoem}\n\n— Created at Digital Campfire\n\nCreate your own poem at: ${window.location.origin}`);
+    window.open(`mailto:?subject=${subject}&body=${body}`);
+  };
+
+  const handleShareViaTwitter = () => {
+    const text = encodeURIComponent(`${currentPoem}\n\n— Created at Digital Campfire`);
+    const url = encodeURIComponent(window.location.origin);
+    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`);
   };
 
   return (
@@ -315,116 +296,6 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           )}
         </motion.div>
         
-        {/* Quality Enhancement Controls */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 1.2 }}
-          style={{
-            background: 'rgba(254, 254, 254, 0.8)',
-            padding: '20px',
-            borderRadius: '16px',
-            border: '1px solid rgba(139, 125, 161, 0.15)',
-            backdropFilter: 'blur(10px)',
-            marginBottom: '40px'
-          }}
-        >
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: showQualityControls ? '20px' : '0'
-          }}>
-            <h3 style={{
-              fontSize: '1rem',
-              color: '#2D2D37',
-              fontFamily: "'EB Garamond', serif",
-              fontWeight: 500,
-              margin: 0
-            }}>
-              Enhancement Tools
-            </h3>
-            <motion.button
-              onClick={() => setShowQualityControls(!showQualityControls)}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              style={{
-                padding: '8px 16px',
-                borderRadius: '20px',
-                background: showQualityControls ? 'rgba(139, 125, 161, 0.2)' : 'rgba(139, 125, 161, 0.1)',
-                border: '1px solid rgba(139, 125, 161, 0.3)',
-                color: '#8B7DA1',
-                cursor: 'pointer',
-                fontFamily: "'Courier Prime', monospace",
-                fontSize: '0.85rem'
-              }}
-            >
-              {showQualityControls ? 'Hide' : 'Show'} Tools
-            </motion.button>
-          </div>
-          
-          {showQualityControls && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              transition={{ duration: 0.3 }}
-              style={{
-                display: 'flex',
-                gap: '12px',
-                flexWrap: 'wrap'
-              }}
-            >
-              <motion.button
-                onClick={handleQualityEnhancement}
-                disabled={isEnhancing}
-                whileHover={{ scale: isEnhancing ? 1 : 1.05 }}
-                whileTap={{ scale: isEnhancing ? 1 : 0.95 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '10px 16px',
-                  borderRadius: '20px',
-                  background: enhancementType === 'quality' ? 'rgba(244, 194, 194, 0.3)' : 'rgba(139, 125, 161, 0.1)',
-                  border: '1px solid rgba(139, 125, 161, 0.3)',
-                  color: '#2D2D37',
-                  cursor: isEnhancing ? 'not-allowed' : 'pointer',
-                  opacity: isEnhancing && enhancementType !== 'quality' ? 0.5 : 1,
-                  fontFamily: "'Courier Prime', monospace",
-                  fontSize: '0.85rem'
-                }}
-              >
-                <Wand2 size={14} />
-                {enhancementType === 'quality' ? 'Analyzing...' : 'Check Quality'}
-              </motion.button>
-              
-              <motion.button
-                onClick={handleSoundEnhancement}
-                disabled={isEnhancing}
-                whileHover={{ scale: isEnhancing ? 1 : 1.05 }}
-                whileTap={{ scale: isEnhancing ? 1 : 0.95 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '10px 16px',
-                  borderRadius: '20px',
-                  background: enhancementType === 'sound' ? 'rgba(244, 194, 194, 0.3)' : 'rgba(139, 125, 161, 0.1)',
-                  border: '1px solid rgba(139, 125, 161, 0.3)',
-                  color: '#2D2D37',
-                  cursor: isEnhancing ? 'not-allowed' : 'pointer',
-                  opacity: isEnhancing && enhancementType !== 'sound' ? 0.5 : 1,
-                  fontFamily: "'Courier Prime', monospace",
-                  fontSize: '0.85rem'
-                }}
-              >
-                <Volume2 size={14} />
-                {enhancementType === 'sound' ? 'Enhancing...' : 'Enhance Sound'}
-              </motion.button>
-            </motion.div>
-          )}
-        </motion.div>
-        
         {/* Curator Tweak Section */}
         {showCuratorTweak && (
           <motion.div
@@ -522,6 +393,157 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           </motion.div>
         )}
         
+        {/* Share Options Modal */}
+        {showShareOptions && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(45, 45, 55, 0.8)',
+              backdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '20px'
+            }}
+            onClick={() => setShowShareOptions(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              style={{
+                background: 'rgba(254, 254, 254, 0.95)',
+                padding: '32px',
+                borderRadius: '20px',
+                border: '1px solid rgba(139, 125, 161, 0.2)',
+                backdropFilter: 'blur(20px)',
+                maxWidth: '400px',
+                width: '100%',
+                boxShadow: '0 20px 60px rgba(45, 45, 55, 0.3)'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 style={{
+                fontSize: '1.4rem',
+                marginBottom: '24px',
+                color: '#2D2D37',
+                fontFamily: "'EB Garamond', serif",
+                fontWeight: 500,
+                textAlign: 'center'
+              }}>
+                Share Your Poem
+              </h3>
+              
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px'
+              }}>
+                <motion.button
+                  onClick={handleCopyToClipboard}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '16px 20px',
+                    borderRadius: '12px',
+                    background: copySuccess ? 'rgba(34, 197, 94, 0.1)' : 'rgba(139, 125, 161, 0.1)',
+                    border: `1px solid ${copySuccess ? 'rgba(34, 197, 94, 0.3)' : 'rgba(139, 125, 161, 0.3)'}`,
+                    color: copySuccess ? '#059669' : '#2D2D37',
+                    cursor: 'pointer',
+                    fontFamily: "'Courier Prime', monospace",
+                    fontSize: '0.95rem',
+                    width: '100%',
+                    justifyContent: 'flex-start',
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  {copySuccess ? <Check size={18} /> : <Copy size={18} />}
+                  {copySuccess ? 'Copied to clipboard!' : 'Copy to clipboard'}
+                </motion.button>
+                
+                <motion.button
+                  onClick={handleShareViaTwitter}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '16px 20px',
+                    borderRadius: '12px',
+                    background: 'rgba(29, 161, 242, 0.1)',
+                    border: '1px solid rgba(29, 161, 242, 0.3)',
+                    color: '#1DA1F2',
+                    cursor: 'pointer',
+                    fontFamily: "'Courier Prime', monospace",
+                    fontSize: '0.95rem',
+                    width: '100%',
+                    justifyContent: 'flex-start'
+                  }}
+                >
+                  <Share2 size={18} />
+                  Share on Twitter
+                </motion.button>
+                
+                <motion.button
+                  onClick={handleShareViaEmail}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '16px 20px',
+                    borderRadius: '12px',
+                    background: 'rgba(139, 125, 161, 0.1)',
+                    border: '1px solid rgba(139, 125, 161, 0.3)',
+                    color: '#2D2D37',
+                    cursor: 'pointer',
+                    fontFamily: "'Courier Prime', monospace",
+                    fontSize: '0.95rem',
+                    width: '100%',
+                    justifyContent: 'flex-start'
+                  }}
+                >
+                  <Share2 size={18} />
+                  Share via email
+                </motion.button>
+              </div>
+              
+              <motion.button
+                onClick={() => setShowShareOptions(false)}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  marginTop: '24px',
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  background: 'rgba(139, 125, 161, 0.1)',
+                  border: '1px solid rgba(139, 125, 161, 0.3)',
+                  color: '#8B7DA1',
+                  cursor: 'pointer',
+                  fontFamily: "'Courier Prime', monospace",
+                  fontSize: '0.9rem',
+                  width: '100%'
+                }}
+              >
+                Close
+              </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+        
         {/* Actions */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -585,6 +607,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           </motion.button>
           
           <motion.button
+            onClick={() => setShowShareOptions(true)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             style={{
