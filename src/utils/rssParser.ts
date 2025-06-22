@@ -19,35 +19,19 @@ interface WhisperWithSource {
 
 export async function fetchGuardianHeadlines(): Promise<string[]> {
   try {
-    // Try direct fetch first (works in some environments)
-    let response: Response;
+    console.log('Fetching Guardian headlines...');
     
-    try {
-      response = await fetch('https://www.theguardian.com/world/rss', {
-        mode: 'cors',
-        headers: {
-          'Accept': 'application/rss+xml, application/xml, text/xml',
-        }
-      });
-    } catch (corsError) {
-      // If direct fetch fails due to CORS, try with a proxy
-      response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.theguardian.com/world/rss'));
-    }
+    // Use the reliable CORS proxy that works in production
+    const proxyUrl = 'https://corsproxy.io/?';
+    const targetUrl = 'https://www.theguardian.com/world/rss';
+    
+    const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
     
     if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    let xmlText: string;
-    
-    // Handle allorigins.win response format
-    if (response.url.includes('allorigins.win')) {
-      const jsonResponse = await response.json();
-      xmlText = jsonResponse.contents;
-    } else {
-      xmlText = await response.text();
-    }
-    
+    const xmlText = await response.text();
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
     
@@ -60,6 +44,8 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
     const items = xmlDoc.querySelectorAll('item');
     const headlines: string[] = [];
     
+    console.log(`Found ${items.length} RSS items`);
+    
     // Get all available headlines
     for (let i = 0; i < items.length; i++) {
       const titleElement = items[i].querySelector('title');
@@ -68,13 +54,15 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
       }
     }
     
+    console.log(`Extracted ${headlines.length} headlines`);
+    
     if (headlines.length === 0) {
       throw new Error('No headlines found in RSS feed');
     }
     
     return headlines;
   } catch (error) {
-    console.warn('RSS fetch failed, using fallback headlines:', error.message);
+    console.warn('RSS fetch failed:', error.message);
     // Fallback to static topics if RSS fetch fails
     return [
       'Global climate summit reaches historic agreement on emissions',
@@ -142,53 +130,105 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
   ];
 
   try {
-    // Try to fetch real headlines first
-    const headlines = await fetchGuardianHeadlines();
+    console.log('Fetching poetic whispers with sources...');
     
-    // If we got real headlines, try to transform them
-    if (headlines.length > 0) {
-      console.log(`Fetched ${headlines.length} real headlines, transforming to poetry...`);
+    // Use the reliable CORS proxy that works in production
+    const proxyUrl = 'https://corsproxy.io/?';
+    const targetUrl = 'https://www.theguardian.com/world/rss';
+    
+    const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const xmlText = await response.text();
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+    
+    // Check for parsing errors
+    const parserError = xmlDoc.querySelector('parsererror');
+    if (parserError) {
+      throw new Error('XML parsing failed');
+    }
+    
+    const items = xmlDoc.querySelectorAll('item');
+    const allItems: { headline: string; link: string; pubDate: string }[] = [];
+    
+    console.log(`Found ${items.length} RSS items from The Guardian`);
+    
+    // Collect all available items with their publication dates
+    for (let i = 0; i < items.length; i++) {
+      const titleElement = items[i].querySelector('title');
+      const linkElement = items[i].querySelector('link');
+      const pubDateElement = items[i].querySelector('pubDate');
       
-      // Randomly select 3 headlines
-      const shuffled = [...headlines];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      
-      const selectedHeadlines = shuffled.slice(0, 3);
-      const whispers: WhisperWithSource[] = [];
-      
-      // Transform each headline to poetry
-      for (const headline of selectedHeadlines) {
-        try {
-          console.log(`Transforming: "${headline}"`);
-          const poeticPhrase = await transformHeadlineToPoetry(headline);
-          console.log(`Result: "${poeticPhrase}"`);
-          
-          whispers.push({
-            poetic: poeticPhrase,
-            headline: headline,
-            link: "https://www.theguardian.com"
-          });
-        } catch (transformError) {
-          console.warn('Failed to transform headline, using fallback:', transformError.message);
-          // If transformation fails, use a fallback whisper
-          const fallback = fallbackOptions[Math.floor(Math.random() * fallbackOptions.length)];
-          whispers.push(fallback);
-        }
-      }
-      
-      // If we successfully created whispers, return them
-      if (whispers.length >= 3) {
-        console.log(`Successfully created ${whispers.length} whispers from real headlines`);
-        return whispers;
+      if (titleElement && titleElement.textContent && linkElement && linkElement.textContent) {
+        allItems.push({
+          headline: titleElement.textContent.trim(),
+          link: linkElement.textContent.trim(),
+          pubDate: pubDateElement?.textContent?.trim() || ''
+        });
       }
     }
     
-    // If we reach here, something went wrong, use fallbacks
-    console.info('Using curated poetic whispers');
-    return getRandomFallbackWhispers(fallbackOptions);
+    console.log(`Collected ${allItems.length} valid items`);
+    
+    // Filter for today's articles (within last 24 hours) or use all if none from today
+    const now = new Date();
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    
+    const todaysItems = allItems.filter(item => {
+      if (!item.pubDate) return true; // Include items without dates
+      const itemDate = new Date(item.pubDate);
+      return itemDate >= yesterday;
+    });
+    
+    // Use today's items if available, otherwise use all items
+    const itemsToUse = todaysItems.length >= 3 ? todaysItems : allItems;
+    console.log(`Using ${itemsToUse.length} items (${todaysItems.length} from today)`);
+    
+    // Randomly shuffle all available items using Fisher-Yates algorithm
+    const shuffled = [...itemsToUse];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    // Select 3 random items
+    const selectedItems = shuffled.slice(0, 3);
+    
+    const whispers: WhisperWithSource[] = [];
+    
+    for (const item of selectedItems) {
+      try {
+        console.log(`Transforming headline: "${item.headline}"`);
+        const poeticPhrase = await transformHeadlineToPoetry(item.headline);
+        console.log(`Transformed to: "${poeticPhrase}"`);
+        whispers.push({
+          poetic: poeticPhrase,
+          headline: item.headline,
+          link: item.link
+        });
+      } catch (error) {
+        console.warn('Error transforming headline:', item.headline, error.message);
+        // Use original headline if transformation fails
+        whispers.push({
+          poetic: item.headline,
+          headline: item.headline,
+          link: item.link
+        });
+      }
+    }
+    
+    console.log(`Generated ${whispers.length} whispers from real headlines`);
+    
+    // If we successfully created whispers, return them
+    if (whispers.length >= 3) {
+      return whispers;
+    } else {
+      throw new Error('Not enough whispers generated');
+    }
     
   } catch (error) {
     console.info('RSS processing failed, using curated whispers:', error.message);
