@@ -19,10 +19,10 @@ interface WhisperWithSource {
 
 // Multiple CORS proxy options for better reliability
 const CORS_PROXIES = [
-  'https://api.allorigins.win/get?url=',
   'https://corsproxy.io/?',
-  'https://cors-anywhere.herokuapp.com/',
-  'https://api.codetabs.com/v1/proxy?quest='
+  'https://api.allorigins.win/get?url=',
+  'https://api.codetabs.com/v1/proxy?quest=',
+  'https://cors-anywhere.herokuapp.com/'
 ];
 
 async function fetchWithFallback(url: string): Promise<string> {
@@ -46,22 +46,36 @@ async function fetchWithFallback(url: string): Promise<string> {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
       
-      const data = await response.json();
+      // Get response as text first
+      const responseText = await response.text();
       
-      // Handle different response formats from different proxies
+      if (!responseText || responseText.length < 100) {
+        throw new Error('Response appears to be empty or too short');
+      }
+      
+      // Try to parse as JSON first (for proxies that wrap the response)
       let xmlContent = '';
-      if (typeof data === 'string') {
-        xmlContent = data;
-      } else if (data.contents) {
-        xmlContent = data.contents;
-      } else if (data.body) {
-        xmlContent = data.body;
-      } else {
-        throw new Error('Unexpected response format');
+      try {
+        const data = JSON.parse(responseText);
+        
+        // Handle different response formats from different proxies
+        if (typeof data === 'string') {
+          xmlContent = data;
+        } else if (data.contents) {
+          xmlContent = data.contents;
+        } else if (data.body) {
+          xmlContent = data.body;
+        } else {
+          throw new Error('Unexpected JSON response format');
+        }
+      } catch (jsonError) {
+        // If JSON parsing fails, assume the response is raw XML
+        console.log(`Response is not JSON, treating as raw XML`);
+        xmlContent = responseText;
       }
       
       if (!xmlContent || xmlContent.length < 100) {
-        throw new Error('Response appears to be empty or too short');
+        throw new Error('XML content appears to be empty or too short');
       }
       
       console.log(`Successfully fetched RSS feed using proxy ${i + 1}`);
