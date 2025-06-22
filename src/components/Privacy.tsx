@@ -1,17 +1,45 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Shield, Eye, Database, Lock } from 'lucide-react';
-import Navigation from './Navigation';
 
 interface PrivacyProps {
   onNavigate: (page: 'landing' | 'display' | 'privacy' | 'about') => void;
+  isDarkMode: boolean;
 }
 
-const Privacy: React.FC<PrivacyProps> = ({ onNavigate }) => {
+const Privacy: React.FC<PrivacyProps> = ({ onNavigate, isDarkMode }) => {
+  const getThemeColors = () => {
+    if (isDarkMode) {
+      return {
+        primary: '#EA580C',
+        secondary: '#C2410C',
+        text: '#E5E5E5',
+        textSecondary: 'rgba(229, 229, 229, 0.7)',
+        background: 'rgba(229, 229, 229, 0.05)',
+        border: 'rgba(234, 88, 12, 0.3)',
+        shadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)',
+        glowShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+      };
+    } else {
+      return {
+        primary: '#C2410C',
+        secondary: '#EA580C',
+        text: '#1a1a1a',
+        textSecondary: 'rgba(26, 26, 26, 0.7)',
+        background: 'rgba(26, 26, 26, 0.05)',
+        border: 'rgba(194, 65, 12, 0.4)',
+        shadow: '0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(194, 65, 12, 0.2)',
+        glowShadow: '0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(194, 65, 12, 0.2)'
+      };
+    }
+  };
+
+  const colors = getThemeColors();
+
   return (
     <div style={{
       minHeight: '100vh',
-      padding: '40px 24px 120px',
+      padding: '40px 24px 40px',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center'
@@ -30,17 +58,17 @@ const Privacy: React.FC<PrivacyProps> = ({ onNavigate }) => {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            color: '#EA580C',
+            color: colors.primary,
             fontSize: '0.9rem',
             padding: '8px 16px',
             borderRadius: '20px',
             marginBottom: '40px',
-            background: 'rgba(229, 229, 229, 0.08)',
-            border: '1px solid rgba(234, 88, 12, 0.3)',
+            background: colors.background,
+            border: `1px solid ${colors.border}`,
             cursor: 'pointer',
             backdropFilter: 'blur(15px)',
             fontFamily: "'Courier Prime', monospace",
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+            boxShadow: colors.shadow
           }}
         >
           <ArrowLeft size={16} />
@@ -52,12 +80,12 @@ const Privacy: React.FC<PrivacyProps> = ({ onNavigate }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           style={{
-            background: 'rgba(229, 229, 229, 0.05)',
+            background: colors.background,
             padding: '48px',
             borderRadius: '20px',
-            border: '1px solid rgba(234, 88, 12, 0.2)',
+            border: `1px solid ${colors.border}`,
             backdropFilter: 'blur(20px)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+            boxShadow: colors.glowShadow
           }}
         >
           <div style={{
@@ -66,10 +94,10 @@ const Privacy: React.FC<PrivacyProps> = ({ onNavigate }) => {
             gap: '16px',
             marginBottom: '32px'
           }}>
-            <Shield size={32} color="#EA580C" />
+            <Shield size={32} color={colors.primary} />
             <h1 style={{
               fontSize: '2.5rem',
-              color: '#E5E5E5',
+              color: colors.text,
               fontWeight: 400,
               fontFamily: "'EB Garamond', serif"
             }}>
@@ -80,10 +108,10 @@ const Privacy: React.FC<PrivacyProps> = ({ onNavigate }) => {
           <div style={{
             fontSize: '1.1rem',
             lineHeight: 1.7,
-            color: '#E5E5E5',
+            color: colors.text,
             fontFamily: "'EB Garamond', serif"
           }}>
-            <p style={{ marginBottom: '24px', fontStyle: 'italic', color: '#EA580C' }}>
+            <p style={{ marginBottom: '24px', fontStyle: 'italic', color: colors.primary }}>
               Your privacy is sacred to us. Here's how we protect the words you share by our digital fire.
             </p>
 
@@ -98,7 +126,7 @@ const Privacy: React.FC<PrivacyProps> = ({ onNavigate }) => {
                 <h2 style={{
                   fontSize: '1.4rem',
                   fontWeight: 500,
-                  color: '#E5E5E5',
+                  color: colors.text,
                   fontFamily: "'EB Garamond', serif"
                 }}>
                   What We See
@@ -119,11 +147,11 @@ const Privacy: React.FC<PrivacyProps> = ({ onNavigate }) => {
                 gap: '12px',
                 marginBottom: '16px'
               }}>
-                <Database size={20} color="#EA580C" />
+                <Database size={20} color={colors.primary} />
                 <h2 style={{
                   fontSize: '1.4rem',
                   fontWeight: 500,
-                  color: '#E5E5E5',
+                  color: colors.text,
                   fontFamily: "'EB Garamond', serif"
                 }}>
                   What We Keep
@@ -148,7 +176,7 @@ const Privacy: React.FC<PrivacyProps> = ({ onNavigate }) => {
                 <h2 style={{
                   fontSize: '1.4rem',
                   fontWeight: 500,
-                  color: '#E5E5E5',
+                  color: colors.text,
                   fontFamily: "'EB Garamond', serif"
                 }}>
                   Third-Party Services
@@ -164,15 +192,15 @@ const Privacy: React.FC<PrivacyProps> = ({ onNavigate }) => {
 
             <div style={{
               padding: '24px',
-              background: 'rgba(234, 88, 12, 0.1)',
+              background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.1)`,
               borderRadius: '12px',
-              border: '1px solid rgba(234, 88, 12, 0.3)',
+              border: `1px solid ${colors.border}`,
               marginTop: '32px'
             }}>
               <h3 style={{
                 fontSize: '1.2rem',
                 fontWeight: 500,
-                color: '#E5E5E5',
+                color: colors.text,
                 marginBottom: '12px',
                 fontFamily: "'EB Garamond', serif"
               }}>
@@ -187,7 +215,7 @@ const Privacy: React.FC<PrivacyProps> = ({ onNavigate }) => {
             <p style={{
               marginTop: '32px',
               fontSize: '0.9rem',
-              color: '#EA580C',
+              color: colors.primary,
               fontStyle: 'italic',
               textAlign: 'center'
             }}>
@@ -196,8 +224,6 @@ const Privacy: React.FC<PrivacyProps> = ({ onNavigate }) => {
           </div>
         </motion.div>
       </motion.div>
-
-      <Navigation currentPage="privacy" onNavigate={onNavigate} />
     </div>
   );
 };

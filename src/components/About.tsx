@@ -4,9 +4,38 @@ import { ArrowLeft, Flame, Heart, Sparkles, Users } from 'lucide-react';
 
 interface AboutProps {
   onNavigate: (page: 'landing' | 'display' | 'privacy' | 'about') => void;
+  isDarkMode: boolean;
 }
 
-const About: React.FC<AboutProps> = ({ onNavigate }) => {
+const About: React.FC<AboutProps> = ({ onNavigate, isDarkMode }) => {
+  const getThemeColors = () => {
+    if (isDarkMode) {
+      return {
+        primary: '#EA580C',
+        secondary: '#C2410C',
+        text: '#E5E5E5',
+        textSecondary: 'rgba(229, 229, 229, 0.7)',
+        background: 'rgba(229, 229, 229, 0.05)',
+        border: 'rgba(234, 88, 12, 0.3)',
+        shadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)',
+        glowShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+      };
+    } else {
+      return {
+        primary: '#C2410C',
+        secondary: '#EA580C',
+        text: '#1a1a1a',
+        textSecondary: 'rgba(26, 26, 26, 0.7)',
+        background: 'rgba(26, 26, 26, 0.05)',
+        border: 'rgba(194, 65, 12, 0.4)',
+        shadow: '0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(194, 65, 12, 0.2)',
+        glowShadow: '0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(194, 65, 12, 0.2)'
+      };
+    }
+  };
+
+  const colors = getThemeColors();
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -29,17 +58,17 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            color: '#EA580C',
+            color: colors.primary,
             fontSize: '0.9rem',
             padding: '8px 16px',
             borderRadius: '20px',
             marginBottom: '40px',
-            background: 'rgba(229, 229, 229, 0.08)',
-            border: '1px solid rgba(234, 88, 12, 0.3)',
+            background: colors.background,
+            border: `1px solid ${colors.border}`,
             cursor: 'pointer',
             backdropFilter: 'blur(15px)',
             fontFamily: "'Courier Prime', monospace",
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+            boxShadow: colors.shadow
           }}
         >
           <ArrowLeft size={16} />
@@ -51,12 +80,12 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
           style={{
-            background: 'rgba(229, 229, 229, 0.05)',
+            background: colors.background,
             padding: '48px',
             borderRadius: '20px',
-            border: '1px solid rgba(234, 88, 12, 0.2)',
+            border: `1px solid ${colors.border}`,
             backdropFilter: 'blur(20px)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+            boxShadow: colors.glowShadow
           }}
         >
           <div style={{
@@ -65,10 +94,10 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
             gap: '16px',
             marginBottom: '32px'
           }}>
-            <Flame size={32} color="#EA580C" />
+            <Flame size={32} color={colors.primary} />
             <h1 style={{
               fontSize: '2.5rem',
-              color: '#E5E5E5',
+              color: colors.text,
               fontWeight: 400,
               fontFamily: "'EB Garamond', serif"
             }}>
@@ -79,10 +108,10 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
           <div style={{
             fontSize: '1.1rem',
             lineHeight: 1.7,
-            color: '#E5E5E5',
+            color: colors.text,
             fontFamily: "'EB Garamond', serif"
           }}>
-            <p style={{ marginBottom: '24px', fontStyle: 'italic', color: '#EA580C', fontSize: '1.2rem' }}>
+            <p style={{ marginBottom: '24px', fontStyle: 'italic', color: colors.primary, fontSize: '1.2rem' }}>
               "A space for strangers to sit by and share one line of feeling"
             </p>
 
@@ -97,7 +126,7 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
                 <h2 style={{
                   fontSize: '1.4rem',
                   fontWeight: 500,
-                  color: '#E5E5E5',
+                  color: colors.text,
                   fontFamily: "'EB Garamond', serif"
                 }}>
                   What is Digital Campfire?
@@ -121,11 +150,11 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
                 gap: '12px',
                 marginBottom: '16px'
               }}>
-                <Sparkles size={20} color="#EA580C" />
+                <Sparkles size={20} color={colors.primary} />
                 <h2 style={{
                   fontSize: '1.4rem',
                   fontWeight: 500,
-                  color: '#E5E5E5',
+                  color: colors.text,
                   fontFamily: "'EB Garamond', serif"
                 }}>
                   The Skinny Poem Format
@@ -148,7 +177,7 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
                 textAlign: 'center',
                 marginTop: '16px'
               }}>
-                <div style={{ color: '#EA580C', marginBottom: '8px' }}>Example Structure:</div>
+                <div style={{ color: colors.primary, marginBottom: '8px' }}>Example Structure:</div>
                 <div>The weight of unspoken words</div>
                 <div style={{ color: '#22C55E' }}>breathe</div>
                 <div>silence</div>
@@ -174,7 +203,7 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
                 <h2 style={{
                   fontSize: '1.4rem',
                   fontWeight: 500,
-                  color: '#E5E5E5',
+                  color: colors.text,
                   fontFamily: "'EB Garamond', serif"
                 }}>
                   Why We Built This
@@ -194,15 +223,15 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
 
             <div style={{
               padding: '24px',
-              background: 'rgba(234, 88, 12, 0.1)',
+              background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.1)`,
               borderRadius: '12px',
-              border: '1px solid rgba(234, 88, 12, 0.3)',
+              border: `1px solid ${colors.border}`,
               marginTop: '32px'
             }}>
               <h3 style={{
                 fontSize: '1.2rem',
                 fontWeight: 500,
-                color: '#E5E5E5',
+                color: colors.text,
                 marginBottom: '12px',
                 fontFamily: "'EB Garamond', serif"
               }}>
@@ -228,7 +257,7 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
                 fontSize: '1.1rem',
                 fontStyle: 'italic',
                 marginBottom: '16px',
-                color: '#E5E5E5'
+                color: colors.text
               }}>
                 "Poetry is not a luxury. It is a vital necessity of our existence."
               </p>
@@ -244,7 +273,7 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
             <p style={{
               marginTop: '32px',
               fontSize: '0.9rem',
-              color: '#EA580C',
+              color: colors.primary,
               fontStyle: 'italic',
               textAlign: 'center'
             }}>

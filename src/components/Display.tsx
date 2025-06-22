@@ -14,9 +14,10 @@ interface DisplayProps {
   poem: Poem;
   onBack: () => void;
   onNavigate: (page: 'landing' | 'display' | 'privacy' | 'about') => void;
+  isDarkMode: boolean;
 }
 
-const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
+const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode }) => {
   const [visibleLines, setVisibleLines] = useState(0);
   const [showCuratorTweak, setShowCuratorTweak] = useState(false);
   const [editedPoem, setEditedPoem] = useState(poem.text);
@@ -80,6 +81,34 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
     window.open(`mailto:?subject=${subject}&body=${body}`);
   };
 
+  const getThemeColors = () => {
+    if (isDarkMode) {
+      return {
+        primary: '#EA580C',
+        secondary: '#C2410C',
+        text: '#E5E5E5',
+        textSecondary: 'rgba(229, 229, 229, 0.7)',
+        background: 'rgba(229, 229, 229, 0.05)',
+        border: 'rgba(234, 88, 12, 0.3)',
+        shadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)',
+        glowShadow: '0 0 60px rgba(234, 88, 12, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(234, 88, 12, 0.2)'
+      };
+    } else {
+      return {
+        primary: '#C2410C',
+        secondary: '#EA580C',
+        text: '#1a1a1a',
+        textSecondary: 'rgba(26, 26, 26, 0.7)',
+        background: 'rgba(26, 26, 26, 0.05)',
+        border: 'rgba(194, 65, 12, 0.4)',
+        shadow: '0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(194, 65, 12, 0.2)',
+        glowShadow: '0 0 60px rgba(194, 65, 12, 0.2), 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(194, 65, 12, 0.3)'
+      };
+    }
+  };
+
+  const colors = getThemeColors();
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -101,17 +130,17 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            color: '#EA580C',
+            color: colors.primary,
             fontSize: '0.9rem',
             padding: '8px 16px',
             borderRadius: '20px',
             marginBottom: '40px',
-            background: 'rgba(229, 229, 229, 0.08)',
-            border: '1px solid rgba(234, 88, 12, 0.3)',
+            background: colors.background,
+            border: `1px solid ${colors.border}`,
             cursor: 'pointer',
             backdropFilter: 'blur(15px)',
             fontFamily: "'Courier Prime', monospace",
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+            boxShadow: colors.shadow
           }}
         >
           <ArrowLeft size={16} />
@@ -125,17 +154,13 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
           transition={{ duration: 0.8 }}
           style={{
             background: `
-              radial-gradient(circle at center, rgba(234, 88, 12, 0.08) 0%, transparent 70%),
-              rgba(229, 229, 229, 0.05)
+              radial-gradient(circle at center, rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.08) 0%, transparent 70%),
+              ${colors.background}
             `,
             padding: '48px',
             borderRadius: '20px',
-            boxShadow: `
-              0 0 60px rgba(234, 88, 12, 0.3),
-              0 8px 32px rgba(0, 0, 0, 0.4),
-              0 0 0 1px rgba(234, 88, 12, 0.2)
-            `,
-            border: '1px solid rgba(234, 88, 12, 0.2)',
+            boxShadow: colors.glowShadow,
+            border: `1px solid ${colors.border}`,
             backdropFilter: 'blur(20px)',
             marginBottom: '40px',
             position: 'relative'
@@ -149,7 +174,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
             transform: 'translateX(-50%)',
             width: '4px',
             height: '4px',
-            background: 'rgba(234, 88, 12, 0.6)',
+            background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.6)`,
             borderRadius: '50%',
             animation: 'float 3s ease-in-out infinite'
           }} />
@@ -158,7 +183,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
             fontSize: '1.8rem',
             textAlign: 'center',
             marginBottom: '32px',
-            color: '#E5E5E5',
+            color: colors.text,
             fontWeight: 400,
             fontFamily: "'EB Garamond', serif"
           }}>
@@ -168,7 +193,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
           <div style={{
             fontSize: '1.2rem',
             lineHeight: 1.8,
-            color: '#E5E5E5',
+            color: colors.text,
             whiteSpace: 'pre-wrap',
             textAlign: 'center',
             fontFamily: "'EB Garamond', serif"
@@ -206,16 +231,16 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
           }}
         >
           <div style={{
-            background: 'rgba(229, 229, 229, 0.05)',
+            background: colors.background,
             padding: '20px',
             borderRadius: '12px',
-            border: '1px solid rgba(234, 88, 12, 0.2)',
+            border: `1px solid ${colors.border}`,
             backdropFilter: 'blur(15px)',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+            boxShadow: colors.shadow
           }}>
             <div style={{
               fontSize: '0.8rem',
-              color: '#EA580C',
+              color: colors.primary,
               marginBottom: '8px',
               fontWeight: 600,
               textTransform: 'uppercase',
@@ -226,7 +251,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
             </div>
             <div style={{
               fontSize: '0.95rem',
-              color: '#E5E5E5',
+              color: colors.text,
               fontFamily: "'EB Garamond', serif",
               fontStyle: 'italic'
             }}>
@@ -235,16 +260,16 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
           </div>
           
           <div style={{
-            background: 'rgba(229, 229, 229, 0.05)',
+            background: colors.background,
             padding: '20px',
             borderRadius: '12px',
-            border: '1px solid rgba(234, 88, 12, 0.2)',
+            border: `1px solid ${colors.border}`,
             backdropFilter: 'blur(15px)',
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+            boxShadow: colors.shadow
           }}>
             <div style={{
               fontSize: '0.8rem',
-              color: '#EA580C',
+              color: colors.primary,
               marginBottom: '8px',
               fontWeight: 600,
               textTransform: 'uppercase',
@@ -255,7 +280,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
             </div>
             <div style={{
               fontSize: '1.1rem',
-              color: '#E5E5E5',
+              color: colors.text,
               fontFamily: "'EB Garamond', serif",
               fontStyle: 'italic'
             }}>
@@ -265,17 +290,17 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
           
           {poem.feeling && (
             <div style={{
-              background: 'rgba(229, 229, 229, 0.05)',
+              background: colors.background,
               padding: '20px',
               borderRadius: '12px',
-              border: '1px solid rgba(234, 88, 12, 0.2)',
+              border: `1px solid ${colors.border}`,
               backdropFilter: 'blur(15px)',
               gridColumn: 'span 2',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+              boxShadow: colors.shadow
             }}>
               <div style={{
                 fontSize: '0.8rem',
-                color: '#EA580C',
+                color: colors.primary,
                 marginBottom: '8px',
                 fontWeight: 600,
                 textTransform: 'uppercase',
@@ -286,7 +311,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
               </div>
               <div style={{
                 fontSize: '1rem',
-                color: '#E5E5E5',
+                color: colors.text,
                 fontFamily: "'EB Garamond', serif",
                 fontStyle: 'italic'
               }}>
@@ -303,19 +328,19 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
             style={{
-              background: 'rgba(229, 229, 229, 0.08)',
+              background: colors.background,
               padding: '24px',
               borderRadius: '16px',
-              border: '2px solid rgba(234, 88, 12, 0.3)',
+              border: `2px solid ${colors.border}`,
               backdropFilter: 'blur(20px)',
               marginBottom: '40px',
-              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(234, 88, 12, 0.2)'
+              boxShadow: colors.shadow
             }}
           >
             <h3 style={{
               fontSize: '1.2rem',
               marginBottom: '16px',
-              color: '#E5E5E5',
+              color: colors.text,
               fontFamily: "'EB Garamond', serif",
               fontWeight: 500
             }}>
@@ -323,7 +348,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
             </h3>
             <p style={{
               fontSize: '0.9rem',
-              color: '#EA580C',
+              color: colors.primary,
               marginBottom: '16px',
               fontStyle: 'italic'
             }}>
@@ -336,17 +361,17 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
                 width: '100%',
                 minHeight: '200px',
                 padding: '16px',
-                border: '1px solid rgba(234, 88, 12, 0.4)',
+                border: `1px solid ${colors.border}`,
                 borderRadius: '8px',
                 fontSize: '1rem',
                 lineHeight: 1.6,
                 resize: 'vertical',
-                background: 'rgba(229, 229, 229, 0.05)',
+                background: colors.background,
                 fontFamily: "'EB Garamond', serif",
-                color: '#E5E5E5',
+                color: colors.text,
                 outline: 'none',
                 backdropFilter: 'blur(10px)',
-                boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+                boxShadow: colors.shadow
               }}
             />
             <div style={{
@@ -365,9 +390,9 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
                 style={{
                   padding: '8px 16px',
                   borderRadius: '20px',
-                  background: 'rgba(234, 88, 12, 0.15)',
-                  border: '1px solid rgba(234, 88, 12, 0.4)',
-                  color: '#EA580C',
+                  background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
+                  border: `1px solid ${colors.border}`,
+                  color: colors.primary,
                   cursor: 'pointer',
                   fontFamily: "'Courier Prime', monospace",
                   fontSize: '0.9rem',
@@ -383,9 +408,9 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
                 style={{
                   padding: '8px 16px',
                   borderRadius: '20px',
-                  background: 'linear-gradient(135deg, #2D2D37 0%, #EA580C 100%)',
+                  background: `linear-gradient(135deg, ${isDarkMode ? '#2D2D37' : '#f1f5f9'} 0%, ${colors.primary} 100%)`,
                   border: 'none',
-                  color: '#E5E5E5',
+                  color: colors.text,
                   cursor: 'pointer',
                   fontFamily: "'Courier Prime', monospace",
                   fontSize: '0.9rem'
@@ -409,7 +434,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
               left: 0,
               right: 0,
               bottom: 0,
-              background: 'rgba(26, 26, 26, 0.9)',
+              background: `rgba(${isDarkMode ? '26, 26, 26' : '248, 250, 252'}, 0.9)`,
               backdropFilter: 'blur(15px)',
               display: 'flex',
               alignItems: 'center',
@@ -424,21 +449,21 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.3 }}
               style={{
-                background: 'rgba(229, 229, 229, 0.08)',
+                background: colors.background,
                 padding: '32px',
                 borderRadius: '20px',
-                border: '1px solid rgba(234, 88, 12, 0.3)',
+                border: `1px solid ${colors.border}`,
                 backdropFilter: 'blur(25px)',
                 maxWidth: '400px',
                 width: '100%',
-                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(234, 88, 12, 0.2)'
+                boxShadow: colors.shadow
               }}
               onClick={(e) => e.stopPropagation()}
             >
               <h3 style={{
                 fontSize: '1.4rem',
                 marginBottom: '24px',
-                color: '#E5E5E5',
+                color: colors.text,
                 fontFamily: "'EB Garamond', serif",
                 fontWeight: 500,
                 textAlign: 'center'
@@ -461,9 +486,9 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
                     gap: '12px',
                     padding: '16px 20px',
                     borderRadius: '12px',
-                    background: copySuccess ? 'rgba(34, 197, 94, 0.15)' : 'rgba(234, 88, 12, 0.15)',
-                    border: `1px solid ${copySuccess ? 'rgba(34, 197, 94, 0.4)' : 'rgba(234, 88, 12, 0.4)'}`,
-                    color: copySuccess ? '#22c55e' : '#E5E5E5',
+                    background: copySuccess ? 'rgba(34, 197, 94, 0.15)' : `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
+                    border: `1px solid ${copySuccess ? 'rgba(34, 197, 94, 0.4)' : colors.border}`,
+                    color: copySuccess ? '#22c55e' : colors.text,
                     cursor: 'pointer',
                     fontFamily: "'Courier Prime', monospace",
                     fontSize: '0.95rem',
@@ -487,9 +512,9 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
                     gap: '12px',
                     padding: '16px 20px',
                     borderRadius: '12px',
-                    background: 'rgba(234, 88, 12, 0.15)',
-                    border: '1px solid rgba(234, 88, 12, 0.4)',
-                    color: '#E5E5E5',
+                    background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
+                    border: `1px solid ${colors.border}`,
+                    color: colors.text,
                     cursor: 'pointer',
                     fontFamily: "'Courier Prime', monospace",
                     fontSize: '0.95rem',
@@ -511,9 +536,9 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
                   marginTop: '24px',
                   padding: '8px 16px',
                   borderRadius: '20px',
-                  background: 'rgba(234, 88, 12, 0.15)',
-                  border: '1px solid rgba(234, 88, 12, 0.4)',
-                  color: '#EA580C',
+                  background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
+                  border: `1px solid ${colors.border}`,
+                  color: colors.primary,
                   cursor: 'pointer',
                   fontFamily: "'Courier Prime', monospace",
                   fontSize: '0.9rem',
@@ -554,14 +579,14 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
               gap: '8px',
               padding: '12px 20px',
               borderRadius: '25px',
-              background: showCuratorTweak ? 'rgba(234, 88, 12, 0.25)' : 'rgba(234, 88, 12, 0.15)',
-              border: '1px solid rgba(234, 88, 12, 0.4)',
-              color: '#E5E5E5',
+              background: showCuratorTweak ? `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.25)` : `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
+              border: `1px solid ${colors.border}`,
+              color: colors.text,
               cursor: 'pointer',
               backdropFilter: 'blur(15px)',
               fontFamily: "'Courier Prime', monospace",
               fontSize: '0.9rem',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+              boxShadow: colors.shadow
             }}
           >
             <Edit3 size={16} />
@@ -578,14 +603,14 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
               gap: '8px',
               padding: '12px 20px',
               borderRadius: '25px',
-              background: 'rgba(234, 88, 12, 0.15)',
-              border: '1px solid rgba(234, 88, 12, 0.4)',
-              color: '#E5E5E5',
+              background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
+              border: `1px solid ${colors.border}`,
+              color: colors.text,
               cursor: 'pointer',
               backdropFilter: 'blur(15px)',
               fontFamily: "'Courier Prime', monospace",
               fontSize: '0.9rem',
-              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)'
+              boxShadow: colors.shadow
             }}
           >
             <Share2 size={16} />
@@ -600,7 +625,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
           style={{ textAlign: 'center', marginTop: '40px' }}
         >
           <p style={{
-            color: '#EA580C',
+            color: colors.primary,
             fontSize: '0.9rem',
             fontStyle: 'italic',
             fontFamily: "'EB Garamond', serif"
