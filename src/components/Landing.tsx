@@ -4,7 +4,6 @@ import { ArrowLeft, ArrowRight, RefreshCw, ExternalLink } from 'lucide-react';
 import { fetchPoeticWhispersWithSources } from '../utils/rssParser';
 import { generateSkinnyPoem, generateAnchorWords } from '../utils/openai';
 import { generateRandomOrbColor, getRandomBaseAnchors } from '../utils/helpers';
-import Navigation from './Navigation';
 
 const baseAnchorWords = [
   "breathe",
@@ -818,9 +817,6 @@ ${selectedWhisper}`;
           </motion.button>
         </div>
       </motion.div>
-      
-      {/* Navigation Footer */}
-      <Navigation currentPage="landing" onNavigate={onNavigate} />
       
       <style>{`
         @keyframes spin {

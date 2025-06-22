@@ -93,8 +93,8 @@ function App() {
         zIndex: 1
       }} />
       
-      {/* Bolt Logo - appears on all pages */}
-      <BoltLogo />
+      {/* Bolt Logo with Navigation - appears on all pages */}
+      <BoltLogo onNavigate={handleNavigate} currentPage={currentState} />
       
       <div style={{ position: 'relative', zIndex: 2 }}>
         <AnimatePresence mode="wait">

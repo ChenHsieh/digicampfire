@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Share2, Edit3, Copy, Check } from 'lucide-react';
 import { validateSkinnyPoem } from '../utils/openai';
-import Navigation from './Navigation';
 
 interface Poem {
   whisper: string;
@@ -610,9 +609,6 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate }) => {
           </p>
         </motion.div>
       </div>
-      
-      {/* Navigation Footer */}
-      <Navigation currentPage="display" onNavigate={onNavigate} />
       
       <style>{`
         @keyframes float {

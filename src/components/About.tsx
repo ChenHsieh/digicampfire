@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Flame, Heart, Sparkles, Users } from 'lucide-react';
-import Navigation from './Navigation';
 
 interface AboutProps {
   onNavigate: (page: 'landing' | 'display' | 'privacy' | 'about') => void;
@@ -11,7 +10,7 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
   return (
     <div style={{
       minHeight: '100vh',
-      padding: '40px 24px 120px',
+      padding: '40px 24px 40px',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center'
@@ -254,8 +253,6 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
           </div>
         </motion.div>
       </motion.div>
-
-      <Navigation currentPage="about" onNavigate={onNavigate} />
     </div>
   );
 };
