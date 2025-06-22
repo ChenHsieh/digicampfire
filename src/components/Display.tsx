@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowLeft, Share2, Edit3, Copy, Check } from 'lucide-react';
 import { validateSkinnyPoem } from '../utils/openai';
 
@@ -605,11 +605,6 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             transform: translateX(-50%) translateY(-10px);
             opacity: 1;
           }
-        }
-        
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
         }
       `}</style>
     </div>

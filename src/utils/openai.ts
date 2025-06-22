@@ -12,14 +12,14 @@ export async function transformHeadlineToPoetry(headline: string): Promise<strin
       messages: [
         {
           role: "system",
-          content: `You are a poetic summarizer. Transform the given news headline into a short, emotionally ambiguous noun phrase (max 7 words). This phrase should be poetic, symbolic, and open-ended—suitable to serve as both the first and last line of a Skinny poem.
+          content: `You are a poetic summarizer. I will give you a news headline. Your task is to transform it into a short, emotionally ambiguous noun phrase (max 7 words). This phrase should be poetic, symbolic, and open-ended—suitable to serve as both the first and last line of a Skinny poem.
 
 Guidelines:
-• Do NOT summarize literally
-• Avoid full sentences. Use abstract, metaphor-rich noun phrases instead
-• Steer clear of specific names, places, or temporal references
-• Prioritize symbolic weight, emotional texture, and interpretive openness
-• Imagine the phrase as the title of a surreal painting
+	•	Do NOT summarize literally.
+	•	Avoid full sentences. Use abstract, metaphor-rich noun phrases instead (e.g., "glass edge of tomorrow", "inheritance of the burning sky").
+	•	Steer clear of specific names, places, or temporal references.
+	•	Prioritize symbolic weight, emotional texture, and interpretive openness.
+	•	Imagine the phrase as the title of a surreal painting, or a whispered line from a dream.
 
 Example:
 Headline: "UN warns of irreversible climate tipping points"
@@ -34,35 +34,11 @@ Poetic phrase: "the edge of unremembered heat"`
       temperature: 0.8
     });
 
-    const result = response.choices[0]?.message?.content?.trim();
-    if (!result) {
-      throw new Error('No content returned from OpenAI');
-    }
-    
-    return result;
+    return response.choices[0]?.message?.content?.trim() || headline;
   } catch (error) {
     console.error('Error transforming headline:', error);
-    // More sophisticated fallback based on headline content
-    return createPoetricFallback(headline);
-  }
-}
-
-function createPoetricFallback(headline: string): string {
-  // Simple poetic transformations as fallback
-  const lowerHeadline = headline.toLowerCase();
-  
-  if (lowerHeadline.includes('climate') || lowerHeadline.includes('environment')) {
-    return "the weight of tomorrow's sky";
-  } else if (lowerHeadline.includes('war') || lowerHeadline.includes('conflict')) {
-    return "echoes of distant thunder";
-  } else if (lowerHeadline.includes('economy') || lowerHeadline.includes('market')) {
-    return "the pulse of uncertain tides";
-  } else if (lowerHeadline.includes('technology') || lowerHeadline.includes('digital')) {
-    return "fragments of electric dreams";
-  } else if (lowerHeadline.includes('health') || lowerHeadline.includes('medical')) {
-    return "whispers of healing light";
-  } else {
-    return "the space between what was and what could be";
+    // Fallback to original headline if API fails
+    return headline;
   }
 }
 
@@ -93,29 +69,15 @@ Return only the 6 words, one per line.`
       temperature: 0.8
     });
 
-    const content = response.choices[0]?.message?.content?.trim();
-    if (!content) {
-      throw new Error('No content returned from OpenAI');
-    }
-
-    const words = content.split('\n').filter(word => word.trim()).map(word => word.trim().toLowerCase());
-    return words.length >= 6 ? words.slice(0, 6) : getRandomBaseAnchors();
+    const words = response.choices[0]?.message?.content?.trim().split('\n').filter(word => word.trim()) || [];
+    return words.length >= 6 ? words.slice(0, 6) : [
+      "breathe", "release", "become", "hold", "listen", "remember"
+    ];
   } catch (error) {
     console.error('Error generating anchor words:', error);
-    return getRandomBaseAnchors();
+    // Fallback to base words
+    return ["breathe", "release", "become", "hold", "listen", "remember"];
   }
-}
-
-function getRandomBaseAnchors(): string[] {
-  const baseWords = [
-    "breathe", "release", "become", "hold", "listen", "remember",
-    "forgive", "trust", "surrender", "witness", "embrace", "flow",
-    "gather", "whisper", "dance", "rest", "bloom", "heal"
-  ];
-  
-  // Shuffle and return 6 words
-  const shuffled = [...baseWords].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, 6);
 }
 
 export async function validateSkinnyPoem(poem: string, anchor: string): Promise<{ isValid: boolean; issues: string[] }> {
@@ -253,91 +215,72 @@ Return only the 7 enhanced middle lines, one word per line.`
 }
 
 export async function generateSkinnyPoem(whisper: string, anchor: string, feeling: string): Promise<string> {
-  console.log('Starting poem generation with:', { whisper, anchor, feeling });
-  
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
         {
           role: "system",
-          content: `You are a master of Skinny poetry. Create a Skinny poem following this EXACT structure:
+          content: `Create a Skinny poem with:
+- Whisper (first/last line): "${whisper}"
+- Anchor word (lines 2, 6, 10): "${anchor}"
+- User feeling: "${feeling}"
 
-STRUCTURE REQUIREMENTS:
-- Line 1: "${whisper}" (exactly as given)
-- Line 2: "${anchor}" (exactly as given)
-- Lines 3-5: Single words only
-- Line 6: "${anchor}" (exactly as given)
-- Lines 7-9: Single words only  
-- Line 10: "${anchor}" (exactly as given)
-- Line 11: "${whisper}" (exactly as given, or slight variation using same words)
+✍️ FORM:
+Write exactly 11 lines.
 
-CONTENT GOALS:
-- Reflect the user's feeling: "${feeling}"
-- Make the anchor word feel meaningful through repetition
-- Build around a single emotional moment or image
-- Use precise, grounded language
-- Create emotional resonance through rhythm and repetition
+1. Line 1: The "whisper" phrase (poetic, metaphorical, or emotionally suggestive)
+2. Lines 2–10: Single word per line only — no phrases
+   - Line 2 = "${anchor}"
+   - Line 6 = "${anchor}"
+   - Line 10 = "${anchor}"
+3. Line 11: Repeat or re-order the exact same words from the whisper (Line 1)
 
-Return ONLY the 11-line poem. No explanations, no formatting, no extra text.`
+🧠 GOALS:
+- Reflect or contrast the user's feeling ("${feeling}") through imagery and word choice
+- Make the anchor word feel meaningful — as echo, emphasis, or irony
+- Build around a single emotional moment, image, or metaphor
+- Use precise, grounded language (not vague or abstract)
+- The poem should feel raw, rhythmic, and emotionally resonant
+
+Return only the 11-line poem. No title, no explanation, no formatting.`
         },
         {
           role: "user",
-          content: `Create a Skinny poem using:
-Whisper: "${whisper}"
-Anchor: "${anchor}"
-Feeling: "${feeling}"`
+          content: `Create a Skinny poem using whisper: "${whisper}", anchor: "${anchor}", feeling: "${feeling}"`
         }
       ],
       max_tokens: 200,
       temperature: 0.7
     });
 
-    const content = response.choices[0]?.message?.content?.trim();
-    if (!content) {
-      console.error('No content returned from OpenAI');
-      return createFallbackSkinnyPoem(whisper, anchor, feeling);
-    }
-
-    console.log('Generated poem:', content);
+    let poem = response.choices[0]?.message?.content?.trim() || createFallbackSkinnyPoem(whisper, anchor, feeling);
 
     // Validate the generated poem
-    const validation = await validateSkinnyPoem(content, anchor);
+    const validation = await validateSkinnyPoem(poem, anchor);
     if (!validation.isValid) {
       console.warn('Generated poem failed validation:', validation.issues);
-      console.log('Using fallback poem instead');
       return createFallbackSkinnyPoem(whisper, anchor, feeling);
     }
 
-    console.log('Poem validation passed');
-    return content;
+    return poem;
 
   } catch (error) {
     console.error('Error generating Skinny poem:', error);
-    console.log('Using fallback poem due to error');
     return createFallbackSkinnyPoem(whisper, anchor, feeling);
   }
 }
 
 function createFallbackSkinnyPoem(whisper: string, anchor: string, feeling: string): string {
-  console.log('Creating fallback poem');
-  
-  // Create a more sophisticated fallback based on the feeling
-  const feelingWords = feeling.toLowerCase().split(/\s+/).filter(word => 
-    word.length > 3 && !['the', 'and', 'but', 'for', 'are', 'with', 'this', 'that', 'from', 'they', 'have', 'been'].includes(word)
-  );
-  
-  const middleWord = feelingWords.length > 0 ? feelingWords[0] : 'silence';
-  
   return `${whisper}
 ${anchor}
 silence
 holds
-${middleWord}
+what
 ${anchor}
 cannot
-speak
-yet
+say
+in
 ${anchor}
 ${whisper}`;
 }
