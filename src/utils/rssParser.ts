@@ -19,8 +19,8 @@ interface WhisperWithSource {
 
 export async function fetchGuardianHeadlines(): Promise<string[]> {
   try {
-    // Use Netlify function to fetch the RSS feed
-    const response = await fetch('/.netlify/functions/rss');
+    // Use corsproxy.io which works in both development and production
+    const response = await fetch('https://corsproxy.io/?https://www.theguardian.com/world/rss');
     if (!response.ok) {
       throw new Error('Failed to fetch RSS feed');
     }
@@ -59,8 +59,8 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
 
 export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSource[]> {
   try {
-    // Use Netlify function to fetch the RSS feed
-    const response = await fetch('/.netlify/functions/rss');
+    // Use corsproxy.io which works in both development and production
+    const response = await fetch('https://corsproxy.io/?https://www.theguardian.com/world/rss');
     
     if (!response.ok) {
       throw new Error('Failed to fetch RSS feed');
@@ -89,7 +89,7 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
     console.log(`Found ${allItems.length} RSS items`); // Debug log
     
     // Randomly select 3 items from all available
-    const shuffled = allItems.sort(() => Math.random() - 0.5);
+    const shuffled = allItems.sort(() => Math.random - 0.5);
     const selectedItems = shuffled.slice(0, 3);
     
     const whispers: WhisperWithSource[] = [];
