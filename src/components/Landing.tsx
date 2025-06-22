@@ -685,7 +685,7 @@ ${selectedWhisper}`;
           fontFamily: "'EB Garamond', serif",
           textAlign: 'center'
         }}>
-          Digital Campfire hehe
+          Digital Campfire
         </h1>
         
         <p style={{
