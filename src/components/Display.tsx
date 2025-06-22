@@ -95,71 +95,99 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
       // Generate orb colors for background
       const orbColor = generateRandomOrbColor();
       
-      // Create gradient background
-      const gradient = ctx.createRadialGradient(540, 540, 0, 540, 540, 540);
-      gradient.addColorStop(0, orbColor.primary.replace('0.6', '0.8'));
-      gradient.addColorStop(0.5, orbColor.secondary.replace('0.5', '0.6'));
-      gradient.addColorStop(1, orbColor.dark.replace('0.8', '0.9'));
+      // Create 30° linear gradient background
+      const gradient = ctx.createLinearGradient(0, 0, Math.cos(30 * Math.PI / 180) * 1080, Math.sin(30 * Math.PI / 180) * 1080);
+      gradient.addColorStop(0, orbColor.primary.replace('0.6', '0.9'));
+      gradient.addColorStop(0.5, orbColor.secondary.replace('0.5', '0.7'));
+      gradient.addColorStop(1, orbColor.dark.replace('0.8', '0.8'));
       
       ctx.fillStyle = gradient;
       ctx.fillRect(0, 0, 1080, 1080);
       
-      // Add subtle texture overlay
-      ctx.globalAlpha = 0.1;
-      for (let i = 0; i < 1000; i++) {
+      // Add particle noise texture overlay
+      ctx.globalAlpha = 0.15;
+      
+      // Create more sophisticated particle noise pattern
+      for (let i = 0; i < 2000; i++) {
+        const x = Math.random() * 1080;
+        const y = Math.random() * 1080;
+        const size = Math.random() * 3 + 0.5;
+        const opacity = Math.random() * 0.8 + 0.2;
+        
+        ctx.globalAlpha = opacity * 0.15;
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(Math.random() * 1080, Math.random() * 1080, Math.random() * 2, 0, Math.PI * 2);
+        ctx.arc(x, y, size, 0, Math.PI * 2);
         ctx.fill();
       }
+      
+      // Add some larger particles for depth
+      for (let i = 0; i < 300; i++) {
+        const x = Math.random() * 1080;
+        const y = Math.random() * 1080;
+        const size = Math.random() * 2 + 1;
+        const opacity = Math.random() * 0.4 + 0.1;
+        
+        ctx.globalAlpha = opacity * 0.1;
+        ctx.fillStyle = '#000000';
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      
       ctx.globalAlpha = 1;
       
-      // Add orb in center
-      const orbGradient = ctx.createRadialGradient(540, 300, 0, 540, 300, 120);
+      // Add orb in upper area
+      const orbGradient = ctx.createRadialGradient(540, 250, 0, 540, 250, 100);
       orbGradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
       orbGradient.addColorStop(0.3, orbColor.secondary.replace('0.5', '0.7'));
-      orbGradient.addColorStop(1, orbColor.primary.replace('0.6', '0.4'));
+      orbGradient.addColorStop(1, orbColor.primary.replace('0.6', '0.3'));
       
       ctx.fillStyle = orbGradient;
       ctx.beginPath();
-      ctx.arc(540, 300, 120, 0, Math.PI * 2);
+      ctx.arc(540, 250, 100, 0, Math.PI * 2);
       ctx.fill();
       
       // Add inner glow
       ctx.globalAlpha = 0.6;
       ctx.fillStyle = orbColor.secondary.replace('0.5', '0.8');
       ctx.beginPath();
-      ctx.arc(540, 300, 60, 0, Math.PI * 2);
+      ctx.arc(540, 250, 50, 0, Math.PI * 2);
       ctx.fill();
       ctx.globalAlpha = 1;
       
-      // Add poem text
+      // Add poem text - LEFT ALIGNED
       ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'left'; // Changed from 'center' to 'left'
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+      ctx.shadowBlur = 6;
+      ctx.shadowOffsetY = 3;
+      
+      // Title - centered
       ctx.textAlign = 'center';
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-      ctx.shadowBlur = 4;
-      ctx.shadowOffsetY = 2;
+      ctx.font = 'bold 36px serif';
+      ctx.fillText('Digital Campfire', 540, 420);
       
-      // Title
-      ctx.font = 'bold 32px serif';
-      ctx.fillText('Digital Campfire', 540, 500);
-      
-      // Poem lines
-      ctx.font = '28px serif';
+      // Poem lines - left aligned
+      ctx.textAlign = 'left';
+      ctx.font = '32px serif';
       const poemLines = currentPoem.split('\n').filter(line => line.trim() !== '');
-      const startY = 560;
-      const lineHeight = 36;
+      const startY = 480;
+      const lineHeight = 42;
+      const leftMargin = 120; // Left margin for poem text
       
       poemLines.forEach((line, index) => {
         const y = startY + (index * lineHeight);
-        if (y < 950) { // Ensure text doesn't go off canvas
-          ctx.fillText(line.trim(), 540, y);
+        if (y < 920) { // Ensure text doesn't go off canvas
+          ctx.fillText(line.trim(), leftMargin, y);
         }
       });
       
-      // Add website URL at bottom
-      ctx.font = '20px monospace';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      // Add website URL at bottom - centered
+      ctx.textAlign = 'center';
+      ctx.font = '22px monospace';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+      ctx.shadowBlur = 4;
       ctx.fillText('vibepoem.netlify.app', 540, 1040);
       
       // Convert to blob and download
@@ -750,7 +778,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
           }}>
             Thank you for sharing your light with us
           </p>
-        </motion.div>
+        </div>
       </div>
       
       {/* Hidden canvas for generating picture cards */}
