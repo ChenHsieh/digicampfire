@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Share2, Edit3, Copy, Check } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Share2, Edit3, Copy, Check, Heart, Sparkles } from 'lucide-react';
 import { validateSkinnyPoem } from '../utils/openai';
+import { sharePoem } from '../utils/database';
 
 interface Poem {
   whisper: string;
@@ -22,6 +23,9 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
   const [currentPoem, setCurrentPoem] = useState(poem.text);
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [showShareToArchive, setShowShareToArchive] = useState(false);
+  const [sharingToArchive, setSharingToArchive] = useState(false);
+  const [shareSuccess, setShareSuccess] = useState(false);
   
   const lines = currentPoem.split('\n').filter(line => line.trim() !== '');
   
@@ -79,6 +83,32 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
     window.open(`mailto:?subject=${subject}&body=${body}`);
   };
 
+  const handleShareToArchive = async () => {
+    setSharingToArchive(true);
+    
+    try {
+      const result = await sharePoem({
+        whisper: poem.whisper,
+        anchor: poem.anchor,
+        feeling: poem.feeling,
+        text: currentPoem
+      });
+
+      if (result.success) {
+        setShareSuccess(true);
+        setShowShareToArchive(false);
+        setTimeout(() => setShareSuccess(false), 3000);
+      } else {
+        alert(`Failed to share poem: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Error sharing poem:', error);
+      alert('Failed to share poem. Please try again.');
+    } finally {
+      setSharingToArchive(false);
+    }
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -115,6 +145,33 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           <ArrowLeft size={16} />
           Return to the fire
         </motion.button>
+        
+        {/* Success message for sharing */}
+        <AnimatePresence>
+          {shareSuccess && (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              style={{
+                background: 'rgba(34, 197, 94, 0.1)',
+                border: '1px solid rgba(34, 197, 94, 0.3)',
+                borderRadius: '12px',
+                padding: '16px 20px',
+                marginBottom: '24px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '12px',
+                color: '#059669'
+              }}
+            >
+              <Sparkles size={20} />
+              <span style={{ fontFamily: "'Courier Prime', monospace", fontSize: '0.95rem' }}>
+                Your poem has been shared with the community! Visit the archive to see it alongside others.
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
         {/* Campfire glow for the poem */}
         <motion.div
@@ -288,7 +345,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
               </div>
             </div>
           )}
-        </motion.div>
+        </div>
         
         {/* Curator Tweak Section */}
         {showCuratorTweak && (
@@ -442,6 +499,33 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                 gap: '16px'
               }}>
                 <motion.button
+                  onClick={() => {
+                    setShowShareOptions(false);
+                    setShowShareToArchive(true);
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '16px 20px',
+                    borderRadius: '12px',
+                    background: 'rgba(244, 194, 194, 0.2)',
+                    border: '1px solid rgba(244, 194, 194, 0.4)',
+                    color: '#2D2D37',
+                    cursor: 'pointer',
+                    fontFamily: "'Courier Prime', monospace",
+                    fontSize: '0.95rem',
+                    width: '100%',
+                    justifyContent: 'flex-start'
+                  }}
+                >
+                  <Heart size={18} />
+                  Share with community archive
+                </motion.button>
+                
+                <motion.button
                   onClick={handleCopyToClipboard}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -510,6 +594,175 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
               >
                 Close
               </motion.button>
+            </motion.div>
+          </motion.div>
+        )}
+
+        {/* Share to Archive Confirmation Modal */}
+        {showShareToArchive && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(45, 45, 55, 0.8)',
+              backdropFilter: 'blur(10px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+              padding: '20px'
+            }}
+            onClick={() => !sharingToArchive && setShowShareToArchive(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              style={{
+                background: 'rgba(254, 254, 254, 0.95)',
+                padding: '32px',
+                borderRadius: '20px',
+                border: '1px solid rgba(139, 125, 161, 0.2)',
+                backdropFilter: 'blur(20px)',
+                maxWidth: '500px',
+                width: '100%',
+                boxShadow: '0 20px 60px rgba(45, 45, 55, 0.3)'
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{
+                textAlign: 'center',
+                marginBottom: '24px'
+              }}>
+                <Heart size={48} color="#8B7DA1" style={{ margin: '0 auto 16px' }} />
+                <h3 style={{
+                  fontSize: '1.4rem',
+                  marginBottom: '12px',
+                  color: '#2D2D37',
+                  fontFamily: "'EB Garamond', serif",
+                  fontWeight: 500
+                }}>
+                  Offer Your Spark
+                </h3>
+                <p style={{
+                  fontSize: '1rem',
+                  color: '#8B7DA1',
+                  lineHeight: 1.6,
+                  fontStyle: 'italic'
+                }}>
+                  Share your poem with our community archive? It will be displayed anonymously 
+                  for others to find inspiration and connection.
+                </p>
+              </div>
+
+              <div style={{
+                background: 'rgba(139, 125, 161, 0.1)',
+                padding: '20px',
+                borderRadius: '12px',
+                marginBottom: '24px'
+              }}>
+                <h4 style={{
+                  fontSize: '1rem',
+                  color: '#2D2D37',
+                  marginBottom: '8px',
+                  fontFamily: "'Courier Prime', monospace",
+                  fontWeight: 500
+                }}>
+                  What gets shared:
+                </h4>
+                <ul style={{
+                  fontSize: '0.9rem',
+                  color: '#2D2D37',
+                  paddingLeft: '20px',
+                  lineHeight: 1.5
+                }}>
+                  <li>Your poem text</li>
+                  <li>The whisper and anchor word you chose</li>
+                  <li>Your feeling (if you shared one)</li>
+                  <li>Today's date</li>
+                </ul>
+                <p style={{
+                  fontSize: '0.85rem',
+                  color: '#8B7DA1',
+                  marginTop: '12px',
+                  fontStyle: 'italic'
+                }}>
+                  No personal information is collected or stored.
+                </p>
+              </div>
+              
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                justifyContent: 'center'
+              }}>
+                <motion.button
+                  onClick={() => setShowShareToArchive(false)}
+                  disabled={sharingToArchive}
+                  whileHover={{ scale: sharingToArchive ? 1 : 1.05 }}
+                  whileTap={{ scale: sharingToArchive ? 1 : 0.95 }}
+                  style={{
+                    padding: '12px 20px',
+                    borderRadius: '20px',
+                    background: 'rgba(139, 125, 161, 0.1)',
+                    border: '1px solid rgba(139, 125, 161, 0.3)',
+                    color: '#8B7DA1',
+                    cursor: sharingToArchive ? 'not-allowed' : 'pointer',
+                    fontFamily: "'Courier Prime', monospace",
+                    fontSize: '0.9rem',
+                    opacity: sharingToArchive ? 0.5 : 1
+                  }}
+                >
+                  Keep Private
+                </motion.button>
+                
+                <motion.button
+                  onClick={handleShareToArchive}
+                  disabled={sharingToArchive}
+                  whileHover={{ scale: sharingToArchive ? 1 : 1.05 }}
+                  whileTap={{ scale: sharingToArchive ? 1 : 0.95 }}
+                  style={{
+                    padding: '12px 20px',
+                    borderRadius: '20px',
+                    background: sharingToArchive ? 
+                      'rgba(139, 125, 161, 0.3)' : 
+                      'linear-gradient(135deg, #2D2D37 0%, #8B7DA1 100%)',
+                    border: 'none',
+                    color: '#FEFEFE',
+                    cursor: sharingToArchive ? 'not-allowed' : 'pointer',
+                    fontFamily: "'Courier Prime', monospace",
+                    fontSize: '0.9rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px'
+                  }}
+                >
+                  {sharingToArchive ? (
+                    <>
+                      <div style={{
+                        width: '16px',
+                        height: '16px',
+                        border: '2px solid rgba(254, 254, 254, 0.3)',
+                        borderTop: '2px solid #FEFEFE',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite'
+                      }} />
+                      Sharing...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles size={16} />
+                      Share with Community
+                    </>
+                  )}
+                </motion.button>
+              </div>
             </motion.div>
           </motion.div>
         )}
@@ -605,6 +858,11 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             transform: translateX(-50%) translateY(-10px);
             opacity: 1;
           }
+        }
+        
+        @keyframes spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
       `}</style>
     </div>
