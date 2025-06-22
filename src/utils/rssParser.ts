@@ -19,22 +19,38 @@ interface WhisperWithSource {
 
 export async function fetchGuardianHeadlines(): Promise<string[]> {
   try {
-    // Try Netlify function first, fallback to direct fetch for local development
+    // Try multiple endpoints for better reliability
     let response;
+    let lastError;
+    
+    // Try Netlify function first
     try {
       response = await fetch('/.netlify/functions/rss');
+      if (!response.ok) throw new Error(`Netlify function failed: ${response.status}`);
     } catch (error) {
-      // Fallback for local development
-      response = await fetch('/api/rss');
-    }
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch RSS feed');
+      lastError = error;
+      console.log('Netlify function failed, trying local proxy...');
+      
+      // Fallback to local development proxy
+      try {
+        response = await fetch('/api/rss');
+        if (!response.ok) throw new Error(`Local proxy failed: ${response.status}`);
+      } catch (localError) {
+        lastError = localError;
+        console.log('Local proxy failed, using fallback data...');
+        throw new Error('All RSS endpoints failed');
+      }
     }
     
     const xmlText = await response.text();
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+    
+    // Check for XML parsing errors
+    const parserError = xmlDoc.querySelector('parsererror');
+    if (parserError) {
+      throw new Error('Failed to parse RSS XML');
+    }
     
     const items = xmlDoc.querySelectorAll('item');
     const headlines: string[] = [];
@@ -45,6 +61,10 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
       if (titleElement && titleElement.textContent) {
         headlines.push(titleElement.textContent.trim());
       }
+    }
+    
+    if (headlines.length === 0) {
+      throw new Error('No headlines found in RSS feed');
     }
     
     return headlines;
@@ -62,22 +82,38 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
 
 export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSource[]> {
   try {
-    // Try Netlify function first, fallback to direct fetch for local development
+    // Try multiple endpoints for better reliability
     let response;
+    let lastError;
+    
+    // Try Netlify function first
     try {
       response = await fetch('/.netlify/functions/rss');
+      if (!response.ok) throw new Error(`Netlify function failed: ${response.status}`);
     } catch (error) {
-      // Fallback for local development
-      response = await fetch('/api/rss');
-    }
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch RSS feed');
+      lastError = error;
+      console.log('Netlify function failed, trying local proxy...');
+      
+      // Fallback to local development proxy
+      try {
+        response = await fetch('/api/rss');
+        if (!response.ok) throw new Error(`Local proxy failed: ${response.status}`);
+      } catch (localError) {
+        lastError = localError;
+        console.log('Local proxy failed, using fallback data...');
+        throw new Error('All RSS endpoints failed');
+      }
     }
     
     const xmlText = await response.text();
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+    
+    // Check for XML parsing errors
+    const parserError = xmlDoc.querySelector('parsererror');
+    if (parserError) {
+      throw new Error('Failed to parse RSS XML');
+    }
     
     const items = xmlDoc.querySelectorAll('item');
     const whispers: WhisperWithSource[] = [];
@@ -108,6 +144,10 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
           });
         }
       }
+    }
+    
+    if (whispers.length === 0) {
+      throw new Error('No whispers generated from RSS feed');
     }
     
     return whispers;
