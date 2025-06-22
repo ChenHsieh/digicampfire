@@ -41,46 +41,70 @@ Poetic phrase: "The edge won't wait for us"`
   }
 }
 
-export async function generatePoem(whisper: string, anchor: string, feeling: string): Promise<string> {
+export async function generateSkinnyPoem(whisper: string, anchor: string, feeling: string): Promise<string> {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4",
       messages: [
         {
           role: "system",
-          content: `You are a poet creating "Skinny poems" - minimalist, emotionally resonant verses. Create a poem using these elements:
+          content: `You are writing a Skinny poem (11 lines). The structure is:
 
-- Whisper (opening theme): "${whisper}"
-- Anchor word: "${anchor}"
-- Personal feeling: "${feeling}"
+Line 1 = A selected poetic phrase from step 1 (start line)
+Lines 2–10 = One word per line
+Lines 2, 6, 10 = Must repeat the selected keyword in step 2
+Line 11 = A repeat (or reordering if needed) of the first line's words
 
-Style guidelines:
-- 3-4 lines maximum
-- Use simple, powerful language
-- Focus on emotion and imagery
-- Include the anchor word naturally
-- End with quiet resolution or acceptance
-- Avoid rhyming or forced meter`
+Goal:
+- Build around a single vivid image or emotional situation based on user input if possible, or randomly find a cause to compose.
+- Be honest, grounded, and evocative.
+- Use concrete words. Avoid abstraction or cliché.
+- Echo the tone of the user input if they are meaningful.
+- Make the repetition meaningful or ironic.
+
+Input:
+- First/last line: ${whisper}
+- Repeated word: ${anchor}
+- User feeling/input: ${feeling}
+
+Output:
+<11-line Skinny poem>`
         },
         {
           role: "user",
-          content: `Create a Skinny poem with whisper: "${whisper}", anchor: "${anchor}", feeling: "${feeling}"`
+          content: `Create a Skinny poem with:
+- First/last line: "${whisper}"
+- Repeated word: "${anchor}"
+- User feeling/input: "${feeling}"`
         }
       ],
-      max_tokens: 100,
+      max_tokens: 150,
       temperature: 0.7
     });
 
-    return response.choices[0]?.message?.content?.trim() || `In the quiet space where ${whisper.toLowerCase()} meets the dawn,
-I ${anchor} into the knowing that ${feeling.toLowerCase()}.
-Each breath carries the weight of what we cannot name,
-yet in this moment, we are enough.`;
+    return response.choices[0]?.message?.content?.trim() || createFallbackSkinnyPoem(whisper, anchor, feeling);
   } catch (error) {
-    console.error('Error generating poem:', error);
+    console.error('Error generating Skinny poem:', error);
     // Fallback poem if API fails
-    return `In the quiet space where ${whisper.toLowerCase()} meets the dawn,
-I ${anchor} into the knowing that ${feeling.toLowerCase()}.
-Each breath carries the weight of what we cannot name,
-yet in this moment, we are enough.`;
+    return createFallbackSkinnyPoem(whisper, anchor, feeling);
   }
+}
+
+function createFallbackSkinnyPoem(whisper: string, anchor: string, feeling: string): string {
+  return `${whisper}
+${anchor}
+silence
+holds
+what
+${anchor}
+cannot
+say
+in
+${anchor}
+${whisper}`;
+}
+
+// Keep the old function for backward compatibility, but redirect to new one
+export async function generatePoem(whisper: string, anchor: string, feeling: string): Promise<string> {
+  return generateSkinnyPoem(whisper, anchor, feeling);
 }

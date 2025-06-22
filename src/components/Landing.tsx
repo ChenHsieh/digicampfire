@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Sparkles, RefreshCw, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ArrowRight, RefreshCw, ExternalLink } from 'lucide-react';
 import { fetchPoeticWhispersWithSources } from '../utils/rssParser';
-import { generatePoem } from '../utils/openai';
+import { generateSkinnyPoem } from '../utils/openai';
 
 const anchorWords = [
   "breathe",
@@ -98,7 +98,7 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
     setIsGenerating(true);
     
     try {
-      const generatedPoem = await generatePoem(selectedWhisper, selectedAnchor, feeling);
+      const generatedPoem = await generateSkinnyPoem(selectedWhisper, selectedAnchor, feeling);
       
       onComplete({
         whisper: selectedWhisper,
@@ -109,10 +109,17 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
     } catch (error) {
       console.error('Error generating poem:', error);
       // Fallback poem
-      const fallbackPoem = `In the quiet space where ${selectedWhisper.toLowerCase()} meets the dawn,
-I ${selectedAnchor} into the knowing that ${feeling.toLowerCase()}.
-Each breath carries the weight of what we cannot name,
-yet in this moment, we are enough.`;
+      const fallbackPoem = `${selectedWhisper}
+${selectedAnchor}
+silence
+holds
+what
+${selectedAnchor}
+cannot
+say
+in
+${selectedAnchor}
+${selectedWhisper}`;
       
       onComplete({
         whisper: selectedWhisper,
@@ -480,10 +487,15 @@ yet in this moment, we are enough.`;
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          style={{ marginBottom: '24px' }}
-        >
-          <Sparkles size={48} color="#8B7DA1" />
-        </motion.div>
+          style={{ 
+            marginBottom: '24px',
+            width: '48px',
+            height: '48px',
+            border: '3px solid rgba(139, 125, 161, 0.2)',
+            borderTop: '3px solid #8B7DA1',
+            borderRadius: '50%'
+          }}
+        />
         <p style={{
           fontSize: '1.2rem',
           color: '#2D2D37',
@@ -667,10 +679,7 @@ yet in this moment, we are enough.`;
             }}
           >
             {currentStep === 3 ? (
-              <>
-                Let the poem arrive
-                <Sparkles size={16} />
-              </>
+              'Let the poem arrive'
             ) : (
               <>
                 Next
