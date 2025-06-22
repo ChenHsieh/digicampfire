@@ -41,6 +41,87 @@ Poetic phrase: "The edge won't wait for us"`
   }
 }
 
+export async function generateAnchorWords(): Promise<string[]> {
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "system",
+          content: `Generate 6 powerful, single-word verbs that could serve as anchor words in poetry. These should be:
+- Action words that can be repeated meaningfully
+- Emotionally resonant
+- Simple but profound
+- Suitable for contemplative poetry
+- One word each, lowercase
+
+Examples: breathe, release, become, hold, listen, remember
+
+Return only the 6 words, one per line.`
+        },
+        {
+          role: "user",
+          content: "Generate 6 new anchor words for poetry"
+        }
+      ],
+      max_tokens: 50,
+      temperature: 0.8
+    });
+
+    const words = response.choices[0]?.message?.content?.trim().split('\n').filter(word => word.trim()) || [];
+    return words.length >= 6 ? words.slice(0, 6) : [
+      "breathe", "release", "become", "hold", "listen", "remember"
+    ];
+  } catch (error) {
+    console.error('Error generating anchor words:', error);
+    // Fallback to base words
+    return ["breathe", "release", "become", "hold", "listen", "remember"];
+  }
+}
+
+export async function validateSkinnyPoem(poem: string, anchor: string): Promise<{ isValid: boolean; issues: string[] }> {
+  const lines = poem.split('\n').filter(line => line.trim() !== '');
+  const issues: string[] = [];
+  
+  // Check line count
+  if (lines.length !== 11) {
+    issues.push(`Must have exactly 11 lines (found ${lines.length})`);
+  }
+  
+  if (lines.length >= 11) {
+    // Check that lines 2-10 are single words
+    for (let i = 1; i <= 9; i++) {
+      if (lines[i] && lines[i].trim().split(/\s+/).length > 1) {
+        issues.push(`Line ${i + 1} must be a single word`);
+      }
+    }
+    
+    // Check anchor word appears in positions 2, 6, 10 (indices 1, 5, 9)
+    const anchorPositions = [1, 5, 9];
+    for (const pos of anchorPositions) {
+      if (lines[pos] && lines[pos].trim().toLowerCase() !== anchor.toLowerCase()) {
+        issues.push(`Line ${pos + 1} must be the anchor word "${anchor}"`);
+      }
+    }
+    
+    // Check first and last lines are related (contain similar words)
+    if (lines[0] && lines[10]) {
+      const firstWords = lines[0].toLowerCase().split(/\s+/);
+      const lastWords = lines[10].toLowerCase().split(/\s+/);
+      const commonWords = firstWords.filter(word => lastWords.includes(word));
+      
+      if (commonWords.length === 0) {
+        issues.push('First and last lines should share some words or be variations of each other');
+      }
+    }
+  }
+  
+  return {
+    isValid: issues.length === 0,
+    issues
+  };
+}
+
 export async function auditPoemQuality(poem: string): Promise<{ isGood: boolean; suggestion?: string }> {
   try {
     const response = await openai.chat.completions.create({
@@ -48,11 +129,13 @@ export async function auditPoemQuality(poem: string): Promise<{ isGood: boolean;
       messages: [
         {
           role: "system",
-          content: "You are a poetry quality auditor. Analyze if the poem maintains a single dominant sensory image throughout. Reply with YES/NO and if NO, suggest one specific edit to improve coherence."
+          content: `You are a poetry quality auditor for Skinny poems. Analyze if the poem maintains a single dominant sensory image throughout and follows Skinny poem structure (11 lines, single words in lines 2-10, repeated anchor word in positions 2, 6, 10).
+
+Reply with YES/NO and if NO, suggest one specific edit to improve coherence while maintaining Skinny poem structure.`
         },
         {
           role: "user",
-          content: `Does this poem keep a single dominant sensory image? Reply YES/NO & suggest one edit if needed:\n\n${poem}`
+          content: `Does this Skinny poem maintain good structure and coherent imagery? Reply YES/NO & suggest one edit if needed:\n\n${poem}`
         }
       ],
       max_tokens: 100,
@@ -72,7 +155,7 @@ export async function auditPoemQuality(poem: string): Promise<{ isGood: boolean;
 
 export async function enhancePoemSound(poem: string, anchor: string): Promise<string> {
   try {
-    const lines = poem.split('\n');
+    const lines = poem.split('\n').filter(line => line.trim() !== '');
     if (lines.length !== 11) return poem;
     
     const middleLines = lines.slice(2, 9); // Lines 3-9 (index 2-8)
@@ -82,29 +165,45 @@ export async function enhancePoemSound(poem: string, anchor: string): Promise<st
       messages: [
         {
           role: "system",
-          content: `You are a sound poet. Rewrite only the middle lines (lines 3-9) of this Skinny poem to add internal rhyme and alliteration while preserving the exact words and meaning. Keep the anchor word "${anchor}" unchanged in its positions.`
+          content: `You are enhancing the sound of a Skinny poem. Rewrite ONLY lines 3-9 (the middle section) to add subtle internal rhyme and alliteration while:
+
+CRITICAL RULES:
+- Keep each line as a SINGLE WORD only
+- Preserve the overall meaning and imagery
+- Do NOT change the anchor word "${anchor}" in its positions
+- Maintain the Skinny poem structure
+- Focus on sound enhancement, not meaning changes
+
+Return only the 7 enhanced middle lines, one word per line.`
         },
         {
           role: "user",
-          content: `Enhance the sound of these middle lines while keeping all words:\n${middleLines.join('\n')}`
+          content: `Enhance the sound of these middle lines while keeping them as single words:\n${middleLines.join('\n')}`
         }
       ],
-      max_tokens: 100,
+      max_tokens: 50,
       temperature: 0.6
     });
 
     const enhancedMiddle = response.choices[0]?.message?.content?.trim();
     if (!enhancedMiddle) return poem;
     
-    const enhancedLines = enhancedMiddle.split('\n');
+    const enhancedLines = enhancedMiddle.split('\n').filter(line => line.trim());
     if (enhancedLines.length !== 7) return poem;
+    
+    // Validate each enhanced line is a single word
+    for (const line of enhancedLines) {
+      if (line.trim().split(/\s+/).length > 1) {
+        return poem; // Return original if any line has multiple words
+      }
+    }
     
     // Reconstruct the full poem
     return [
       lines[0], // First line
-      lines[1], // Line 2
+      lines[1], // Line 2 (anchor)
       ...enhancedLines, // Enhanced lines 3-9
-      lines[9], // Line 10
+      lines[9], // Line 10 (anchor)
       lines[10] // Last line
     ].join('\n');
     
@@ -115,75 +214,60 @@ export async function enhancePoemSound(poem: string, anchor: string): Promise<st
 }
 
 export async function generateSkinnyPoem(whisper: string, anchor: string, feeling: string): Promise<string> {
-  let attempts = 0;
-  const maxAttempts = 3;
-  
-  while (attempts < maxAttempts) {
-    try {
-      const response = await openai.chat.completions.create({
-        model: "gpt-4",
-        messages: [
-          {
-            role: "system",
-            content: `You are writing a Skinny poem (11 lines). The structure is:
+  try {
+    const response = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: `You are writing a Skinny poem with EXACT structure requirements:
 
-Line 1 = A selected poetic phrase from step 1 (start line)
-Lines 2–10 = One word per line
-Lines 2, 6, 10 = Must repeat the selected keyword in step 2
-Line 11 = A repeat (or reordering if needed) of the first line's words
+STRUCTURE (11 lines total):
+- Line 1: The whisper phrase (can be multiple words)
+- Lines 2-10: SINGLE WORDS ONLY (9 lines, each exactly one word)
+- Line 11: Repeat or rearrange the whisper phrase
 
-Goal:
-- Build around a single vivid image or emotional situation based on user input if possible, or randomly find a cause to compose.
-- Be honest, grounded, and evocative.
-- Use concrete words. Avoid abstraction or cliché.
-- Echo the tone of the user input if they are meaningful.
-- Make the repetition meaningful or ironic.
+ANCHOR WORD PLACEMENT:
+- Line 2: Must be "${anchor}"
+- Line 6: Must be "${anchor}" 
+- Line 10: Must be "${anchor}"
 
-Input:
-- First/last line: ${whisper}
-- Repeated word: ${anchor}
-- User feeling/input: ${feeling}
+CONTENT GOALS:
+- Build around a single vivid image or emotional situation
+- Use concrete, evocative single words for lines 2-10
+- Echo the user's feeling: "${feeling}"
+- Make the anchor word repetition meaningful
+- Be honest, grounded, and emotionally resonant
 
-Output:
-<11-line Skinny poem>`
-          },
-          {
-            role: "user",
-            content: `Create a Skinny poem with:
-- First/last line: "${whisper}"
-- Repeated word: "${anchor}"
-- User feeling/input: "${feeling}"`
-          }
-        ],
-        max_tokens: 150,
-        temperature: 0.7
-      });
+Return ONLY the 11-line poem, nothing else.`
+        },
+        {
+          role: "user",
+          content: `Create a Skinny poem with:
+- Whisper (first/last line): "${whisper}"
+- Anchor word (lines 2, 6, 10): "${anchor}"
+- User feeling: "${feeling}"`
+        }
+      ],
+      max_tokens: 150,
+      temperature: 0.7
+    });
 
-      let poem = response.choices[0]?.message?.content?.trim() || createFallbackSkinnyPoem(whisper, anchor, feeling);
-      
-      // Quality audit
-      const audit = await auditPoemQuality(poem);
-      if (!audit.isGood && attempts < maxAttempts - 1) {
-        attempts++;
-        continue; // Try again
-      }
-      
-      // Sound enhancement
-      poem = await enhancePoemSound(poem, anchor);
-      
-      return poem;
-      
-    } catch (error) {
-      console.error('Error generating Skinny poem:', error);
-      attempts++;
-      
-      if (attempts >= maxAttempts) {
-        return createFallbackSkinnyPoem(whisper, anchor, feeling);
-      }
+    let poem = response.choices[0]?.message?.content?.trim() || createFallbackSkinnyPoem(whisper, anchor, feeling);
+    
+    // Validate the generated poem
+    const validation = await validateSkinnyPoem(poem, anchor);
+    if (!validation.isValid) {
+      console.warn('Generated poem failed validation:', validation.issues);
+      return createFallbackSkinnyPoem(whisper, anchor, feeling);
     }
+    
+    return poem;
+    
+  } catch (error) {
+    console.error('Error generating Skinny poem:', error);
+    return createFallbackSkinnyPoem(whisper, anchor, feeling);
   }
-  
-  return createFallbackSkinnyPoem(whisper, anchor, feeling);
 }
 
 function createFallbackSkinnyPoem(whisper: string, anchor: string, feeling: string): string {

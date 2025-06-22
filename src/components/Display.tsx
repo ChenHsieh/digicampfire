@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Heart, Share2, Edit3 } from 'lucide-react';
+import { ArrowLeft, Heart, Share2, Edit3, Wand2, Volume2 } from 'lucide-react';
+import { auditPoemQuality, enhancePoemSound, validateSkinnyPoem } from '../utils/openai';
 
 interface Poem {
   whisper: string;
@@ -18,7 +19,12 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
   const [visibleLines, setVisibleLines] = useState(0);
   const [showCuratorTweak, setShowCuratorTweak] = useState(false);
   const [editedPoem, setEditedPoem] = useState(poem.text);
-  const lines = poem.text.split('\n').filter(line => line.trim() !== '');
+  const [currentPoem, setCurrentPoem] = useState(poem.text);
+  const [showQualityControls, setShowQualityControls] = useState(false);
+  const [isEnhancing, setIsEnhancing] = useState(false);
+  const [enhancementType, setEnhancementType] = useState<'quality' | 'sound' | null>(null);
+  
+  const lines = currentPoem.split('\n').filter(line => line.trim() !== '');
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -34,9 +40,68 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
     return () => clearInterval(timer);
   }, [lines.length]);
 
-  const handleSaveTweak = () => {
+  const handleSaveTweak = async () => {
+    // Validate the edited poem follows Skinny poem rules
+    const validation = await validateSkinnyPoem(editedPoem, poem.anchor);
+    
+    if (!validation.isValid) {
+      alert(`Please check the Skinny poem structure:\n${validation.issues.join('\n')}`);
+      return;
+    }
+    
+    setCurrentPoem(editedPoem);
     setShowCuratorTweak(false);
-    // Here you could update the poem state if needed
+  };
+
+  const handleQualityEnhancement = async () => {
+    setIsEnhancing(true);
+    setEnhancementType('quality');
+    
+    try {
+      const audit = await auditPoemQuality(currentPoem);
+      if (!audit.isGood && audit.suggestion) {
+        // Show the suggestion to user and let them decide
+        const userWantsToApply = confirm(`Quality suggestion: ${audit.suggestion}\n\nWould you like to regenerate the poem with this improvement?`);
+        if (userWantsToApply) {
+          // For now, just show the suggestion - in a full implementation, 
+          // you'd regenerate the poem with the suggestion
+          alert('Feature coming soon: Auto-regeneration with quality improvements');
+        }
+      } else {
+        alert('Your poem already maintains excellent coherence and imagery!');
+      }
+    } catch (error) {
+      console.error('Error enhancing quality:', error);
+      alert('Unable to analyze poem quality at the moment.');
+    }
+    
+    setIsEnhancing(false);
+    setEnhancementType(null);
+  };
+
+  const handleSoundEnhancement = async () => {
+    setIsEnhancing(true);
+    setEnhancementType('sound');
+    
+    try {
+      const enhancedPoem = await enhancePoemSound(currentPoem, poem.anchor);
+      
+      // Validate the enhanced poem still follows rules
+      const validation = await validateSkinnyPoem(enhancedPoem, poem.anchor);
+      
+      if (validation.isValid) {
+        setCurrentPoem(enhancedPoem);
+        setEditedPoem(enhancedPoem);
+      } else {
+        alert('Sound enhancement would break Skinny poem structure. Keeping original.');
+      }
+    } catch (error) {
+      console.error('Error enhancing sound:', error);
+      alert('Unable to enhance sound at the moment.');
+    }
+    
+    setIsEnhancing(false);
+    setEnhancementType(null);
   };
 
   return (
@@ -250,6 +315,116 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           )}
         </motion.div>
         
+        {/* Quality Enhancement Controls */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 1.2 }}
+          style={{
+            background: 'rgba(254, 254, 254, 0.8)',
+            padding: '20px',
+            borderRadius: '16px',
+            border: '1px solid rgba(139, 125, 161, 0.15)',
+            backdropFilter: 'blur(10px)',
+            marginBottom: '40px'
+          }}
+        >
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: showQualityControls ? '20px' : '0'
+          }}>
+            <h3 style={{
+              fontSize: '1rem',
+              color: '#2D2D37',
+              fontFamily: "'EB Garamond', serif",
+              fontWeight: 500,
+              margin: 0
+            }}>
+              Enhancement Tools
+            </h3>
+            <motion.button
+              onClick={() => setShowQualityControls(!showQualityControls)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              style={{
+                padding: '8px 16px',
+                borderRadius: '20px',
+                background: showQualityControls ? 'rgba(139, 125, 161, 0.2)' : 'rgba(139, 125, 161, 0.1)',
+                border: '1px solid rgba(139, 125, 161, 0.3)',
+                color: '#8B7DA1',
+                cursor: 'pointer',
+                fontFamily: "'Courier Prime', monospace",
+                fontSize: '0.85rem'
+              }}
+            >
+              {showQualityControls ? 'Hide' : 'Show'} Tools
+            </motion.button>
+          </div>
+          
+          {showQualityControls && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              transition={{ duration: 0.3 }}
+              style={{
+                display: 'flex',
+                gap: '12px',
+                flexWrap: 'wrap'
+              }}
+            >
+              <motion.button
+                onClick={handleQualityEnhancement}
+                disabled={isEnhancing}
+                whileHover={{ scale: isEnhancing ? 1 : 1.05 }}
+                whileTap={{ scale: isEnhancing ? 1 : 0.95 }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '10px 16px',
+                  borderRadius: '20px',
+                  background: enhancementType === 'quality' ? 'rgba(244, 194, 194, 0.3)' : 'rgba(139, 125, 161, 0.1)',
+                  border: '1px solid rgba(139, 125, 161, 0.3)',
+                  color: '#2D2D37',
+                  cursor: isEnhancing ? 'not-allowed' : 'pointer',
+                  opacity: isEnhancing && enhancementType !== 'quality' ? 0.5 : 1,
+                  fontFamily: "'Courier Prime', monospace",
+                  fontSize: '0.85rem'
+                }}
+              >
+                <Wand2 size={14} />
+                {enhancementType === 'quality' ? 'Analyzing...' : 'Check Quality'}
+              </motion.button>
+              
+              <motion.button
+                onClick={handleSoundEnhancement}
+                disabled={isEnhancing}
+                whileHover={{ scale: isEnhancing ? 1 : 1.05 }}
+                whileTap={{ scale: isEnhancing ? 1 : 0.95 }}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '10px 16px',
+                  borderRadius: '20px',
+                  background: enhancementType === 'sound' ? 'rgba(244, 194, 194, 0.3)' : 'rgba(139, 125, 161, 0.1)',
+                  border: '1px solid rgba(139, 125, 161, 0.3)',
+                  color: '#2D2D37',
+                  cursor: isEnhancing ? 'not-allowed' : 'pointer',
+                  opacity: isEnhancing && enhancementType !== 'sound' ? 0.5 : 1,
+                  fontFamily: "'Courier Prime', monospace",
+                  fontSize: '0.85rem'
+                }}
+              >
+                <Volume2 size={14} />
+                {enhancementType === 'sound' ? 'Enhancing...' : 'Enhance Sound'}
+              </motion.button>
+            </motion.div>
+          )}
+        </motion.div>
+        
         {/* Curator Tweak Section */}
         {showCuratorTweak && (
           <motion.div
@@ -274,6 +449,14 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             }}>
               Curator Tweak
             </h3>
+            <p style={{
+              fontSize: '0.9rem',
+              color: '#8B7DA1',
+              marginBottom: '16px',
+              fontStyle: 'italic'
+            }}>
+              Edit carefully - changes will be validated against Skinny poem structure
+            </p>
             <textarea
               value={editedPoem}
               onChange={(e) => setEditedPoem(e.target.value)}
@@ -299,7 +482,10 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
               justifyContent: 'flex-end'
             }}>
               <motion.button
-                onClick={() => setShowCuratorTweak(false)}
+                onClick={() => {
+                  setShowCuratorTweak(false);
+                  setEditedPoem(currentPoem); // Reset to current poem
+                }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 style={{
@@ -371,7 +557,12 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           </motion.button>
           
           <motion.button
-            onClick={() => setShowCuratorTweak(!showCuratorTweak)}
+            onClick={() => {
+              setShowCuratorTweak(!showCuratorTweak);
+              if (!showCuratorTweak) {
+                setEditedPoem(currentPoem); // Initialize with current poem
+              }
+            }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             style={{
@@ -380,7 +571,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
               gap: '8px',
               padding: '12px 20px',
               borderRadius: '25px',
-              background: 'rgba(139, 125, 161, 0.2)',
+              background: showCuratorTweak ? 'rgba(139, 125, 161, 0.3)' : 'rgba(139, 125, 161, 0.2)',
               border: '1px solid rgba(139, 125, 161, 0.4)',
               color: '#2D2D37',
               cursor: 'pointer',

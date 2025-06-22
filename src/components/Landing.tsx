@@ -2,12 +2,19 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, RefreshCw, ExternalLink } from 'lucide-react';
 import { fetchPoeticWhispersWithSources } from '../utils/rssParser';
-import { generateSkinnyPoem } from '../utils/openai';
+import { generateSkinnyPoem, generateAnchorWords } from '../utils/openai';
 
-const anchorWords = [
+const baseAnchorWords = [
   "breathe",
   "release", 
-  "become"
+  "become",
+  "hold",
+  "listen",
+  "remember",
+  "forgive",
+  "trust",
+  "surrender",
+  "witness"
 ];
 
 const feelingPrompts = [
@@ -39,6 +46,8 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isOrbHovered, setIsOrbHovered] = useState(false);
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
+  const [anchorWords, setAnchorWords] = useState(baseAnchorWords);
+  const [loadingAnchors, setLoadingAnchors] = useState(false);
   const [whisperOptions, setWhisperOptions] = useState<WhisperWithSource[]>([
     {
       poetic: "The weight of unspoken words",
@@ -98,6 +107,21 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
       console.error('Failed to load poetic whispers:', error);
     } finally {
       setLoadingWhispers(false);
+    }
+  };
+
+  const loadNewAnchors = async () => {
+    setLoadingAnchors(true);
+    try {
+      const newAnchors = await generateAnchorWords();
+      setAnchorWords(newAnchors);
+    } catch (error) {
+      console.error('Failed to generate new anchor words:', error);
+      // Rotate through base words if generation fails
+      const shuffled = [...baseAnchorWords].sort(() => Math.random() - 0.5);
+      setAnchorWords(shuffled.slice(0, 6));
+    } finally {
+      setLoadingAnchors(false);
     }
   };
 
@@ -368,27 +392,52 @@ ${selectedWhisper}`;
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 style={{
-              fontSize: '1.5rem',
-              marginBottom: '40px',
-              textAlign: 'center',
-              color: '#2D2D37',
-              fontFamily: "'EB Garamond', serif",
-              fontWeight: 400
-            }}>
-              Choose the word that anchors us.
-            </h2>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '40px' }}>
+              <h2 style={{
+                fontSize: '1.5rem',
+                textAlign: 'center',
+                color: '#2D2D37',
+                fontFamily: "'EB Garamond', serif",
+                fontWeight: 400
+              }}>
+                Choose the word that anchors us.
+              </h2>
+              <motion.button
+                onClick={loadNewAnchors}
+                disabled={loadingAnchors}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                style={{
+                  padding: '8px',
+                  borderRadius: '50%',
+                  background: 'rgba(254, 254, 254, 0.8)',
+                  border: '1px solid rgba(139, 125, 161, 0.2)',
+                  cursor: loadingAnchors ? 'not-allowed' : 'pointer',
+                  opacity: loadingAnchors ? 0.5 : 1,
+                  backdropFilter: 'blur(10px)'
+                }}
+              >
+                <RefreshCw 
+                  size={16} 
+                  color="#8B7DA1"
+                  style={{
+                    animation: loadingAnchors ? 'spin 1s linear infinite' : 'none'
+                  }}
+                />
+              </motion.button>
+            </div>
             
             <div style={{
-              display: 'flex',
-              justifyContent: 'center',
-              gap: '24px',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+              gap: '20px',
               marginBottom: '40px',
-              flexWrap: 'wrap'
+              maxWidth: '600px',
+              margin: '0 auto 40px'
             }}>
-              {anchorWords.map((word, index) => (
+              {anchorWords.slice(0, 6).map((word, index) => (
                 <motion.button
-                  key={index}
+                  key={`${word}-${index}`}
                   onClick={() => handleSelection(word, 'anchor')}
                   whileHover={{ scale: 1.05, rotate: 1 }}
                   whileTap={{ scale: 0.95 }}
@@ -404,7 +453,7 @@ ${selectedWhisper}`;
                     background: { duration: 0.6, repeat: selectedAnchor === word ? 2 : 0 }
                   }}
                   style={{
-                    padding: '20px 32px',
+                    padding: '16px 24px',
                     border: `3px solid ${selectedAnchor === word ? '#2D2D37' : 'rgba(45, 45, 55, 0.2)'}`,
                     borderRadius: '50px',
                     background: selectedAnchor === word ? 
@@ -417,7 +466,7 @@ ${selectedWhisper}`;
                     backdropFilter: 'blur(10px)',
                     transition: 'all 0.3s ease',
                     fontFamily: "'Courier Prime', monospace",
-                    fontSize: '1.2rem',
+                    fontSize: '1rem',
                     fontWeight: 600,
                     color: '#2D2D37',
                     textTransform: 'lowercase'
