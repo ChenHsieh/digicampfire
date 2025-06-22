@@ -19,8 +19,8 @@ interface WhisperWithSource {
 
 export async function fetchGuardianHeadlines(): Promise<string[]> {
   try {
-    // Use Vite's proxy to fetch the RSS feed
-    const response = await fetch('https://www.theguardian.com/world/rss');
+    // Use Netlify function to fetch the RSS feed
+    const response = await fetch('/.netlify/functions/rss');
     if (!response.ok) {
       throw new Error('Failed to fetch RSS feed');
     }
@@ -86,6 +86,8 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
       }
     }
     
+    console.log(`Found ${allItems.length} RSS items`); // Debug log
+    
     // Randomly select 3 items from all available
     const shuffled = allItems.sort(() => Math.random() - 0.5);
     const selectedItems = shuffled.slice(0, 3);
@@ -94,7 +96,9 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
     
     for (const item of selectedItems) {
       try {
+        console.log(`Transforming headline: ${item.headline}`); // Debug log
         const poeticPhrase = await transformHeadlineToPoetry(item.headline);
+        console.log(`Transformed to: ${poeticPhrase}`); // Debug log
         whispers.push({
           poetic: poeticPhrase,
           headline: item.headline,
@@ -111,6 +115,7 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
       }
     }
     
+    console.log(`Generated ${whispers.length} whispers`); // Debug log
     return whispers;
   } catch (error) {
     console.error('Error creating poetic whispers:', error);
