@@ -20,6 +20,9 @@ Guidelines:
 • Steer clear of specific names, places, or temporal references
 • Prioritize symbolic weight, emotional texture, and interpretive openness
 • Imagine the phrase as the title of a surreal painting
+• avoid "whispers"
+• don't include any quotation marks
+
 
 Example:
 Headline: "UN warns of irreversible climate tipping points"
