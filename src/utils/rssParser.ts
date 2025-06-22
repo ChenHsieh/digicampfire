@@ -32,8 +32,8 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
     const items = xmlDoc.querySelectorAll('item');
     const headlines: string[] = [];
     
-    // Get first 4 headlines
-    for (let i = 0; i < Math.min(4, items.length); i++) {
+    // Get all available headlines
+    for (let i = 0; i < items.length; i++) {
       const titleElement = items[i].querySelector('title');
       if (titleElement && titleElement.textContent) {
         headlines.push(titleElement.textContent.trim());
@@ -48,15 +48,19 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
       'Political tensions rise as new policies spark debate',
       'Technology breakthrough promises to reshape industry',
       'Climate scientists warn of accelerating environmental changes',
-      'Cultural movements gain momentum across communities'
+      'Cultural movements gain momentum across communities',
+      'Economic indicators show mixed signals for global markets',
+      'Healthcare innovations offer new treatment possibilities',
+      'Educational reforms aim to address learning gaps',
+      'Environmental conservation efforts expand worldwide'
     ];
   }
 }
 
 export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSource[]> {
   try {
-    // Use Vite's proxy to fetch the RSS feed
-    const response = await fetch('/api/rss');
+    // Use Netlify function to fetch the RSS feed
+    const response = await fetch('/.netlify/functions/rss');
     
     if (!response.ok) {
       throw new Error('Failed to fetch RSS feed');
@@ -67,41 +71,51 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
     
     const items = xmlDoc.querySelectorAll('item');
-    const whispers: WhisperWithSource[] = [];
+    const allItems: { headline: string; link: string }[] = [];
     
-    // Get first 3 items with headlines and links
-    for (let i = 0; i < Math.min(3, items.length); i++) {
+    // Collect all available items
+    for (let i = 0; i < items.length; i++) {
       const titleElement = items[i].querySelector('title');
       const linkElement = items[i].querySelector('link');
       
       if (titleElement && titleElement.textContent && linkElement && linkElement.textContent) {
-        const headline = titleElement.textContent.trim();
-        const link = linkElement.textContent.trim();
-        
-        try {
-          const poeticPhrase = await transformHeadlineToPoetry(headline);
-          whispers.push({
-            poetic: poeticPhrase,
-            headline: headline,
-            link: link
-          });
-        } catch (error) {
-          console.error('Error transforming headline:', headline, error);
-          // Use original headline if transformation fails
-          whispers.push({
-            poetic: headline,
-            headline: headline,
-            link: link
-          });
-        }
+        allItems.push({
+          headline: titleElement.textContent.trim(),
+          link: linkElement.textContent.trim()
+        });
+      }
+    }
+    
+    // Randomly select 3 items from all available
+    const shuffled = allItems.sort(() => Math.random() - 0.5);
+    const selectedItems = shuffled.slice(0, 3);
+    
+    const whispers: WhisperWithSource[] = [];
+    
+    for (const item of selectedItems) {
+      try {
+        const poeticPhrase = await transformHeadlineToPoetry(item.headline);
+        whispers.push({
+          poetic: poeticPhrase,
+          headline: item.headline,
+          link: item.link
+        });
+      } catch (error) {
+        console.error('Error transforming headline:', item.headline, error);
+        // Use original headline if transformation fails
+        whispers.push({
+          poetic: item.headline,
+          headline: item.headline,
+          link: item.link
+        });
       }
     }
     
     return whispers;
   } catch (error) {
     console.error('Error creating poetic whispers:', error);
-    // Fallback to static poetic phrases
-    return [
+    // Fallback to static poetic phrases with random selection
+    const fallbackOptions = [
       {
         poetic: "The weight of unspoken words",
         headline: "Global tensions continue to shape international discourse",
@@ -116,8 +130,27 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
         poetic: "The space between what was and what could be",
         headline: "Future possibilities emerge from current challenges",
         link: "https://www.theguardian.com"
+      },
+      {
+        poetic: "Echoes of tomorrow's promise",
+        headline: "Innovation continues to reshape our daily lives",
+        link: "https://www.theguardian.com"
+      },
+      {
+        poetic: "The silence between heartbeats",
+        headline: "Personal stories emerge from global events",
+        link: "https://www.theguardian.com"
+      },
+      {
+        poetic: "Fragments of a changing world",
+        headline: "Social movements adapt to modern challenges",
+        link: "https://www.theguardian.com"
       }
     ];
+    
+    // Randomly select 3 from fallback options
+    const shuffled = fallbackOptions.sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3);
   }
 }
 

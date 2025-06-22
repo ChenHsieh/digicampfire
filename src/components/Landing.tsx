@@ -283,6 +283,7 @@ ${selectedWhisper}`;
                       scale: { duration: 0.2 },
                       background: { duration: 0.6, repeat: selectedWhisper === whisper.poetic ? 2 : 0 }
                     }}
+                    onClick={() => handleSelection(whisper.poetic, 'whisper')}
                     style={{
                       padding: '28px 32px',
                       border: `2px solid ${selectedWhisper === whisper.poetic ? '#8B7DA1' : 'rgba(139, 125, 161, 0.2)'}`,
@@ -298,30 +299,18 @@ ${selectedWhisper}`;
                       transition: 'all 0.3s ease'
                     }}
                   >
-                    {/* Main poetic phrase - clickable */}
-                    <motion.button
-                      onClick={() => handleSelection(whisper.poetic, 'whisper')}
-                      whileTap={{ scale: 0.98 }}
-                      style={{
-                        width: '100%',
-                        textAlign: 'center',
-                        background: 'none',
-                        border: 'none',
-                        cursor: 'pointer',
-                        padding: 0,
-                        marginBottom: '16px'
-                      }}
-                    >
-                      <div style={{
-                        fontFamily: "'EB Garamond', serif",
-                        fontSize: '1.4rem',
-                        color: '#2D2D37',
-                        lineHeight: 1.4,
-                        fontWeight: 500
-                      }}>
-                        {whisper.poetic}
-                      </div>
-                    </motion.button>
+                    {/* Main poetic phrase - now part of the clickable container */}
+                    <div style={{
+                      fontFamily: "'EB Garamond', serif",
+                      fontSize: '1.4rem',
+                      color: '#2D2D37',
+                      lineHeight: 1.4,
+                      fontWeight: 500,
+                      textAlign: 'center',
+                      marginBottom: '16px'
+                    }}>
+                      {whisper.poetic}
+                    </div>
                     
                     {/* Source headline with link */}
                     <div style={{
@@ -347,6 +336,7 @@ ${selectedWhisper}`;
                         rel="noopener noreferrer"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
+                        onClick={(e) => e.stopPropagation()} // Prevent triggering the parent click
                         style={{
                           display: 'flex',
                           alignItems: 'center',
