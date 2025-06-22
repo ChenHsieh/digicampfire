@@ -8,29 +8,19 @@ const openai = new OpenAI({
 export async function transformHeadlineToPoetry(headline: string): Promise<string> {
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: `You are a poetic summarizer. I will give you a news headline. Your task is to turn this into a short, poetic, emotionally ambiguous phrase (max 7 words) that could work as the first and last line of a Skinny poem.
+      model: "gpt-4o",
+      input: `You are a poetic summarizer. I will give you a news headline. Your task is to transform it into a short, emotionally ambiguous noun phrase (max 7 words). This phrase should be poetic, symbolic, and open-ended—suitable to serve as both the first and last line of a Skinny poem.
 
-Rules:
-- Do NOT summarize literally.
-- Focus on metaphor, emotional tone, or symbolic abstraction.
-- Avoid names, locations, or time markers.
-- Be open-ended enough to spark multiple meanings.
+Guidelines:
+	•	Do NOT summarize literally.
+	•	Avoid full sentences. Use abstract, metaphor-rich noun phrases instead (e.g., “glass edge of tomorrow”, “inheritance of the burning sky”).
+	•	Steer clear of specific names, places, or temporal references.
+	•	Prioritize symbolic weight, emotional texture, and interpretive openness.
+	•	Imagine the phrase as the title of a surreal painting, or a whispered line from a dream.
 
 Example:
-Headline: "UN warns of irreversible climate tipping points"
-Poetic phrase: "The edge won't wait for us"`
-        },
-        {
-          role: "user",
-          content: headline
-        }
-      ],
-      max_tokens: 20,
-      temperature: 0.8
+Headline: “UN warns of irreversible climate tipping points”
+Poetic phrase: “the edge of unremembered heat”`
     });
 
     return response.choices[0]?.message?.content?.trim() || headline;
