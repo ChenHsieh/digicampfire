@@ -20,8 +20,7 @@ interface WhisperWithSource {
 export async function fetchGuardianHeadlines(): Promise<string[]> {
   try {
     // Use Vite's proxy to fetch the RSS feed
-    const response = await fetch('/api/rss');
-    
+    const response = await fetch('https://www.theguardian.com/world/rss');
     if (!response.ok) {
       throw new Error('Failed to fetch RSS feed');
     }
