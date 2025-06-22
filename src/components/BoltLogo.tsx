@@ -20,7 +20,8 @@ const BoltLogo: React.FC = () => {
         borderRadius: '50%',
         overflow: 'hidden',
         boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        transition: 'all 0.3s ease'
+        transition: 'all 0.3s ease',
+        background: '#000000' // Fallback background
       }}
     >
       <img
@@ -30,6 +31,28 @@ const BoltLogo: React.FC = () => {
           width: '100%',
           height: '100%',
           objectFit: 'cover'
+        }}
+        onError={(e) => {
+          // Fallback if image fails to load
+          const target = e.target as HTMLImageElement;
+          target.style.display = 'none';
+          const parent = target.parentElement;
+          if (parent) {
+            parent.innerHTML = `
+              <div style="
+                width: 100%;
+                height: 100%;
+                background: #000000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-family: 'Courier Prime', monospace;
+                font-size: 18px;
+                font-weight: bold;
+              ">b</div>
+            `;
+          }
         }}
       />
     </motion.a>
