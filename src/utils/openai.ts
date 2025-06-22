@@ -49,7 +49,7 @@ Guidelines:
 	•	Prioritize symbolic weight, emotional texture, and interpretive openness.
 	•	Imagine the phrase as the title of a surreal painting, or a glance from a dream.
   •	Avoid usage of 'whisper' if possible
-  • don't include quotation marks
+  • Please don't include any quotation marks
 
 Example:
 Headline: "UN warns of irreversible climate tipping points"
