@@ -1,33 +1,18 @@
 import OpenAI from 'openai';
 
 // Initialize OpenAI client with better error handling for production
-let openai: OpenAI | null = null;
-
-try {
-  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
-  
-  if (!apiKey) {
-    console.error('OpenAI API key not found in environment variables');
-  } else {
-    openai = new OpenAI({
-      apiKey: apiKey,
-      dangerouslyAllowBrowser: true,
-      // Add timeout and retry configuration for production
-      timeout: 30000, // 30 second timeout
-      maxRetries: 2
-    });
-  }
-} catch (error) {
-  console.error('Failed to initialize OpenAI client:', error);
-}
+const openai = new OpenAI({
+  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
+  // Add timeout and retry configuration for production
+  timeout: 30000, // 30 second timeout
+  maxRetries: 2
+});
 
 export async function transformHeadlineToPoetry(headline: string): Promise<string> {
-  if (!openai) {
-    console.warn('OpenAI client not available, using original headline');
-    return headline;
-  }
-
   try {
+    console.log('Transforming headline with OpenAI:', headline);
+    
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
@@ -55,21 +40,25 @@ Poetic phrase: "the edge of unremembered heat"`
       temperature: 0.8
     });
 
-    return response.choices[0]?.message?.content?.trim() || headline;
+    const result = response.choices[0]?.message?.content?.trim() || headline;
+    console.log('Transformed headline result:', result);
+    return result;
   } catch (error) {
     console.error('Error transforming headline:', error);
+    console.error('Error details:', {
+      name: error?.name,
+      message: error?.message,
+      status: error?.status,
+      code: error?.code
+    });
     return headline;
   }
 }
 
 export async function generateAnchorWords(): Promise<string[]> {
-  if (!openai) {
-    console.warn('OpenAI client not available, using base anchor words');
-    const baseWords = ["breathe", "release", "become", "hold", "listen", "remember", "trust", "surrender", "witness", "forgive"];
-    return baseWords.sort(() => Math.random() - 0.5).slice(0, 6);
-  }
-
   try {
+    console.log('Generating anchor words with OpenAI...');
+    
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: [
@@ -96,6 +85,8 @@ Return only the 6 words, one per line.`
     });
 
     const words = response.choices[0]?.message?.content?.trim().split('\n').filter(word => word.trim()) || [];
+    console.log('Generated anchor words:', words);
+    
     return words.length >= 6 ? words.slice(0, 6) : [
       "breathe", "release", "become", "hold", "listen", "remember"
     ];
@@ -149,111 +140,7 @@ export async function validateSkinnyPoem(poem: string, anchor: string): Promise<
   };
 }
 
-export async function auditPoemQuality(poem: string): Promise<{ isGood: boolean; suggestion?: string }> {
-  if (!openai) {
-    return { isGood: true };
-  }
-
-  try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [
-        {
-          role: "system",
-          content: `You are a poetry quality auditor for Skinny poems. Analyze if the poem maintains a single dominant sensory image throughout and follows Skinny poem structure (11 lines, single words in lines 2-10, repeated anchor word in positions 2, 6, 10).
-
-Reply with YES/NO and if NO, suggest one specific edit to improve coherence while maintaining Skinny poem structure.`
-        },
-        {
-          role: "user",
-          content: `Does this Skinny poem maintain good structure and coherent imagery? Reply YES/NO & suggest one edit if needed:\n\n${poem}`
-        }
-      ],
-      max_tokens: 100,
-      temperature: 0.3
-    });
-
-    const result = response.choices[0]?.message?.content?.trim() || '';
-    const isGood = result.toLowerCase().startsWith('yes');
-    const suggestion = isGood ? undefined : result.split('\n').slice(1).join('\n').trim();
-
-    return { isGood, suggestion };
-  } catch (error) {
-    console.error('Error auditing poem quality:', error);
-    return { isGood: true };
-  }
-}
-
-export async function enhancePoemSound(poem: string, anchor: string): Promise<string> {
-  if (!openai) {
-    return poem;
-  }
-
-  try {
-    const lines = poem.split('\n').filter(line => line.trim() !== '');
-    if (lines.length !== 11) return poem;
-
-    const middleLines = lines.slice(2, 9); // Lines 3-9 (index 2-8)
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: `You are enhancing the sound of a Skinny poem. Rewrite ONLY lines 3-9 (the middle section) to add subtle internal rhyme and alliteration while:
-
-CRITICAL RULES:
-- Keep each line as a SINGLE WORD only
-- Preserve the overall meaning and imagery
-- Do NOT change the anchor word "${anchor}" in its positions
-- Maintain the Skinny poem structure
-- Focus on sound enhancement, not meaning changes
-
-Return only the 7 enhanced middle lines, one word per line.`
-        },
-        {
-          role: "user",
-          content: `Enhance the sound of these middle lines while keeping them as single words:\n${middleLines.join('\n')}`
-        }
-      ],
-      max_tokens: 50,
-      temperature: 0.6
-    });
-
-    const enhancedMiddle = response.choices[0]?.message?.content?.trim();
-    if (!enhancedMiddle) return poem;
-
-    const enhancedLines = enhancedMiddle.split('\n').filter(line => line.trim());
-    if (enhancedLines.length !== 7) return poem;
-
-    // Validate each enhanced line is a single word
-    for (const line of enhancedLines) {
-      if (line.trim().split(/\s+/).length > 1) {
-        return poem;
-      }
-    }
-
-    // Reconstruct the full poem
-    return [
-      lines[0], // First line
-      lines[1], // Line 2 (anchor)
-      ...enhancedLines, // Enhanced lines 3-9
-      lines[9], // Line 10 (anchor)
-      lines[10] // Last line
-    ].join('\n');
-
-  } catch (error) {
-    console.error('Error enhancing poem sound:', error);
-    return poem;
-  }
-}
-
 export async function generateSkinnyPoem(whisper: string, anchor: string, feeling: string): Promise<string> {
-  if (!openai) {
-    console.warn('OpenAI client not available, using fallback poem generation');
-    return createFallbackSkinnyPoem(whisper, anchor, feeling);
-  }
-
   try {
     console.log('Generating Skinny poem with OpenAI...');
     console.log('Whisper:', whisper);
@@ -348,9 +235,10 @@ Return only the 11-line poem. No title, no explanation, no formatting.`
   } catch (error) {
     console.error('Error generating Skinny poem:', error);
     console.error('Error details:', {
-      name: error.name,
-      message: error.message,
-      stack: error.stack
+      name: error?.name,
+      message: error?.message,
+      status: error?.status,
+      code: error?.code
     });
     console.warn('Falling back to createFallbackSkinnyPoem due to error');
     return createFallbackSkinnyPoem(whisper, anchor, feeling);
@@ -380,9 +268,4 @@ ${word2}
 in
 ${anchor}
 ${whisper}`;
-}
-
-// Keep the old function for backward compatibility, but redirect to new one
-export async function generatePoem(whisper: string, anchor: string, feeling: string): Promise<string> {
-  return generateSkinnyPoem(whisper, anchor, feeling);
 }
