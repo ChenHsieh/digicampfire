@@ -71,34 +71,56 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
     
     const items = xmlDoc.querySelectorAll('item');
-    const allItems: { headline: string; link: string }[] = [];
+    const allItems: { headline: string; link: string; pubDate: string }[] = [];
     
-    // Collect all available items
+    // Collect all available items with their publication dates
     for (let i = 0; i < items.length; i++) {
       const titleElement = items[i].querySelector('title');
       const linkElement = items[i].querySelector('link');
+      const pubDateElement = items[i].querySelector('pubDate');
       
       if (titleElement && titleElement.textContent && linkElement && linkElement.textContent) {
         allItems.push({
           headline: titleElement.textContent.trim(),
-          link: linkElement.textContent.trim()
+          link: linkElement.textContent.trim(),
+          pubDate: pubDateElement?.textContent?.trim() || ''
         });
       }
     }
     
-    console.log(`Found ${allItems.length} RSS items`); // Debug log
+    console.log(`Found ${allItems.length} RSS items from The Guardian`);
     
-    // Randomly select 3 items from all available
-    const shuffled = allItems.sort(() => Math.random - 0.5);
+    // Filter for today's articles (within last 24 hours) or use all if none from today
+    const now = new Date();
+    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+    
+    const todaysItems = allItems.filter(item => {
+      if (!item.pubDate) return true; // Include items without dates
+      const itemDate = new Date(item.pubDate);
+      return itemDate >= yesterday;
+    });
+    
+    // Use today's items if available, otherwise use all items
+    const itemsToUse = todaysItems.length >= 3 ? todaysItems : allItems;
+    console.log(`Using ${itemsToUse.length} items (${todaysItems.length} from today)`);
+    
+    // Randomly shuffle all available items using Fisher-Yates algorithm
+    const shuffled = [...itemsToUse];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    
+    // Select 3 random items
     const selectedItems = shuffled.slice(0, 3);
     
     const whispers: WhisperWithSource[] = [];
     
     for (const item of selectedItems) {
       try {
-        console.log(`Transforming headline: ${item.headline}`); // Debug log
+        console.log(`Transforming headline: ${item.headline}`);
         const poeticPhrase = await transformHeadlineToPoetry(item.headline);
-        console.log(`Transformed to: ${poeticPhrase}`); // Debug log
+        console.log(`Transformed to: ${poeticPhrase}`);
         whispers.push({
           poetic: poeticPhrase,
           headline: item.headline,
@@ -115,7 +137,7 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
       }
     }
     
-    console.log(`Generated ${whispers.length} whispers`); // Debug log
+    console.log(`Generated ${whispers.length} whispers`);
     return whispers;
   } catch (error) {
     console.error('Error creating poetic whispers:', error);
@@ -153,8 +175,12 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
       }
     ];
     
-    // Randomly select 3 from fallback options
-    const shuffled = fallbackOptions.sort(() => Math.random() - 0.5);
+    // Randomly select 3 from fallback options using proper shuffling
+    const shuffled = [...fallbackOptions];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
     return shuffled.slice(0, 3);
   }
 }
