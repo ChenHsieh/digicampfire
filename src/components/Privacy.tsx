@@ -101,6 +101,31 @@ const Privacy: React.FC = () => {
               </h2>
             </div>
             
+            <div style={{
+              background: 'rgba(139, 125, 161, 0.1)',
+              padding: '20px',
+              borderRadius: '12px',
+              marginBottom: '20px'
+            }}>
+              <p style={{
+                fontSize: '1.1rem',
+                color: '#2D2D37',
+                fontWeight: 500,
+                marginBottom: '8px'
+              }}>
+                We collect NOTHING.
+              </p>
+              <p style={{
+                fontSize: '1rem',
+                color: '#2D2D37',
+                lineHeight: 1.6
+              }}>
+                Digital Campfire is a completely client-side application. Your poems, feelings, 
+                and creative expressions never leave your browser. Nothing is stored on our servers, 
+                and no personal data is collected or transmitted.
+              </p>
+            </div>
+
             <div style={{ marginBottom: '24px' }}>
               <h3 style={{
                 fontSize: '1.3rem',
@@ -117,11 +142,10 @@ const Privacy: React.FC = () => {
                 color: '#2D2D37',
                 paddingLeft: '20px'
               }}>
-                <li>Your selected whisper (transformed news headline)</li>
-                <li>Your chosen anchor word</li>
-                <li>Your feeling/emotion input (optional)</li>
-                <li>The generated poem text</li>
-                <li>Creation timestamp</li>
+                <li>Your poem exists only in your browser's memory</li>
+                <li>When you close the tab or navigate away, it's gone forever</li>
+                <li>No data is sent to any server or database</li>
+                <li>Your creative process is completely private</li>
               </ul>
             </div>
 
@@ -133,7 +157,7 @@ const Privacy: React.FC = () => {
                 fontWeight: 500,
                 marginBottom: '12px'
               }}>
-                When You Share Your Poem:
+                External Services:
               </h3>
               <ul style={{
                 fontSize: '1.1rem',
@@ -141,35 +165,9 @@ const Privacy: React.FC = () => {
                 color: '#2D2D37',
                 paddingLeft: '20px'
               }}>
-                <li>All poem creation data (as above)</li>
-                <li>Sharing timestamp</li>
-                <li>Anonymous identifier (no personal information)</li>
-              </ul>
-            </div>
-
-            <div style={{
-              background: 'rgba(139, 125, 161, 0.1)',
-              padding: '20px',
-              borderRadius: '12px',
-              marginTop: '20px'
-            }}>
-              <p style={{
-                fontSize: '1rem',
-                color: '#2D2D37',
-                fontWeight: 500,
-                marginBottom: '8px'
-              }}>
-                Important: We do NOT collect:
-              </p>
-              <ul style={{
-                fontSize: '1rem',
-                color: '#2D2D37',
-                paddingLeft: '20px'
-              }}>
-                <li>Names, email addresses, or contact information</li>
-                <li>IP addresses or location data</li>
-                <li>Device information or browser fingerprints</li>
-                <li>Any personally identifiable information</li>
+                <li>We use OpenAI's API to help generate poems (your inputs are processed but not stored by us)</li>
+                <li>We fetch news headlines from The Guardian's public RSS feed</li>
+                <li>These services have their own privacy policies</li>
               </ul>
             </div>
           </motion.section>
@@ -204,47 +202,28 @@ const Privacy: React.FC = () => {
               </h2>
             </div>
             
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{
-                fontSize: '1.3rem',
-                color: '#2D2D37',
-                fontFamily: "'EB Garamond', serif",
-                fontWeight: 500,
-                marginBottom: '12px'
-              }}>
-                Shared Poems:
-              </h3>
-              <ul style={{
-                fontSize: '1.1rem',
-                lineHeight: 1.7,
-                color: '#2D2D37',
-                paddingLeft: '20px'
-              }}>
-                <li>Display in our public archive for others to read and find inspiration</li>
-                <li>Create a collective record of how people process current events through poetry</li>
-                <li>Analyze patterns in emotional responses to world events (anonymously)</li>
-              </ul>
-            </div>
+            <p style={{
+              fontSize: '1.1rem',
+              lineHeight: 1.7,
+              color: '#2D2D37',
+              marginBottom: '20px'
+            }}>
+              Since we don't collect or store any data, there's nothing for us to use! 
+              Your creative process is entirely yours:
+            </p>
 
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{
-                fontSize: '1.3rem',
-                color: '#2D2D37',
-                fontFamily: "'EB Garamond', serif",
-                fontWeight: 500,
-                marginBottom: '12px'
-              }}>
-                Private Poems:
-              </h3>
-              <p style={{
-                fontSize: '1.1rem',
-                lineHeight: 1.7,
-                color: '#2D2D37'
-              }}>
-                Poems you create but don't share are not stored on our servers. They exist only 
-                in your browser session and are lost when you close the page or navigate away.
-              </p>
-            </div>
+            <ul style={{
+              fontSize: '1.1rem',
+              lineHeight: 1.7,
+              color: '#2D2D37',
+              paddingLeft: '20px',
+              marginBottom: '20px'
+            }}>
+              <li>Your poems remain in your browser only</li>
+              <li>You control what happens to your creations</li>
+              <li>You can copy, share, or save them yourself</li>
+              <li>We have no access to your personal expressions</li>
+            </ul>
           </motion.section>
 
           {/* Data Security */}
@@ -273,7 +252,7 @@ const Privacy: React.FC = () => {
                 fontFamily: "'EB Garamond', serif",
                 fontWeight: 500
               }}>
-                Data Security & Storage
+                Data Security
               </h2>
             </div>
             
@@ -283,8 +262,9 @@ const Privacy: React.FC = () => {
               color: '#2D2D37',
               marginBottom: '20px'
             }}>
-              Your shared poems are stored securely using Supabase, a trusted database platform 
-              with enterprise-grade security. All data is encrypted in transit and at rest.
+              The most secure data is data that doesn't exist on servers. Since Digital Campfire 
+              operates entirely in your browser, your creative expressions are as secure as your 
+              own device.
             </p>
 
             <div style={{ marginBottom: '24px' }}>
@@ -295,7 +275,7 @@ const Privacy: React.FC = () => {
                 fontWeight: 500,
                 marginBottom: '12px'
               }}>
-                Data Retention:
+                What This Means:
               </h3>
               <ul style={{
                 fontSize: '1.1rem',
@@ -303,9 +283,10 @@ const Privacy: React.FC = () => {
                 color: '#2D2D37',
                 paddingLeft: '20px'
               }}>
-                <li>Shared poems are stored indefinitely as part of our community archive</li>
-                <li>We may periodically remove very old entries to maintain performance</li>
-                <li>No personal data is retained beyond the poem content and timestamps</li>
+                <li>No data breaches possible (we have no data to breach)</li>
+                <li>No unauthorized access to your poems</li>
+                <li>No government or third-party data requests</li>
+                <li>Complete creative privacy</li>
               </ul>
             </div>
           </motion.section>
@@ -339,8 +320,8 @@ const Privacy: React.FC = () => {
               color: '#2D2D37',
               marginBottom: '20px'
             }}>
-              Since we don't collect personal information, traditional data rights (like access or 
-              deletion requests) don't apply in the usual way. However:
+              Since we don't collect personal data, traditional data rights don't apply. 
+              Instead, you have something better: complete control.
             </p>
 
             <ul style={{
@@ -350,9 +331,10 @@ const Privacy: React.FC = () => {
               paddingLeft: '20px',
               marginBottom: '20px'
             }}>
-              <li>You can choose not to share your poems (they won't be stored)</li>
-              <li>Shared poems are anonymous and cannot be traced back to you</li>
-              <li>You can contact us if you have concerns about specific content</li>
+              <li>You own your poems completely</li>
+              <li>You decide what to do with them</li>
+              <li>You can use the app without any account or registration</li>
+              <li>Your creative process is entirely anonymous</li>
             </ul>
 
             <div style={{
@@ -372,7 +354,7 @@ const Privacy: React.FC = () => {
                 fontSize: '1rem',
                 color: '#2D2D37'
               }}>
-                If you have questions about this privacy statement or our data practices, 
+                If you have questions about this privacy statement or our practices, 
                 please reach out through our contact form or email us directly.
               </p>
             </div>
@@ -408,7 +390,8 @@ const Privacy: React.FC = () => {
             }}>
               We may update this privacy statement from time to time to reflect changes in our 
               practices or for legal reasons. Any changes will be posted on this page with an 
-              updated "last modified" date. We encourage you to review this statement periodically.
+              updated "last modified" date. Since we don't collect contact information, 
+              we encourage you to check this page periodically.
             </p>
 
             <p style={{
@@ -442,7 +425,7 @@ const Privacy: React.FC = () => {
             fontStyle: 'italic',
             fontFamily: "'EB Garamond', serif"
           }}>
-            Your trust is sacred to us
+            Your privacy is absolute here
           </p>
         </motion.div>
       </motion.div>

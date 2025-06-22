@@ -5,7 +5,6 @@ import Landing from './components/Landing';
 import Display from './components/Display';
 import About from './components/About';
 import Privacy from './components/Privacy';
-import Archive from './components/Archive';
 import BoltLogo from './components/BoltLogo';
 import Navigation from './components/Navigation';
 
@@ -125,7 +124,6 @@ function App() {
             <Route path="/" element={<MainApp />} />
             <Route path="/about" element={<About />} />
             <Route path="/privacy" element={<Privacy />} />
-            <Route path="/archive" element={<Archive />} />
           </Routes>
         </div>
       </div>

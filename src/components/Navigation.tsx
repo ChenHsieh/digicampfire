@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Home, Info, Shield, Archive } from 'lucide-react';
+import { Home, Info, Shield } from 'lucide-react';
 
 const Navigation: React.FC = () => {
   const location = useLocation();
@@ -14,7 +14,6 @@ const Navigation: React.FC = () => {
   const navItems = [
     { path: '/', label: 'Campfire', icon: Home },
     { path: '/about', label: 'About', icon: Info },
-    { path: '/archive', label: 'Archive', icon: Archive },
     { path: '/privacy', label: 'Privacy', icon: Shield },
   ];
 

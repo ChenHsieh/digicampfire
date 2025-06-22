@@ -191,7 +191,7 @@ const About: React.FC = () => {
             </p>
           </motion.section>
 
-          {/* Community & Sharing */}
+          {/* Personal Expression */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -217,7 +217,7 @@ const About: React.FC = () => {
                 fontFamily: "'EB Garamond', serif",
                 fontWeight: 500
               }}>
-                Sharing Your Light
+                Your Personal Expression
               </h2>
             </div>
             
@@ -227,9 +227,9 @@ const About: React.FC = () => {
               color: '#2D2D37',
               marginBottom: '20px'
             }}>
-              When you "offer your spark" by sharing your poem with our community, it becomes part of 
-              our growing archive — a collection of how people around the world are processing and 
-              transforming the events of our time into personal meaning.
+              Each poem you create is entirely yours. The app helps you craft a Skinny poem using AI, 
+              but the emotional core comes from your choices — the whisper that speaks to you, 
+              the anchor word that grounds you, and the feeling you choose to share.
             </p>
             
             <p style={{
@@ -237,9 +237,9 @@ const About: React.FC = () => {
               lineHeight: 1.7,
               color: '#2D2D37'
             }}>
-              Each shared poem is anonymous but carries the date it was created, creating a poetic 
-              record of our collective emotional landscape. Visit our archive to see how others have 
-              transformed the same whispers into entirely different expressions of feeling.
+              You can edit your poem, share it via email or copy it to your clipboard, 
+              but it remains private to you. This is your personal space for processing 
+              the world's events through the lens of your own experience.
             </p>
           </motion.section>
 
