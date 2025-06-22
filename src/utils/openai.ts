@@ -7,20 +7,29 @@ const openai = new OpenAI({
 
 export async function transformHeadlineToPoetry(headline: string): Promise<string> {
   try {
-    const response = await openai.responses.create({
+    const response = await openai.chat.completions.create({
       model: "gpt-4o",
-      input: `You are a poetic summarizer. I will give you a news headline. Your task is to transform it into a short, emotionally ambiguous noun phrase (max 7 words). This phrase should be poetic, symbolic, and open-ended—suitable to serve as both the first and last line of a Skinny poem.
+      messages: [
+        {
+          role: "system",
+          content: `You are a poetic summarizer. I will give you a news headline. Your task is to transform it into a short, emotionally ambiguous noun phrase (max 7 words). This phrase should be poetic, symbolic, and open-ended—suitable to serve as both the first and last line of a Skinny poem.
 
 Guidelines:
 	•	Do NOT summarize literally.
-	•	Avoid full sentences. Use abstract, metaphor-rich noun phrases instead (e.g., “glass edge of tomorrow”, “inheritance of the burning sky”).
+	•	Avoid full sentences. Use abstract, metaphor-rich noun phrases instead (e.g., "glass edge of tomorrow", "inheritance of the burning sky").
 	•	Steer clear of specific names, places, or temporal references.
 	•	Prioritize symbolic weight, emotional texture, and interpretive openness.
 	•	Imagine the phrase as the title of a surreal painting, or a whispered line from a dream.
 
 Example:
-Headline: “UN warns of irreversible climate tipping points”
-Poetic phrase: “the edge of unremembered heat”`
+Headline: "UN warns of irreversible climate tipping points"
+Poetic phrase: "the edge of unremembered heat"`
+        },
+        {
+          role: "user",
+          content: headline
+        }
+      ]
     });
 
     return response.choices[0]?.message?.content?.trim() || headline;
@@ -205,9 +214,12 @@ Return only the 7 enhanced middle lines, one word per line.`
 
 export async function generateSkinnyPoem(whisper: string, anchor: string, feeling: string): Promise<string> {
   try {
-    const response = await openai.responses.create({
+    const response = await openai.chat.completions.create({
       model: "gpt-4o",
-      input: `Create a Skinny poem with:
+      messages: [
+        {
+          role: "system",
+          content: `Create a Skinny poem with:
 - Whisper (first/last line): "${whisper}"
 - Anchor word (lines 2, 6, 10): "${anchor}"
 - User feeling: "${feeling}"
@@ -215,7 +227,7 @@ export async function generateSkinnyPoem(whisper: string, anchor: string, feelin
 ✍️ FORM:
 Write exactly 11 lines.
 
-1. Line 1: The “whisper” phrase (poetic, metaphorical, or emotionally suggestive)
+1. Line 1: The "whisper" phrase (poetic, metaphorical, or emotionally suggestive)
 2. Lines 2–10: Single word per line only — no phrases
    - Line 2 = "${anchor}"
    - Line 6 = "${anchor}"
@@ -223,13 +235,19 @@ Write exactly 11 lines.
 3. Line 11: Repeat or re-order the exact same words from the whisper (Line 1)
 
 🧠 GOALS:
-- Reflect or contrast the user’s feeling (“${feeling}”) through imagery and word choice
+- Reflect or contrast the user's feeling ("${feeling}") through imagery and word choice
 - Make the anchor word feel meaningful — as echo, emphasis, or irony
 - Build around a single emotional moment, image, or metaphor
 - Use precise, grounded language (not vague or abstract)
 - The poem should feel raw, rhythmic, and emotionally resonant
 
 Return only the 11-line poem. No title, no explanation, no formatting.`
+        },
+        {
+          role: "user",
+          content: `Create a Skinny poem with whisper: "${whisper}", anchor: "${anchor}", feeling: "${feeling}"`
+        }
+      ]
     });
 
     let poem = response.choices[0]?.message?.content?.trim() || createFallbackSkinnyPoem(whisper, anchor, feeling);
