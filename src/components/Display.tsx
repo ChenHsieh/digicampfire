@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Edit3, Copy, Check, Download, Image } from 'lucide-react';
 import { validateSkinnyPoem } from '../utils/openai';
 import { generateRandomOrbColor } from '../utils/helpers';
+import { useTheme } from '../hooks/useTheme';
+import ThemedButton from './ThemedButton';
 
 interface Poem {
   whisper: string;
@@ -28,6 +30,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
   const [isGeneratingCard, setIsGeneratingCard] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   
+  const colors = useTheme(isDarkMode);
   const lines = currentPoem.split('\n').filter(line => line.trim() !== '');
   
   useEffect(() => {
@@ -211,34 +214,6 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
     }
   };
 
-  const getThemeColors = () => {
-    if (isDarkMode) {
-      return {
-        primary: '#EA580C',
-        secondary: '#C2410C',
-        text: '#E5E5E5',
-        textSecondary: 'rgba(229, 229, 229, 0.7)',
-        background: 'rgba(229, 229, 229, 0.05)',
-        border: 'rgba(234, 88, 12, 0.3)',
-        shadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)',
-        glowShadow: '0 0 60px rgba(234, 88, 12, 0.3), 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(234, 88, 12, 0.2)'
-      };
-    } else {
-      return {
-        primary: '#C2410C',
-        secondary: '#EA580C',
-        text: '#1a1a1a',
-        textSecondary: 'rgba(26, 26, 26, 0.7)',
-        background: 'rgba(26, 26, 26, 0.05)',
-        border: 'rgba(194, 65, 12, 0.4)',
-        shadow: '0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(194, 65, 12, 0.2)',
-        glowShadow: '0 0 60px rgba(194, 65, 12, 0.2), 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(194, 65, 12, 0.3)'
-      };
-    }
-  };
-
-  const colors = getThemeColors();
-
   return (
     <div style={{
       minHeight: '100vh',
@@ -252,32 +227,19 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
         width: '100%',
         position: 'relative'
       }}>
-        <motion.button
+        <ThemedButton
           onClick={onBack}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          isDarkMode={isDarkMode}
+          variant="outline"
+          icon={<ArrowLeft size={16} />}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            color: colors.primary,
-            fontSize: '0.9rem',
-            padding: '8px 16px',
-            borderRadius: '20px',
             marginBottom: '40px',
             marginLeft: 'auto',
-            marginRight: 'auto',
-            background: colors.background,
-            border: `1px solid ${colors.border}`,
-            cursor: 'pointer',
-            backdropFilter: 'blur(15px)',
-            fontFamily: "'Courier Prime', monospace",
-            boxShadow: colors.shadow
+            marginRight: 'auto'
           }}
         >
-          <ArrowLeft size={16} />
           Return to the fire
-        </motion.button>
+        </ThemedButton>
         
         {/* Campfire glow for the poem */}
         <motion.div
@@ -424,7 +386,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
             <div style={{
               fontSize: '1.1rem',
               color: colors.text,
-              fontFamily: "'EB Garamond', serif", // Changed to match whisper font
+              fontFamily: "'EB Garamond', serif",
               fontStyle: 'italic'
             }}>
               {poem.anchor}
@@ -523,44 +485,25 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
               marginTop: '16px',
               justifyContent: 'flex-end'
             }}>
-              <motion.button
+              <ThemedButton
                 onClick={() => {
                   setShowCuratorTweak(false);
-                  setEditedPoem(currentPoem); // Reset to current poem
+                  setEditedPoem(currentPoem);
                 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '20px',
-                  background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
-                  border: `1px solid ${colors.border}`,
-                  color: colors.primary,
-                  cursor: 'pointer',
-                  fontFamily: "'Courier Prime', monospace",
-                  fontSize: '0.9rem',
-                  backdropFilter: 'blur(10px)'
-                }}
+                isDarkMode={isDarkMode}
+                variant="outline"
+                size="small"
               >
                 Cancel
-              </motion.button>
-              <motion.button
+              </ThemedButton>
+              <ThemedButton
                 onClick={handleSaveTweak}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '20px',
-                  background: `linear-gradient(135deg, ${isDarkMode ? '#2D2D37' : '#f1f5f9'} 0%, ${colors.primary} 100%)`,
-                  border: 'none',
-                  color: colors.text,
-                  cursor: 'pointer',
-                  fontFamily: "'Courier Prime', monospace",
-                  fontSize: '0.9rem'
-                }}
+                isDarkMode={isDarkMode}
+                variant="primary"
+                size="small"
               >
                 Save Changes
-              </motion.button>
+              </ThemedButton>
             </div>
           </motion.div>
         )}
@@ -619,81 +562,48 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
                 flexDirection: 'column',
                 gap: '16px'
               }}>
-                <motion.button
+                <ThemedButton
                   onClick={handleCopyToClipboard}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  isDarkMode={isDarkMode}
+                  variant="secondary"
+                  icon={copySuccess ? <Check size={18} /> : <Copy size={18} />}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '16px 20px',
-                    borderRadius: '12px',
-                    background: copySuccess ? 'rgba(34, 197, 94, 0.15)' : `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
-                    border: `1px solid ${copySuccess ? 'rgba(34, 197, 94, 0.4)' : colors.border}`,
-                    color: copySuccess ? '#22c55e' : colors.text,
-                    cursor: 'pointer',
-                    fontFamily: "'Courier Prime', monospace",
-                    fontSize: '0.95rem',
                     width: '100%',
                     justifyContent: 'flex-start',
-                    transition: 'all 0.3s ease',
-                    backdropFilter: 'blur(10px)'
+                    background: copySuccess ? 'rgba(34, 197, 94, 0.15)' : undefined,
+                    borderColor: copySuccess ? 'rgba(34, 197, 94, 0.4)' : undefined,
+                    color: copySuccess ? '#22c55e' : undefined
                   }}
                 >
-                  {copySuccess ? <Check size={18} /> : <Copy size={18} />}
                   {copySuccess ? 'Copied with link!' : 'Copy text with link'}
-                </motion.button>
+                </ThemedButton>
                 
-                <motion.button
+                <ThemedButton
                   onClick={generatePictureCard}
                   disabled={isGeneratingCard}
-                  whileHover={{ scale: isGeneratingCard ? 1 : 1.02 }}
-                  whileTap={{ scale: isGeneratingCard ? 1 : 0.98 }}
+                  isDarkMode={isDarkMode}
+                  variant="secondary"
+                  icon={isGeneratingCard ? <Download size={18} /> : <Image size={18} />}
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '16px 20px',
-                    borderRadius: '12px',
-                    background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
-                    border: `1px solid ${colors.border}`,
-                    color: colors.text,
-                    cursor: isGeneratingCard ? 'not-allowed' : 'pointer',
-                    fontFamily: "'Courier Prime', monospace",
-                    fontSize: '0.95rem',
                     width: '100%',
-                    justifyContent: 'flex-start',
-                    backdropFilter: 'blur(10px)',
-                    opacity: isGeneratingCard ? 0.7 : 1,
-                    transition: 'all 0.3s ease'
+                    justifyContent: 'flex-start'
                   }}
                 >
-                  {isGeneratingCard ? <Download size={18} /> : <Image size={18} />}
                   {isGeneratingCard ? 'Generating card...' : 'Download picture card'}
-                </motion.button>
+                </ThemedButton>
               </div>
               
-              <motion.button
+              <ThemedButton
                 onClick={() => setShowShareOptions(false)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+                isDarkMode={isDarkMode}
+                variant="outline"
                 style={{
                   marginTop: '24px',
-                  padding: '8px 16px',
-                  borderRadius: '20px',
-                  background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
-                  border: `1px solid ${colors.border}`,
-                  color: colors.primary,
-                  cursor: 'pointer',
-                  fontFamily: "'Courier Prime', monospace",
-                  fontSize: '0.9rem',
-                  width: '100%',
-                  backdropFilter: 'blur(10px)'
+                  width: '100%'
                 }}
               >
                 Close
-              </motion.button>
+              </ThemedButton>
             </motion.div>
           </motion.div>
         )}
@@ -710,58 +620,28 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
             flexWrap: 'wrap'
           }}
         >
-          <motion.button
+          <ThemedButton
             onClick={() => {
               setShowCuratorTweak(!showCuratorTweak);
               if (!showCuratorTweak) {
-                setEditedPoem(currentPoem); // Initialize with current poem
+                setEditedPoem(currentPoem);
               }
             }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '12px 20px',
-              borderRadius: '25px',
-              background: showCuratorTweak ? `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.25)` : `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
-              border: `1px solid ${colors.border}`,
-              color: colors.text,
-              cursor: 'pointer',
-              backdropFilter: 'blur(15px)',
-              fontFamily: "'Courier Prime', monospace",
-              fontSize: '0.9rem',
-              boxShadow: colors.shadow
-            }}
+            isDarkMode={isDarkMode}
+            variant={showCuratorTweak ? "primary" : "secondary"}
+            icon={<Edit3 size={16} />}
           >
-            <Edit3 size={16} />
             Small revisions in the dusk
-          </motion.button>
+          </ThemedButton>
           
-          <motion.button
+          <ThemedButton
             onClick={() => setShowShareOptions(true)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '12px 20px',
-              borderRadius: '25px',
-              background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
-              border: `1px solid ${colors.border}`,
-              color: colors.text,
-              cursor: 'pointer',
-              backdropFilter: 'blur(15px)',
-              fontFamily: "'Courier Prime', monospace",
-              fontSize: '0.9rem',
-              boxShadow: colors.shadow
-            }}
+            isDarkMode={isDarkMode}
+            variant="secondary"
+            icon={<Copy size={16} />}
           >
-            <Copy size={16} />
             Offer your spark
-          </motion.button>
+          </ThemedButton>
         </motion.div>
         
         <motion.div

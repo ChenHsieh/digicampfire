@@ -6,6 +6,7 @@ import Privacy from './components/Privacy';
 import About from './components/About';
 import BoltLogo from './components/BoltLogo';
 import NavigationBubble from './components/NavigationBubble';
+import { useTheme } from './hooks/useTheme';
 
 type AppState = 'landing' | 'display' | 'privacy' | 'about';
 
@@ -20,6 +21,8 @@ function App() {
   const [currentState, setCurrentState] = useState<AppState>('landing');
   const [currentPoem, setCurrentPoem] = useState<Poem | null>(null);
   const [isDarkMode, setIsDarkMode] = useState(true);
+  
+  const colors = useTheme(isDarkMode);
 
   const handlePoemComplete = (poem: Poem) => {
     setCurrentPoem(poem);

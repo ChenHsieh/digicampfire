@@ -1,6 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Flame, Heart, Sparkles, Users } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
+import ThemedButton from './ThemedButton';
 
 interface AboutProps {
   onNavigate: (page: 'landing' | 'display' | 'privacy' | 'about') => void;
@@ -8,33 +10,7 @@ interface AboutProps {
 }
 
 const About: React.FC<AboutProps> = ({ onNavigate, isDarkMode }) => {
-  const getThemeColors = () => {
-    if (isDarkMode) {
-      return {
-        primary: '#EA580C',
-        secondary: '#C2410C',
-        text: '#E5E5E5',
-        textSecondary: 'rgba(229, 229, 229, 0.7)',
-        background: 'rgba(229, 229, 229, 0.05)',
-        border: 'rgba(234, 88, 12, 0.3)',
-        shadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)',
-        glowShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(234, 88, 12, 0.1)'
-      };
-    } else {
-      return {
-        primary: '#C2410C',
-        secondary: '#EA580C',
-        text: '#1a1a1a',
-        textSecondary: 'rgba(26, 26, 26, 0.7)',
-        background: 'rgba(26, 26, 26, 0.05)',
-        border: 'rgba(194, 65, 12, 0.4)',
-        shadow: '0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(194, 65, 12, 0.2)',
-        glowShadow: '0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(194, 65, 12, 0.2)'
-      };
-    }
-  };
-
-  const colors = getThemeColors();
+  const colors = useTheme(isDarkMode);
 
   return (
     <div style={{
@@ -50,31 +26,18 @@ const About: React.FC<AboutProps> = ({ onNavigate, isDarkMode }) => {
         transition={{ duration: 0.8 }}
         style={{ maxWidth: '800px', width: '100%' }}
       >
-        <motion.button
+        <ThemedButton
           onClick={() => onNavigate('landing')}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+          isDarkMode={isDarkMode}
+          variant="outline"
+          icon={<ArrowLeft size={16} />}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            color: colors.primary,
-            fontSize: '0.9rem',
-            padding: '8px 16px',
-            borderRadius: '20px',
             marginBottom: '40px',
-            marginLeft: '80px', // Add left margin to avoid nav bubble overlap
-            background: colors.background,
-            border: `1px solid ${colors.border}`,
-            cursor: 'pointer',
-            backdropFilter: 'blur(15px)',
-            fontFamily: "'Courier Prime', monospace",
-            boxShadow: colors.shadow
+            marginLeft: '80px' // Add left margin to avoid nav bubble overlap
           }}
         >
-          <ArrowLeft size={16} />
           Back to campfire
-        </motion.button>
+        </ThemedButton>
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}

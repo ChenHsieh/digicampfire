@@ -4,6 +4,8 @@ import { ArrowLeft, ArrowRight, RefreshCw, ExternalLink } from 'lucide-react';
 import { fetchPoeticWhispersWithSources } from '../utils/rssParser';
 import { generateSkinnyPoem, generateAnchorWords } from '../utils/openai';
 import { generateRandomOrbColor, getRandomBaseAnchors } from '../utils/helpers';
+import { useTheme } from '../hooks/useTheme';
+import ThemedButton from './ThemedButton';
 
 const baseAnchorWords = [
   "breathe",
@@ -71,6 +73,8 @@ const Landing: React.FC<LandingProps> = ({ onComplete, onNavigate, isDarkMode })
   ]);
   const [loadingWhispers, setLoadingWhispers] = useState(false);
   const orbRef = useRef<HTMLDivElement>(null);
+
+  const colors = useTheme(isDarkMode);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -208,32 +212,6 @@ ${selectedWhisper}`;
     setIsOrbHovered(true);
     setOrbColor(generateRandomOrbColor());
   };
-
-  const getThemeColors = () => {
-    if (isDarkMode) {
-      return {
-        primary: '#EA580C',
-        secondary: '#C2410C',
-        text: '#E5E5E5',
-        textSecondary: 'rgba(229, 229, 229, 0.7)',
-        background: 'rgba(229, 229, 229, 0.05)',
-        border: 'rgba(234, 88, 12, 0.3)',
-        shadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)'
-      };
-    } else {
-      return {
-        primary: '#C2410C',
-        secondary: '#EA580C',
-        text: '#1a1a1a',
-        textSecondary: 'rgba(26, 26, 26, 0.7)',
-        background: 'rgba(26, 26, 26, 0.05)',
-        border: 'rgba(194, 65, 12, 0.4)',
-        shadow: '0 4px 16px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(194, 65, 12, 0.2)'
-      };
-    }
-  };
-
-  const colors = getThemeColors();
 
   const renderStep = () => {
     switch (currentStep) {
@@ -774,64 +752,25 @@ ${selectedWhisper}`;
           alignItems: 'center',
           marginTop: '40px'
         }}>
-          <motion.button
+          <ThemedButton
             onClick={handleBack}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              padding: '12px 20px',
-              borderRadius: '25px',
-              fontWeight: 500,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: colors.background,
-              color: colors.primary,
-              border: `1px solid ${colors.border}`,
-              cursor: 'pointer',
-              backdropFilter: 'blur(15px)',
-              opacity: currentStep === 1 ? 0.5 : 1,
-              pointerEvents: currentStep === 1 ? 'none' : 'auto',
-              fontFamily: "'Courier Prime', monospace",
-              boxShadow: colors.shadow
-            }}
+            isDarkMode={isDarkMode}
+            variant="outline"
+            disabled={currentStep === 1}
+            icon={<ArrowLeft size={16} />}
           >
-            <ArrowLeft size={16} />
             Back
-          </motion.button>
+          </ThemedButton>
           
-          <motion.button
+          <ThemedButton
             onClick={handleNext}
             disabled={!canProceed()}
-            whileHover={{ scale: canProceed() ? 1.05 : 1 }}
-            whileTap={{ scale: canProceed() ? 0.95 : 1 }}
-            style={{
-              padding: '12px 20px',
-              borderRadius: '25px',
-              fontWeight: 500,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              background: canProceed() ? 
-                `linear-gradient(135deg, ${isDarkMode ? '#2D2D37' : '#f1f5f9'} 0%, ${colors.primary} 100%)` : 
-                'rgba(100, 100, 100, 0.3)',
-              color: colors.text,
-              border: 'none',
-              cursor: canProceed() ? 'pointer' : 'not-allowed',
-              opacity: canProceed() ? 1 : 0.5,
-              boxShadow: canProceed() ? `0 4px 20px rgba(45, 45, 55, ${isDarkMode ? '0.4' : '0.2'}), 0 0 0 1px ${colors.border}` : 'none',
-              fontFamily: "'Courier Prime', monospace"
-            }}
+            isDarkMode={isDarkMode}
+            variant="primary"
+            icon={currentStep === 3 ? undefined : <ArrowRight size={16} />}
           >
-            {currentStep === 3 ? (
-              'Let the poem arrive'
-            ) : (
-              <>
-                Next
-                <ArrowRight size={16} />
-              </>
-            )}
-          </motion.button>
+            {currentStep === 3 ? 'Let the poem arrive' : 'Next'}
+          </ThemedButton>
         </div>
       </motion.div>
       
