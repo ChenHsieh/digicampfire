@@ -19,13 +19,15 @@ interface WhisperWithSource {
 
 export async function fetchGuardianHeadlines(): Promise<string[]> {
   try {
-    // Use corsproxy.io which works in both development and production
-    const response = await fetch('https://corsproxy.io/?https://www.theguardian.com/world/rss');
+    // Use a more reliable CORS proxy that works in production
+    const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.theguardian.com/world/rss'));
     if (!response.ok) {
       throw new Error('Failed to fetch RSS feed');
     }
     
-    const xmlText = await response.text();
+    const data = await response.json();
+    const xmlText = data.contents;
+    
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
     
@@ -59,14 +61,17 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
 
 export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSource[]> {
   try {
-    // Use corsproxy.io which works in both development and production
-    const response = await fetch('https://corsproxy.io/?https://www.theguardian.com/world/rss');
+    console.log('Fetching RSS feed...');
+    // Use a more reliable CORS proxy that works in production
+    const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.theguardian.com/world/rss'));
     
     if (!response.ok) {
       throw new Error('Failed to fetch RSS feed');
     }
     
-    const xmlText = await response.text();
+    const data = await response.json();
+    const xmlText = data.contents;
+    
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
     
