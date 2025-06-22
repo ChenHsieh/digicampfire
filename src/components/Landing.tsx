@@ -66,6 +66,7 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
     }
   ]);
   const [loadingWhispers, setLoadingWhispers] = useState(false);
+  const [whisperError, setWhisperError] = useState<string | null>(null);
   const orbRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -100,11 +101,16 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
 
   const loadWhispers = async () => {
     setLoadingWhispers(true);
+    setWhisperError(null);
     try {
+      console.log('Loading whispers...');
       const poeticWhispers = await fetchPoeticWhispersWithSources();
+      console.log('Loaded whispers:', poeticWhispers);
       setWhisperOptions(poeticWhispers);
     } catch (error) {
       console.error('Failed to load poetic whispers:', error);
+      setWhisperError('Unable to fetch fresh whispers. Using curated collection.');
+      // Keep the existing whisper options as fallback
     } finally {
       setLoadingWhispers(false);
     }
@@ -143,7 +149,9 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
     setIsGenerating(true);
     
     try {
+      console.log('Generating poem with:', { selectedWhisper, selectedAnchor, feeling });
       const generatedPoem = await generateSkinnyPoem(selectedWhisper, selectedAnchor, feeling);
+      console.log('Generated poem:', generatedPoem);
       
       onComplete({
         whisper: selectedWhisper,
@@ -153,7 +161,7 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
       });
     } catch (error) {
       console.error('Error generating poem:', error);
-      // Fallback poem
+      // Create a simple fallback poem
       const fallbackPoem = `${selectedWhisper}
 ${selectedAnchor}
 silence
@@ -246,6 +254,22 @@ ${selectedWhisper}`;
                 />
               </motion.button>
             </div>
+            
+            {whisperError && (
+              <div style={{
+                background: 'rgba(244, 194, 194, 0.2)',
+                border: '1px solid rgba(244, 194, 194, 0.4)',
+                borderRadius: '8px',
+                padding: '12px',
+                marginBottom: '20px',
+                fontSize: '0.9rem',
+                color: '#8B7DA1',
+                textAlign: 'center',
+                fontStyle: 'italic'
+              }}>
+                {whisperError}
+              </div>
+            )}
             
             {loadingWhispers ? (
               <div style={{
