@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, RefreshCw, ExternalLink } from 'lucide-react';
 import { fetchPoeticWhispersWithSources } from '../utils/rssParser';
 import { generateSkinnyPoem, generateAnchorWords } from '../utils/openai';
+import { generateRandomOrbColor, getRandomBaseAnchors } from '../utils/helpers';
 
 const baseAnchorWords = [
   "breathe",
@@ -48,6 +49,7 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [anchorWords, setAnchorWords] = useState(baseAnchorWords);
   const [loadingAnchors, setLoadingAnchors] = useState(false);
+  const [orbColor, setOrbColor] = useState(generateRandomOrbColor());
   const [whisperOptions, setWhisperOptions] = useState<WhisperWithSource[]>([
     {
       poetic: "The weight of unspoken words",
@@ -74,8 +76,9 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
         const rect = orbRef.current.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
-        const deltaX = (e.clientX - centerX) / 10;
-        const deltaY = (e.clientY - centerY) / 10;
+        // Reduced movement sensitivity from /10 to /30 for more subtle effect
+        const deltaX = (e.clientX - centerX) / 30;
+        const deltaY = (e.clientY - centerY) / 30;
         setMousePosition({ x: deltaX, y: deltaY });
       }
     };
@@ -117,9 +120,7 @@ const Landing: React.FC<LandingProps> = ({ onComplete }) => {
       setAnchorWords(newAnchors);
     } catch (error) {
       console.error('Failed to generate new anchor words:', error);
-      // Rotate through base words if generation fails
-      const shuffled = [...baseAnchorWords].sort(() => Math.random() - 0.5);
-      setAnchorWords(shuffled.slice(0, 6));
+      setAnchorWords(getRandomBaseAnchors());
     } finally {
       setLoadingAnchors(false);
     }
@@ -199,6 +200,11 @@ ${selectedWhisper}`;
         setCurrentStep(currentStep + 1);
       }
     }, 800);
+  };
+
+  const handleOrbHover = () => {
+    setIsOrbHovered(true);
+    setOrbColor(generateRandomOrbColor());
   };
 
   const renderStep = () => {
@@ -617,19 +623,19 @@ ${selectedWhisper}`;
         transition={{ duration: 0.8 }}
         style={{ maxWidth: '800px', width: '100%' }}
       >
-        {/* Responsive Campfire Orb */}
+        {/* Enhanced Campfire Orb with random colors and improved pulsing */}
         <div 
           ref={orbRef}
-          onMouseEnter={() => setIsOrbHovered(true)}
+          onMouseEnter={handleOrbHover}
           onMouseLeave={() => setIsOrbHovered(false)}
           style={{
             width: '160px',
             height: '160px',
             background: `
               radial-gradient(circle at 30% 30%, rgba(254, 254, 254, 0.9) 0%, transparent 30%),
-              radial-gradient(circle at 70% 70%, rgba(244, 194, 194, 0.7) 0%, transparent 50%),
-              radial-gradient(circle at 50% 50%, rgba(139, 125, 161, 0.6) 0%, transparent 70%),
-              linear-gradient(135deg, rgba(45, 45, 55, 0.8) 0%, rgba(139, 125, 161, 0.6) 50%, rgba(244, 194, 194, 0.5) 100%)
+              radial-gradient(circle at 70% 70%, ${orbColor.secondary} 0%, transparent 50%),
+              radial-gradient(circle at 50% 50%, ${orbColor.primary} 0%, transparent 70%),
+              linear-gradient(135deg, ${orbColor.dark} 0%, ${orbColor.primary} 50%, ${orbColor.secondary} 100%)
             `,
             borderRadius: '50%',
             margin: '0 auto 48px',
@@ -637,8 +643,8 @@ ${selectedWhisper}`;
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: `
-              0 0 60px rgba(139, 125, 161, ${isOrbHovered ? 0.6 : 0.4}),
-              0 0 120px rgba(244, 194, 194, ${isOrbHovered ? 0.4 : 0.2}),
+              0 0 60px ${orbColor.primary.replace('0.6', isOrbHovered ? '0.8' : '0.4')},
+              0 0 120px ${orbColor.secondary.replace('0.5', isOrbHovered ? '0.6' : '0.2')},
               inset 0 0 60px rgba(254, 254, 254, 0.1)
             `,
             transform: `translate(${mousePosition.x}px, ${mousePosition.y}px) scale(${isOrbHovered ? 1.1 : 1})`,
@@ -647,21 +653,42 @@ ${selectedWhisper}`;
             position: 'relative'
           }}
         >
-          {/* Inner flame effect */}
+          {/* Enhanced inner flame effect with stronger pulsing on hover */}
           <motion.div 
             animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.7, 0.3]
+              scale: isOrbHovered ? [1, 1.4, 1] : [1, 1.2, 1],
+              opacity: isOrbHovered ? [0.4, 0.9, 0.4] : [0.3, 0.7, 0.3]
             }}
             transition={{
-              duration: 2,
+              duration: isOrbHovered ? 1.5 : 2,
               repeat: Infinity,
               ease: "easeInOut"
             }}
             style={{
               width: '80px',
               height: '80px',
-              background: 'radial-gradient(circle, rgba(244, 194, 194, 0.8) 0%, transparent 70%)',
+              background: `radial-gradient(circle, ${orbColor.secondary.replace('0.5', '0.8')} 0%, transparent 70%)`,
+              borderRadius: '50%'
+            }} 
+          />
+          
+          {/* Additional pulsing layer for campfire effect */}
+          <motion.div 
+            animate={{
+              scale: isOrbHovered ? [1.2, 1.6, 1.2] : [1.1, 1.3, 1.1],
+              opacity: isOrbHovered ? [0.2, 0.5, 0.2] : [0.1, 0.3, 0.1]
+            }}
+            transition={{
+              duration: isOrbHovered ? 1.8 : 2.5,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.5
+            }}
+            style={{
+              position: 'absolute',
+              width: '120px',
+              height: '120px',
+              background: `radial-gradient(circle, ${orbColor.primary.replace('0.6', '0.4')} 0%, transparent 60%)`,
               borderRadius: '50%'
             }} 
           />
