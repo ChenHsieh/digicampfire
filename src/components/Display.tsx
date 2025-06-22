@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Share2, Edit3, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Edit3, Copy, Check, Download, Image } from 'lucide-react';
 import { validateSkinnyPoem } from '../utils/openai';
+import { generateRandomOrbColor } from '../utils/helpers';
 
 interface Poem {
   whisper: string;
@@ -24,6 +25,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
   const [currentPoem, setCurrentPoem] = useState(poem.text);
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [isGeneratingCard, setIsGeneratingCard] = useState(false);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   
   const lines = currentPoem.split('\n').filter(line => line.trim() !== '');
   
@@ -55,7 +58,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
   };
 
   const handleCopyToClipboard = async () => {
-    const shareText = `${currentPoem}\n\n— Created at Digital Campfire`;
+    const shareText = `${currentPoem}\n\n— Created at Digital Campfire\nCreate your own poem at: https://vibepoem.netlify.app/`;
     
     try {
       await navigator.clipboard.writeText(shareText);
@@ -75,10 +78,109 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
     }
   };
 
-  const handleShareViaEmail = () => {
-    const subject = encodeURIComponent('A poem from Digital Campfire');
-    const body = encodeURIComponent(`${currentPoem}\n\n— Created at Digital Campfire\n\nCreate your own poem at: ${window.location.origin}`);
-    window.open(`mailto:?subject=${subject}&body=${body}`);
+  const generatePictureCard = async () => {
+    setIsGeneratingCard(true);
+    
+    try {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      // Set canvas size for Instagram square format
+      canvas.width = 1080;
+      canvas.height = 1080;
+      
+      // Generate orb colors for background
+      const orbColor = generateRandomOrbColor();
+      
+      // Create gradient background
+      const gradient = ctx.createRadialGradient(540, 540, 0, 540, 540, 540);
+      gradient.addColorStop(0, orbColor.primary.replace('0.6', '0.8'));
+      gradient.addColorStop(0.5, orbColor.secondary.replace('0.5', '0.6'));
+      gradient.addColorStop(1, orbColor.dark.replace('0.8', '0.9'));
+      
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1080, 1080);
+      
+      // Add subtle texture overlay
+      ctx.globalAlpha = 0.1;
+      for (let i = 0; i < 1000; i++) {
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(Math.random() * 1080, Math.random() * 1080, Math.random() * 2, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      
+      // Add orb in center
+      const orbGradient = ctx.createRadialGradient(540, 300, 0, 540, 300, 120);
+      orbGradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+      orbGradient.addColorStop(0.3, orbColor.secondary.replace('0.5', '0.7'));
+      orbGradient.addColorStop(1, orbColor.primary.replace('0.6', '0.4'));
+      
+      ctx.fillStyle = orbGradient;
+      ctx.beginPath();
+      ctx.arc(540, 300, 120, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Add inner glow
+      ctx.globalAlpha = 0.6;
+      ctx.fillStyle = orbColor.secondary.replace('0.5', '0.8');
+      ctx.beginPath();
+      ctx.arc(540, 300, 60, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      
+      // Add poem text
+      ctx.fillStyle = '#ffffff';
+      ctx.textAlign = 'center';
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetY = 2;
+      
+      // Title
+      ctx.font = 'bold 32px serif';
+      ctx.fillText('Digital Campfire', 540, 500);
+      
+      // Poem lines
+      ctx.font = '28px serif';
+      const poemLines = currentPoem.split('\n').filter(line => line.trim() !== '');
+      const startY = 560;
+      const lineHeight = 36;
+      
+      poemLines.forEach((line, index) => {
+        const y = startY + (index * lineHeight);
+        if (y < 950) { // Ensure text doesn't go off canvas
+          ctx.fillText(line.trim(), 540, y);
+        }
+      });
+      
+      // Add website URL at bottom
+      ctx.font = '20px monospace';
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      ctx.fillText('vibepoem.netlify.app', 540, 1040);
+      
+      // Convert to blob and download
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'digital-campfire-poem.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
+      
+    } catch (error) {
+      console.error('Error generating picture card:', error);
+    } finally {
+      setIsGeneratingCard(false);
+    }
   };
 
   const getThemeColors = () => {
@@ -135,7 +237,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
             padding: '8px 16px',
             borderRadius: '20px',
             marginBottom: '40px',
-            marginLeft: '80px', // Add left margin to avoid nav bubble overlap
+            marginLeft: 'auto',
+            marginRight: 'auto',
             background: colors.background,
             border: `1px solid ${colors.border}`,
             cursor: 'pointer',
@@ -183,7 +286,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
           <h1 style={{
             fontSize: '1.8rem',
             textAlign: 'center',
-            marginBottom: '32px',
+            marginBottom: '16px',
             color: colors.text,
             fontWeight: 400,
             fontFamily: "'EB Garamond', serif"
@@ -191,13 +294,24 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
             Your Verse by the Fire
           </h1>
           
+          {/* Divider */}
+          <div style={{
+            width: '60px',
+            height: '2px',
+            background: `linear-gradient(90deg, transparent 0%, ${colors.primary} 50%, transparent 100%)`,
+            margin: '0 auto 32px',
+            borderRadius: '1px'
+          }} />
+          
           <div style={{
             fontSize: '1.2rem',
             lineHeight: 1.8,
             color: colors.text,
             whiteSpace: 'pre-wrap',
-            textAlign: 'center',
-            fontFamily: "'EB Garamond', serif"
+            textAlign: 'left', // Changed from center to left
+            fontFamily: "'EB Garamond', serif",
+            maxWidth: '500px',
+            margin: '0 auto'
           }}>
             {lines.map((line, index) => (
               <motion.div
@@ -282,7 +396,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
             <div style={{
               fontSize: '1.1rem',
               color: colors.text,
-              fontFamily: "'EB Garamond', serif",
+              fontFamily: "'EB Garamond', serif", // Changed to match whisper font
               fontStyle: 'italic'
             }}>
               {poem.anchor}
@@ -500,13 +614,14 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
                   }}
                 >
                   {copySuccess ? <Check size={18} /> : <Copy size={18} />}
-                  {copySuccess ? 'Copied to clipboard!' : 'Copy to clipboard'}
+                  {copySuccess ? 'Copied with link!' : 'Copy text with link'}
                 </motion.button>
                 
                 <motion.button
-                  onClick={handleShareViaEmail}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                  onClick={generatePictureCard}
+                  disabled={isGeneratingCard}
+                  whileHover={{ scale: isGeneratingCard ? 1 : 1.02 }}
+                  whileTap={{ scale: isGeneratingCard ? 1 : 0.98 }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
@@ -516,16 +631,18 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
                     background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.15)`,
                     border: `1px solid ${colors.border}`,
                     color: colors.text,
-                    cursor: 'pointer',
+                    cursor: isGeneratingCard ? 'not-allowed' : 'pointer',
                     fontFamily: "'Courier Prime', monospace",
                     fontSize: '0.95rem',
                     width: '100%',
                     justifyContent: 'flex-start',
-                    backdropFilter: 'blur(10px)'
+                    backdropFilter: 'blur(10px)',
+                    opacity: isGeneratingCard ? 0.7 : 1,
+                    transition: 'all 0.3s ease'
                   }}
                 >
-                  <Share2 size={18} />
-                  Share via email
+                  {isGeneratingCard ? <Download size={18} /> : <Image size={18} />}
+                  {isGeneratingCard ? 'Generating card...' : 'Download picture card'}
                 </motion.button>
               </div>
               
@@ -614,7 +731,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
               boxShadow: colors.shadow
             }}
           >
-            <Share2 size={16} />
+            <Copy size={16} />
             Offer your spark
           </motion.button>
         </motion.div>
@@ -635,6 +752,12 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
           </p>
         </motion.div>
       </div>
+      
+      {/* Hidden canvas for generating picture cards */}
+      <canvas
+        ref={canvasRef}
+        style={{ display: 'none' }}
+      />
       
       <style>{`
         @keyframes float {
