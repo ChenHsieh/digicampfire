@@ -105,6 +105,40 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
 }
 
 export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSource[]> {
+  // Define fallback options first
+  const fallbackOptions = [
+    {
+      poetic: "The weight of unspoken words",
+      headline: "Global tensions continue to shape international discourse",
+      link: "https://www.theguardian.com"
+    },
+    {
+      poetic: "A memory that refuses to fade", 
+      headline: "Historical events continue to influence modern society",
+      link: "https://www.theguardian.com"
+    },
+    {
+      poetic: "The space between what was and what could be",
+      headline: "Future possibilities emerge from current challenges",
+      link: "https://www.theguardian.com"
+    },
+    {
+      poetic: "Echoes of tomorrow's promise",
+      headline: "Innovation continues to reshape our daily lives",
+      link: "https://www.theguardian.com"
+    },
+    {
+      poetic: "The silence between heartbeats",
+      headline: "Personal stories emerge from global events",
+      link: "https://www.theguardian.com"
+    },
+    {
+      poetic: "Fragments of a changing world",
+      headline: "Social movements adapt to modern challenges",
+      link: "https://www.theguardian.com"
+    }
+  ];
+
   try {
     // Use a more reliable CORS proxy for production
     const corsProxies = [
@@ -116,28 +150,41 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
     let response: Response | null = null;
     let lastError: Error | null = null;
     
-    // Try different CORS proxies
+    // Try different CORS proxies with timeout
     for (const proxy of corsProxies) {
       try {
         const url = `${proxy}${encodeURIComponent('https://www.theguardian.com/world/rss')}`;
+        
+        // Add timeout to prevent hanging requests
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+        
         response = await fetch(url, {
           headers: {
             'Accept': 'application/rss+xml, application/xml, text/xml',
-          }
+          },
+          signal: controller.signal
         });
+        
+        clearTimeout(timeoutId);
         
         if (response.ok) {
           break;
         }
       } catch (error) {
         lastError = error as Error;
-        console.warn(`Failed to fetch with proxy ${proxy}:`, error);
+        // Only log detailed errors in development
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`Failed to fetch with proxy ${proxy}:`, error);
+        }
         continue;
       }
     }
     
     if (!response || !response.ok) {
-      throw lastError || new Error('All CORS proxies failed');
+      // Don't throw error, just use fallback
+      console.info('RSS feed unavailable, using curated whispers');
+      return getRandomFallbackWhispers(fallbackOptions);
     }
     
     let xmlText: string;
@@ -156,7 +203,8 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
     // Check for parsing errors
     const parserError = xmlDoc.querySelector('parsererror');
     if (parserError) {
-      throw new Error('XML parsing failed');
+      console.info('RSS parsing failed, using curated whispers');
+      return getRandomFallbackWhispers(fallbackOptions);
     }
     
     const items = xmlDoc.querySelectorAll('item');
@@ -180,7 +228,8 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
     console.log(`Found ${allItems.length} RSS items from The Guardian`);
     
     if (allItems.length === 0) {
-      throw new Error('No items found in RSS feed');
+      console.info('No RSS items found, using curated whispers');
+      return getRandomFallbackWhispers(fallbackOptions);
     }
     
     // Filter for today's articles (within last 24 hours) or use all if none from today
@@ -230,52 +279,23 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
       }
     }
     
-    console.log(`Generated ${whispers.length} whispers`);
+    console.log(`Generated ${whispers.length} whispers from live RSS feed`);
     return whispers;
   } catch (error) {
-    console.error('Error creating poetic whispers:', error);
-    // Fallback to static poetic phrases with random selection
-    const fallbackOptions = [
-      {
-        poetic: "The weight of unspoken words",
-        headline: "Global tensions continue to shape international discourse",
-        link: "https://www.theguardian.com"
-      },
-      {
-        poetic: "A memory that refuses to fade", 
-        headline: "Historical events continue to influence modern society",
-        link: "https://www.theguardian.com"
-      },
-      {
-        poetic: "The space between what was and what could be",
-        headline: "Future possibilities emerge from current challenges",
-        link: "https://www.theguardian.com"
-      },
-      {
-        poetic: "Echoes of tomorrow's promise",
-        headline: "Innovation continues to reshape our daily lives",
-        link: "https://www.theguardian.com"
-      },
-      {
-        poetic: "The silence between heartbeats",
-        headline: "Personal stories emerge from global events",
-        link: "https://www.theguardian.com"
-      },
-      {
-        poetic: "Fragments of a changing world",
-        headline: "Social movements adapt to modern challenges",
-        link: "https://www.theguardian.com"
-      }
-    ];
-    
-    // Randomly select 3 from fallback options using proper shuffling
-    const shuffled = [...fallbackOptions];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
-    return shuffled.slice(0, 3);
+    // Gracefully handle all errors by using fallback
+    console.info('RSS feed temporarily unavailable, using curated whispers');
+    return getRandomFallbackWhispers(fallbackOptions);
   }
+}
+
+function getRandomFallbackWhispers(fallbackOptions: WhisperWithSource[]): WhisperWithSource[] {
+  // Randomly select 3 from fallback options using proper shuffling
+  const shuffled = [...fallbackOptions];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled.slice(0, 3);
 }
 
 export async function fetchPoeticWhispers(): Promise<string[]> {
