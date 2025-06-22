@@ -8,38 +8,39 @@ export interface OrbColor {
 
 export function generateRandomOrbColor(): OrbColor {
   const colorPalettes = [
-    // Orange/Amber tones
+    // Bright orange tones
     {
-      primary: 'rgba(194, 65, 12, 0.6)',
+      primary: 'rgba(234, 88, 12, 0.6)',
       secondary: 'rgba(251, 146, 60, 0.5)',
       dark: 'rgba(124, 45, 18, 0.8)'
     },
     {
-      primary: 'rgba(217, 119, 6, 0.6)',
-      secondary: 'rgba(252, 176, 64, 0.5)',
-      dark: 'rgba(146, 64, 14, 0.8)'
+      primary: 'rgba(249, 115, 22, 0.6)',
+      secondary: 'rgba(253, 186, 116, 0.5)',
+      dark: 'rgba(154, 52, 18, 0.8)'
     },
-    // Dark green tones
+    // Vibrant green tones
     {
       primary: 'rgba(34, 197, 94, 0.6)',
       secondary: 'rgba(74, 222, 128, 0.5)',
       dark: 'rgba(20, 83, 45, 0.8)'
     },
     {
-      primary: 'rgba(22, 163, 74, 0.6)',
-      secondary: 'rgba(134, 239, 172, 0.5)',
-      dark: 'rgba(21, 128, 61, 0.8)'
+      primary: 'rgba(16, 185, 129, 0.6)',
+      secondary: 'rgba(110, 231, 183, 0.5)',
+      dark: 'rgba(6, 78, 59, 0.8)'
     },
-    // Mixed orange-green
+    // Warm amber-orange
     {
-      primary: 'rgba(194, 65, 12, 0.6)',
-      secondary: 'rgba(34, 197, 94, 0.5)',
-      dark: 'rgba(45, 45, 55, 0.8)'
+      primary: 'rgba(245, 158, 11, 0.6)',
+      secondary: 'rgba(252, 211, 77, 0.5)',
+      dark: 'rgba(146, 64, 14, 0.8)'
     },
+    // Forest green
     {
-      primary: 'rgba(34, 197, 94, 0.6)',
-      secondary: 'rgba(217, 119, 6, 0.5)',
-      dark: 'rgba(55, 65, 81, 0.8)'
+      primary: 'rgba(5, 150, 105, 0.6)',
+      secondary: 'rgba(52, 211, 153, 0.5)',
+      dark: 'rgba(4, 120, 87, 0.8)'
     }
   ];
 

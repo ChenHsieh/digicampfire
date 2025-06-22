@@ -9,22 +9,22 @@ interface NavigationProps {
 const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.5 }}
       style={{
         position: 'fixed',
-        bottom: '20px',
+        bottom: '16px',
         left: '50%',
         transform: 'translateX(-50%)',
         display: 'flex',
-        gap: '16px',
-        padding: '12px 20px',
-        background: 'rgba(229, 229, 229, 0.08)',
+        gap: '8px',
+        padding: '8px 16px',
+        background: 'rgba(229, 229, 229, 0.05)',
         backdropFilter: 'blur(20px)',
-        borderRadius: '25px',
-        border: '1px solid rgba(194, 65, 12, 0.2)',
-        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(194, 65, 12, 0.1)',
+        borderRadius: '20px',
+        border: '1px solid rgba(234, 88, 12, 0.15)',
+        boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.05)',
         zIndex: 100
       }}
     >
@@ -33,16 +33,17 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         style={{
-          padding: '6px 12px',
-          borderRadius: '15px',
-          background: currentPage === 'about' ? 'rgba(194, 65, 12, 0.2)' : 'transparent',
+          padding: '4px 10px',
+          borderRadius: '12px',
+          background: currentPage === 'about' ? 'rgba(234, 88, 12, 0.15)' : 'transparent',
           border: 'none',
-          color: currentPage === 'about' ? '#E5E5E5' : '#C2410C',
+          color: currentPage === 'about' ? '#E5E5E5' : 'rgba(234, 88, 12, 0.7)',
           cursor: 'pointer',
           fontFamily: "'Courier Prime', monospace",
-          fontSize: '0.8rem',
+          fontSize: '0.75rem',
           fontWeight: 500,
-          transition: 'all 0.2s ease'
+          transition: 'all 0.2s ease',
+          opacity: 0.8
         }}
       >
         About
@@ -53,16 +54,17 @@ const Navigation: React.FC<NavigationProps> = ({ currentPage, onNavigate }) => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         style={{
-          padding: '6px 12px',
-          borderRadius: '15px',
-          background: currentPage === 'privacy' ? 'rgba(194, 65, 12, 0.2)' : 'transparent',
+          padding: '4px 10px',
+          borderRadius: '12px',
+          background: currentPage === 'privacy' ? 'rgba(234, 88, 12, 0.15)' : 'transparent',
           border: 'none',
-          color: currentPage === 'privacy' ? '#E5E5E5' : '#C2410C',
+          color: currentPage === 'privacy' ? '#E5E5E5' : 'rgba(234, 88, 12, 0.7)',
           cursor: 'pointer',
           fontFamily: "'Courier Prime', monospace",
-          fontSize: '0.8rem',
+          fontSize: '0.75rem',
           fontWeight: 500,
-          transition: 'all 0.2s ease'
+          transition: 'all 0.2s ease',
+          opacity: 0.8
         }}
       >
         Privacy

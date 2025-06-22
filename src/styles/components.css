@@ -1,0 +1,188 @@
+/* Digital Campfire Component Styles */
+
+/* Orb Animation Keyframes */
+@keyframes float {
+  0%, 100% { 
+    transform: translateX(-50%) translateY(0px);
+    opacity: 0.6;
+  }
+  50% { 
+    transform: translateX(-50%) translateY(-10px);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { 
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.8;
+    transform: scale(1.1);
+  }
+}
+
+/* Campfire Orb Styles */
+.campfire-orb {
+  position: relative;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.campfire-orb:hover {
+  transform: scale(1.1);
+}
+
+.campfire-orb::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* Glass Morphism Effects */
+.glass-panel {
+  background: rgba(229, 229, 229, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(234, 88, 12, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(234, 88, 12, 0.1);
+}
+
+.glass-button {
+  background: rgba(229, 229, 229, 0.08);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(234, 88, 12, 0.3);
+  border-radius: 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1);
+  transition: all 0.3s ease;
+}
+
+.glass-button:hover {
+  background: rgba(234, 88, 12, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(234, 88, 12, 0.2);
+}
+
+/* Text Styles */
+.heading-primary {
+  font-family: 'EB Garamond', serif;
+  font-weight: 400;
+  color: var(--dark-text-primary);
+}
+
+.heading-secondary {
+  font-family: 'EB Garamond', serif;
+  font-weight: 500;
+  color: var(--dark-text-primary);
+}
+
+.body-text {
+  font-family: 'EB Garamond', serif;
+  color: var(--dark-text-primary);
+  line-height: 1.7;
+}
+
+.ui-text {
+  font-family: 'Courier Prime', monospace;
+  color: var(--dark-text-primary);
+}
+
+.accent-text {
+  color: var(--primary-orange);
+  font-style: italic;
+}
+
+/* Form Elements */
+.form-input {
+  background: rgba(229, 229, 229, 0.05);
+  border: 2px solid rgba(234, 88, 12, 0.3);
+  border-radius: 12px;
+  color: var(--dark-text-primary);
+  font-family: 'EB Garamond', serif;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--primary-orange);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(234, 88, 12, 0.3);
+}
+
+/* Navigation Styles */
+.navigation-footer {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+}
+
+.nav-button {
+  padding: 4px 10px;
+  border-radius: 12px;
+  border: none;
+  font-family: 'Courier Prime', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.nav-button.active {
+  background: rgba(234, 88, 12, 0.15);
+  color: var(--dark-text-primary);
+}
+
+.nav-button:not(.active) {
+  background: transparent;
+  color: rgba(234, 88, 12, 0.7);
+}
+
+.nav-button:hover {
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .glass-panel {
+    padding: 32px 24px;
+    margin: 0 16px;
+  }
+  
+  .heading-primary {
+    font-size: clamp(2rem, 5vw, 3rem);
+  }
+  
+  .campfire-orb {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .glass-panel {
+    padding: 24px 16px;
+    margin: 0 12px;
+  }
+  
+  .navigation-footer {
+    bottom: 12px;
+  }
+}

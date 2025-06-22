@@ -30,17 +30,17 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            color: '#C2410C',
+            color: '#EA580C',
             fontSize: '0.9rem',
             padding: '8px 16px',
             borderRadius: '20px',
             marginBottom: '40px',
             background: 'rgba(229, 229, 229, 0.08)',
-            border: '1px solid rgba(194, 65, 12, 0.3)',
+            border: '1px solid rgba(234, 88, 12, 0.3)',
             cursor: 'pointer',
             backdropFilter: 'blur(15px)',
             fontFamily: "'Courier Prime', monospace",
-            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(194, 65, 12, 0.1)'
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(234, 88, 12, 0.1)'
           }}
         >
           <ArrowLeft size={16} />
@@ -55,9 +55,9 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
             background: 'rgba(229, 229, 229, 0.05)',
             padding: '48px',
             borderRadius: '20px',
-            border: '1px solid rgba(194, 65, 12, 0.2)',
+            border: '1px solid rgba(234, 88, 12, 0.2)',
             backdropFilter: 'blur(20px)',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(194, 65, 12, 0.1)'
+            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(234, 88, 12, 0.1)'
           }}
         >
           <div style={{
@@ -66,7 +66,7 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
             gap: '16px',
             marginBottom: '32px'
           }}>
-            <Flame size={32} color="#C2410C" />
+            <Flame size={32} color="#EA580C" />
             <h1 style={{
               fontSize: '2.5rem',
               color: '#E5E5E5',
@@ -83,7 +83,7 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
             color: '#E5E5E5',
             fontFamily: "'EB Garamond', serif"
           }}>
-            <p style={{ marginBottom: '24px', fontStyle: 'italic', color: '#C2410C', fontSize: '1.2rem' }}>
+            <p style={{ marginBottom: '24px', fontStyle: 'italic', color: '#EA580C', fontSize: '1.2rem' }}>
               "A space for strangers to sit by and share one line of feeling"
             </p>
 
@@ -122,7 +122,7 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
                 gap: '12px',
                 marginBottom: '16px'
               }}>
-                <Sparkles size={20} color="#C2410C" />
+                <Sparkles size={20} color="#EA580C" />
                 <h2 style={{
                   fontSize: '1.4rem',
                   fontWeight: 500,
@@ -149,7 +149,7 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
                 textAlign: 'center',
                 marginTop: '16px'
               }}>
-                <div style={{ color: '#C2410C', marginBottom: '8px' }}>Example Structure:</div>
+                <div style={{ color: '#EA580C', marginBottom: '8px' }}>Example Structure:</div>
                 <div>The weight of unspoken words</div>
                 <div style={{ color: '#22C55E' }}>breathe</div>
                 <div>silence</div>
@@ -195,9 +195,9 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
 
             <div style={{
               padding: '24px',
-              background: 'rgba(194, 65, 12, 0.1)',
+              background: 'rgba(234, 88, 12, 0.1)',
               borderRadius: '12px',
-              border: '1px solid rgba(194, 65, 12, 0.3)',
+              border: '1px solid rgba(234, 88, 12, 0.3)',
               marginTop: '32px'
             }}>
               <h3 style={{
@@ -245,7 +245,7 @@ const About: React.FC<AboutProps> = ({ onNavigate }) => {
             <p style={{
               marginTop: '32px',
               fontSize: '0.9rem',
-              color: '#C2410C',
+              color: '#EA580C',
               fontStyle: 'italic',
               textAlign: 'center'
             }}>
