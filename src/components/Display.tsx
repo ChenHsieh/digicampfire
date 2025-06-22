@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Heart, Share2, Edit3, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Share2, Edit3, Copy, Check } from 'lucide-react';
 import { validateSkinnyPoem } from '../utils/openai';
 
 interface Poem {
@@ -77,12 +77,6 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
     const subject = encodeURIComponent('A poem from Digital Campfire');
     const body = encodeURIComponent(`${currentPoem}\n\n— Created at Digital Campfire\n\nCreate your own poem at: ${window.location.origin}`);
     window.open(`mailto:?subject=${subject}&body=${body}`);
-  };
-
-  const handleShareViaTwitter = () => {
-    const text = encodeURIComponent(`${currentPoem}\n\n— Created at Digital Campfire`);
-    const url = encodeURIComponent(window.location.origin);
-    window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`);
   };
 
   return (
@@ -318,7 +312,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
               fontFamily: "'EB Garamond', serif",
               fontWeight: 500
             }}>
-              Curator Tweak
+              Small Revisions in the Dusk
             </h3>
             <p style={{
               fontSize: '0.9rem',
@@ -473,30 +467,6 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                 </motion.button>
                 
                 <motion.button
-                  onClick={handleShareViaTwitter}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '16px 20px',
-                    borderRadius: '12px',
-                    background: 'rgba(29, 161, 242, 0.1)',
-                    border: '1px solid rgba(29, 161, 242, 0.3)',
-                    color: '#1DA1F2',
-                    cursor: 'pointer',
-                    fontFamily: "'Courier Prime', monospace",
-                    fontSize: '0.95rem',
-                    width: '100%',
-                    justifyContent: 'flex-start'
-                  }}
-                >
-                  <Share2 size={18} />
-                  Share on Twitter
-                </motion.button>
-                
-                <motion.button
                   onClick={handleShareViaEmail}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -557,28 +527,6 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           }}
         >
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '12px 20px',
-              borderRadius: '25px',
-              background: 'rgba(244, 194, 194, 0.2)',
-              border: '1px solid rgba(244, 194, 194, 0.4)',
-              color: '#2D2D37',
-              cursor: 'pointer',
-              backdropFilter: 'blur(10px)',
-              fontFamily: "'Courier Prime', monospace",
-              fontSize: '0.9rem'
-            }}
-          >
-            <Heart size={16} />
-            Keep this close
-          </motion.button>
-          
-          <motion.button
             onClick={() => {
               setShowCuratorTweak(!showCuratorTweak);
               if (!showCuratorTweak) {
@@ -603,7 +551,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             }}
           >
             <Edit3 size={16} />
-            Curator tweak
+            Small revisions in the dusk
           </motion.button>
           
           <motion.button
@@ -626,7 +574,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             }}
           >
             <Share2 size={16} />
-            Share with others
+            Offer your spark
           </motion.button>
         </motion.div>
         
