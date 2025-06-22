@@ -345,7 +345,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
               </div>
             </div>
           )}
-        </div>
+        </motion.div>
         
         {/* Curator Tweak Section */}
         {showCuratorTweak && (
