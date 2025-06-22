@@ -47,7 +47,9 @@ Guidelines:
 	•	Avoid full sentences. Use abstract, metaphor-rich noun phrases instead (e.g., "glass edge of tomorrow", "inheritance of the burning sky").
 	•	Steer clear of specific names, places, or temporal references.
 	•	Prioritize symbolic weight, emotional texture, and interpretive openness.
-	•	Imagine the phrase as the title of a surreal painting, or a whispered line from a dream.
+	•	Imagine the phrase as the title of a surreal painting, or a glance from a dream.
+  •	Avoid usage of 'whisper' if possible
+  • don't include quotation marks
 
 Example:
 Headline: "UN warns of irreversible climate tipping points"
