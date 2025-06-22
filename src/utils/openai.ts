@@ -1,11 +1,35 @@
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: import.meta.env.VITE_OPENAI_API_KEY,
-  dangerouslyAllowBrowser: true
-});
+// Check if we're in development mode
+const isDevelopment = import.meta.env.DEV;
+
+// Initialize OpenAI client with better error handling
+let openai: OpenAI | null = null;
+
+try {
+  const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+  
+  if (!apiKey) {
+    console.error('OpenAI API key not found in environment variables');
+    if (isDevelopment) {
+      console.warn('Running in development mode without OpenAI API key - using fallbacks');
+    }
+  } else {
+    openai = new OpenAI({
+      apiKey: apiKey,
+      dangerouslyAllowBrowser: true
+    });
+  }
+} catch (error) {
+  console.error('Failed to initialize OpenAI client:', error);
+}
 
 export async function transformHeadlineToPoetry(headline: string): Promise<string> {
+  if (!openai) {
+    console.warn('OpenAI client not available, using original headline');
+    return headline;
+  }
+
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -37,12 +61,17 @@ Poetic phrase: "the edge of unremembered heat"`
     return response.choices[0]?.message?.content?.trim() || headline;
   } catch (error) {
     console.error('Error transforming headline:', error);
-    // Fallback to original headline if API fails
     return headline;
   }
 }
 
 export async function generateAnchorWords(): Promise<string[]> {
+  if (!openai) {
+    console.warn('OpenAI client not available, using base anchor words');
+    const baseWords = ["breathe", "release", "become", "hold", "listen", "remember", "trust", "surrender", "witness", "forgive"];
+    return baseWords.sort(() => Math.random() - 0.5).slice(0, 6);
+  }
+
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -75,8 +104,8 @@ Return only the 6 words, one per line.`
     ];
   } catch (error) {
     console.error('Error generating anchor words:', error);
-    // Fallback to base words
-    return ["breathe", "release", "become", "hold", "listen", "remember"];
+    const baseWords = ["breathe", "release", "become", "hold", "listen", "remember", "trust", "surrender", "witness", "forgive"];
+    return baseWords.sort(() => Math.random() - 0.5).slice(0, 6);
   }
 }
 
@@ -124,6 +153,10 @@ export async function validateSkinnyPoem(poem: string, anchor: string): Promise<
 }
 
 export async function auditPoemQuality(poem: string): Promise<{ isGood: boolean; suggestion?: string }> {
+  if (!openai) {
+    return { isGood: true };
+  }
+
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -150,11 +183,15 @@ Reply with YES/NO and if NO, suggest one specific edit to improve coherence whil
     return { isGood, suggestion };
   } catch (error) {
     console.error('Error auditing poem quality:', error);
-    return { isGood: true }; // Default to accepting if audit fails
+    return { isGood: true };
   }
 }
 
 export async function enhancePoemSound(poem: string, anchor: string): Promise<string> {
+  if (!openai) {
+    return poem;
+  }
+
   try {
     const lines = poem.split('\n').filter(line => line.trim() !== '');
     if (lines.length !== 11) return poem;
@@ -195,7 +232,7 @@ Return only the 7 enhanced middle lines, one word per line.`
     // Validate each enhanced line is a single word
     for (const line of enhancedLines) {
       if (line.trim().split(/\s+/).length > 1) {
-        return poem; // Return original if any line has multiple words
+        return poem;
       }
     }
 
@@ -215,7 +252,14 @@ Return only the 7 enhanced middle lines, one word per line.`
 }
 
 export async function generateSkinnyPoem(whisper: string, anchor: string, feeling: string): Promise<string> {
+  if (!openai) {
+    console.warn('OpenAI client not available, using fallback poem generation');
+    return createFallbackSkinnyPoem(whisper, anchor, feeling);
+  }
+
   try {
+    console.log('Attempting to generate Skinny poem with OpenAI...');
+    
     const response = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
@@ -254,32 +298,53 @@ Return only the 11-line poem. No title, no explanation, no formatting.`
       temperature: 0.7
     });
 
-    let poem = response.choices[0]?.message?.content?.trim() || createFallbackSkinnyPoem(whisper, anchor, feeling);
+    let poem = response.choices[0]?.message?.content?.trim();
+    
+    if (!poem) {
+      console.warn('OpenAI returned empty response, using fallback');
+      return createFallbackSkinnyPoem(whisper, anchor, feeling);
+    }
+
+    console.log('Generated poem:', poem);
 
     // Validate the generated poem
     const validation = await validateSkinnyPoem(poem, anchor);
     if (!validation.isValid) {
       console.warn('Generated poem failed validation:', validation.issues);
+      console.warn('Using fallback poem instead');
       return createFallbackSkinnyPoem(whisper, anchor, feeling);
     }
 
+    console.log('Poem validation passed, returning generated poem');
     return poem;
 
   } catch (error) {
     console.error('Error generating Skinny poem:', error);
+    console.warn('Falling back to createFallbackSkinnyPoem due to error');
     return createFallbackSkinnyPoem(whisper, anchor, feeling);
   }
 }
 
 function createFallbackSkinnyPoem(whisper: string, anchor: string, feeling: string): string {
+  console.log('Creating fallback Skinny poem');
+  
+  // Create a more sophisticated fallback based on the feeling
+  const feelingWords = feeling ? feeling.toLowerCase().split(/\s+/).filter(word => word.length > 2) : [];
+  const emotionalWords = ['silence', 'shadow', 'light', 'echo', 'whisper', 'breath', 'memory', 'dream'];
+  
+  // Pick words that relate to the feeling or use emotional defaults
+  const word1 = feelingWords[0] || emotionalWords[Math.floor(Math.random() * emotionalWords.length)];
+  const word2 = feelingWords[1] || emotionalWords[Math.floor(Math.random() * emotionalWords.length)];
+  const word3 = feelingWords[2] || emotionalWords[Math.floor(Math.random() * emotionalWords.length)];
+  
   return `${whisper}
 ${anchor}
-silence
+${word1}
 holds
 what
 ${anchor}
 cannot
-say
+${word2}
 in
 ${anchor}
 ${whisper}`;
