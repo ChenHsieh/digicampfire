@@ -12,7 +12,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:production": "NODE_ENV=production npx vite build"
+    "build:production": "NODE_ENV=production npm run build"
   },
   "dependencies": {
     "lucide-react": "^0.344.0",
