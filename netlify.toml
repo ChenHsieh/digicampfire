@@ -33,7 +33,8 @@
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.openai.com https://api.allorigins.win https://corsproxy.io https://cors-anywhere.herokuapp.com https://www.theguardian.com;"
+    # Updated CSP to allow OpenAI API and CORS proxy
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.openai.com https://corsproxy.io https://www.theguardian.com;"
 
 [[headers]]
   for = "/assets/*"
@@ -43,3 +44,7 @@
 # Function timeout for edge functions if needed
 [functions]
   timeout = 30
+
+# Environment variables documentation
+# Set these in Netlify dashboard under Site settings > Environment variables:
+# VITE_OPENAI_API_KEY = your_openai_api_key_here

@@ -6,7 +6,7 @@ const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
 let openai: OpenAI | null = null;
 
 // Only initialize OpenAI if we have an API key
-if (apiKey && apiKey.trim() !== '') {
+if (apiKey && apiKey.trim() !== '' && apiKey !== 'undefined') {
   try {
     openai = new OpenAI({
       apiKey: apiKey,
@@ -14,24 +14,26 @@ if (apiKey && apiKey.trim() !== '') {
       timeout: 30000, // 30 second timeout
       maxRetries: 2
     });
-    console.log('OpenAI client initialized successfully');
+    console.log('✅ OpenAI client initialized successfully');
   } catch (error) {
-    console.error('Failed to initialize OpenAI client:', error);
+    console.error('❌ Failed to initialize OpenAI client:', error);
     openai = null;
   }
 } else {
-  console.warn('OpenAI API key not found - using fallback responses');
+  console.warn('⚠️ OpenAI API key not found or invalid - using fallback responses');
+  console.warn('Expected format: VITE_OPENAI_API_KEY=sk-...');
+  console.warn('Current value:', apiKey ? `${apiKey.substring(0, 10)}...` : 'undefined');
 }
 
 export async function transformHeadlineToPoetry(headline: string): Promise<string> {
   // If no OpenAI client, use a simple transformation
   if (!openai) {
-    console.log('No OpenAI client available, using simple transformation for:', headline);
+    console.log('🔄 No OpenAI client available, using simple transformation for:', headline);
     return createSimplePoetryTransformation(headline);
   }
 
   try {
-    console.log('Transforming headline with OpenAI:', headline);
+    console.log('🤖 Transforming headline with OpenAI:', headline);
     
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -61,10 +63,10 @@ Poetic phrase: "the edge of unremembered heat"`
     });
 
     const result = response.choices[0]?.message?.content?.trim() || createSimplePoetryTransformation(headline);
-    console.log('Transformed headline result:', result);
+    console.log('✨ Transformed headline result:', result);
     return result;
   } catch (error) {
-    console.warn('OpenAI transformation failed, using simple transformation:', error.message);
+    console.warn('⚠️ OpenAI transformation failed, using simple transformation:', error.message);
     return createSimplePoetryTransformation(headline);
   }
 }
@@ -105,13 +107,13 @@ function createSimplePoetryTransformation(headline: string): string {
 
 export async function generateAnchorWords(): Promise<string[]> {
   if (!openai) {
-    console.log('No OpenAI client available, using curated anchor words');
+    console.log('🔄 No OpenAI client available, using curated anchor words');
     const baseWords = ["breathe", "release", "become", "hold", "listen", "remember", "trust", "surrender", "witness", "forgive", "carry", "embrace"];
     return baseWords.sort(() => Math.random() - 0.5).slice(0, 6);
   }
 
   try {
-    console.log('Generating anchor words with OpenAI...');
+    console.log('🤖 Generating anchor words with OpenAI...');
     
     const response = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
@@ -139,7 +141,7 @@ Return only the 6 words, one per line.`
     });
 
     const words = response.choices[0]?.message?.content?.trim().split('\n').filter(word => word.trim()) || [];
-    console.log('Generated anchor words:', words);
+    console.log('✨ Generated anchor words:', words);
     
     if (words.length >= 6) {
       return words.slice(0, 6);
@@ -149,7 +151,7 @@ Return only the 6 words, one per line.`
       return baseWords;
     }
   } catch (error) {
-    console.warn('OpenAI anchor generation failed, using curated words:', error.message);
+    console.warn('⚠️ OpenAI anchor generation failed, using curated words:', error.message);
     const baseWords = ["breathe", "release", "become", "hold", "listen", "remember", "trust", "surrender", "witness", "forgive"];
     return baseWords.sort(() => Math.random() - 0.5).slice(0, 6);
   }
@@ -200,15 +202,15 @@ export async function validateSkinnyPoem(poem: string, anchor: string): Promise<
 
 export async function generateSkinnyPoem(whisper: string, anchor: string, feeling: string): Promise<string> {
   if (!openai) {
-    console.log('No OpenAI client available, creating enhanced fallback poem');
+    console.log('🔄 No OpenAI client available, creating enhanced fallback poem');
     return createEnhancedFallbackSkinnyPoem(whisper, anchor, feeling);
   }
 
   try {
-    console.log('Generating Skinny poem with OpenAI...');
-    console.log('Whisper:', whisper);
-    console.log('Anchor:', anchor);
-    console.log('Feeling:', feeling);
+    console.log('🤖 Generating Skinny poem with OpenAI...');
+    console.log('📝 Whisper:', whisper);
+    console.log('⚓ Anchor:', anchor);
+    console.log('💭 Feeling:', feeling);
     
     const response = await openai.chat.completions.create({
       model: "gpt-4",
@@ -254,11 +256,11 @@ Return only the 11-line poem. No title, no explanation, no formatting.`
     let poem = response.choices[0]?.message?.content?.trim();
     
     if (!poem) {
-      console.warn('OpenAI returned empty response, using enhanced fallback');
+      console.warn('⚠️ OpenAI returned empty response, using enhanced fallback');
       return createEnhancedFallbackSkinnyPoem(whisper, anchor, feeling);
     }
 
-    console.log('Generated poem from OpenAI:', poem);
+    console.log('✨ Generated poem from OpenAI:', poem);
 
     // Clean up the poem - remove any extra formatting
     poem = poem.replace(/```/g, '').replace(/^\d+\.\s*/gm, '').trim();
@@ -266,8 +268,8 @@ Return only the 11-line poem. No title, no explanation, no formatting.`
     // Validate the generated poem
     const validation = await validateSkinnyPoem(poem, anchor);
     if (!validation.isValid) {
-      console.warn('Generated poem failed validation:', validation.issues);
-      console.warn('Poem that failed:', poem);
+      console.warn('⚠️ Generated poem failed validation:', validation.issues);
+      console.warn('📝 Poem that failed:', poem);
       
       // Try to fix common issues
       const lines = poem.split('\n').filter(line => line.trim() !== '');
@@ -282,26 +284,27 @@ Return only the 11-line poem. No title, no explanation, no formatting.`
         const revalidation = await validateSkinnyPoem(fixedPoem, anchor);
         
         if (revalidation.isValid) {
-          console.log('Fixed poem validation issues, using corrected version');
+          console.log('✅ Fixed poem validation issues, using corrected version');
           return fixedPoem;
         }
       }
       
-      console.warn('Could not fix validation issues, using enhanced fallback poem');
+      console.warn('❌ Could not fix validation issues, using enhanced fallback poem');
       return createEnhancedFallbackSkinnyPoem(whisper, anchor, feeling);
     }
 
-    console.log('Poem validation passed, returning generated poem');
+    console.log('✅ Poem validation passed, returning generated poem');
     return poem;
 
   } catch (error) {
-    console.warn('OpenAI poem generation failed, using enhanced fallback:', error.message);
+    console.warn('⚠️ OpenAI poem generation failed, using enhanced fallback:', error.message);
+    console.warn('🔍 Error details:', error);
     return createEnhancedFallbackSkinnyPoem(whisper, anchor, feeling);
   }
 }
 
 function createEnhancedFallbackSkinnyPoem(whisper: string, anchor: string, feeling: string): string {
-  console.log('Creating enhanced fallback Skinny poem');
+  console.log('🔄 Creating enhanced fallback Skinny poem');
   
   // Create a more sophisticated fallback based on the feeling and whisper
   const feelingWords = feeling ? feeling.toLowerCase().split(/\s+/).filter(word => word.length > 2) : [];
