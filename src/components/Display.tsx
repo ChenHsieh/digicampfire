@@ -778,7 +778,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
           }}>
             Thank you for sharing your light with us
           </p>
-        </div>
+        </motion.div>
       </div>
       
       {/* Hidden canvas for generating picture cards */}
