@@ -8,7 +8,7 @@ export default defineConfig({
     exclude: ['lucide-react'],
   },
   build: {
-    // Ensure environment variables are properly handled in production
+    // Production optimizations
     rollupOptions: {
       output: {
         manualChunks: {
@@ -20,12 +20,28 @@ export default defineConfig({
     },
     // Increase chunk size warning limit
     chunkSizeWarningLimit: 1000,
-    // Ensure source maps are generated for debugging
-    sourcemap: true
+    // Generate source maps for debugging production issues
+    sourcemap: true,
+    // Optimize for production
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: false, // Keep console logs for debugging
+        drop_debugger: true
+      }
+    }
   },
-  // Define environment variables that should be available
+  // Environment variable handling
   define: {
-    // Ensure NODE_ENV is properly set
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production')
+  },
+  // Production server configuration
+  server: {
+    port: 5173,
+    host: true
+  },
+  preview: {
+    port: 4173,
+    host: true
   }
 });

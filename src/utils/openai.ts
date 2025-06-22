@@ -1,9 +1,6 @@
 import OpenAI from 'openai';
 
-// Check if we're in development mode
-const isDevelopment = import.meta.env.DEV;
-
-// Initialize OpenAI client with better error handling
+// Initialize OpenAI client with better error handling for production
 let openai: OpenAI | null = null;
 
 try {
@@ -11,13 +8,13 @@ try {
   
   if (!apiKey) {
     console.error('OpenAI API key not found in environment variables');
-    if (isDevelopment) {
-      console.warn('Running in development mode without OpenAI API key - using fallbacks');
-    }
   } else {
     openai = new OpenAI({
       apiKey: apiKey,
-      dangerouslyAllowBrowser: true
+      dangerouslyAllowBrowser: true,
+      // Add timeout and retry configuration for production
+      timeout: 30000, // 30 second timeout
+      maxRetries: 2
     });
   }
 } catch (error) {
@@ -258,7 +255,10 @@ export async function generateSkinnyPoem(whisper: string, anchor: string, feelin
   }
 
   try {
-    console.log('Attempting to generate Skinny poem with OpenAI...');
+    console.log('Generating Skinny poem with OpenAI...');
+    console.log('Whisper:', whisper);
+    console.log('Anchor:', anchor);
+    console.log('Feeling:', feeling);
     
     const response = await openai.chat.completions.create({
       model: "gpt-4",
@@ -295,7 +295,11 @@ Return only the 11-line poem. No title, no explanation, no formatting.`
         }
       ],
       max_tokens: 200,
-      temperature: 0.7
+      temperature: 0.7,
+      // Add production-specific settings
+      top_p: 0.9,
+      frequency_penalty: 0.1,
+      presence_penalty: 0.1
     });
 
     let poem = response.choices[0]?.message?.content?.trim();
@@ -305,13 +309,36 @@ Return only the 11-line poem. No title, no explanation, no formatting.`
       return createFallbackSkinnyPoem(whisper, anchor, feeling);
     }
 
-    console.log('Generated poem:', poem);
+    console.log('Generated poem from OpenAI:', poem);
+
+    // Clean up the poem - remove any extra formatting
+    poem = poem.replace(/```/g, '').replace(/^\d+\.\s*/gm, '').trim();
 
     // Validate the generated poem
     const validation = await validateSkinnyPoem(poem, anchor);
     if (!validation.isValid) {
       console.warn('Generated poem failed validation:', validation.issues);
-      console.warn('Using fallback poem instead');
+      console.warn('Poem that failed:', poem);
+      
+      // Try to fix common issues
+      const lines = poem.split('\n').filter(line => line.trim() !== '');
+      
+      // If we have the right number of lines but anchor positions are wrong, try to fix
+      if (lines.length === 11) {
+        lines[1] = anchor; // Line 2
+        lines[5] = anchor; // Line 6  
+        lines[9] = anchor; // Line 10
+        
+        const fixedPoem = lines.join('\n');
+        const revalidation = await validateSkinnyPoem(fixedPoem, anchor);
+        
+        if (revalidation.isValid) {
+          console.log('Fixed poem validation issues, using corrected version');
+          return fixedPoem;
+        }
+      }
+      
+      console.warn('Could not fix validation issues, using fallback poem');
       return createFallbackSkinnyPoem(whisper, anchor, feeling);
     }
 
@@ -320,6 +347,11 @@ Return only the 11-line poem. No title, no explanation, no formatting.`
 
   } catch (error) {
     console.error('Error generating Skinny poem:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
     console.warn('Falling back to createFallbackSkinnyPoem due to error');
     return createFallbackSkinnyPoem(whisper, anchor, feeling);
   }
