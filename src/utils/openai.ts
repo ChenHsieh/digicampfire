@@ -1,5 +1,8 @@
 import OpenAI from 'openai';
 import { createFallbackSkinnyPoem } from './helpers';
+import { HEADLINE_TRANSFORM_PROMPT } from '../prompts/headlineTransform';
+import { ANCHOR_GENERATION_PROMPT } from '../prompts/anchorGeneration';
+import { POEM_GENERATION_PROMPT } from '../prompts/poemGeneration';
 
 const openai = new OpenAI({
   apiKey: import.meta.env.VITE_OPENAI_API_KEY,
@@ -13,20 +16,7 @@ export async function transformHeadlineToPoetry(headline: string): Promise<strin
       messages: [
         {
           role: "system",
-          content: `You are a poetic summarizer. Transform the given news headline into a short, emotionally ambiguous noun phrase (max 7 words). This phrase should be poetic, symbolic, and open-ended—suitable to serve as both the first and last line of a Skinny poem.
-
-Guidelines:
-• Do NOT summarize literally
-• Avoid full sentences. Use abstract, metaphor-rich noun phrases instead
-• Steer clear of specific names, places, or temporal references
-• Prioritize symbolic weight, emotional texture, and interpretive openness
-• Imagine the phrase as the title of a surreal painting
-• try to use words other than "whispers", "shadow"
-• don't include any quotation marks
-
-Example:
-Headline: "UN warns of irreversible climate tipping points"
-Poetic phrase: "the edge of unremembered heat"`
+          content: HEADLINE_TRANSFORM_PROMPT
         },
         {
           role: "user",
@@ -74,16 +64,7 @@ export async function generateAnchorWords(): Promise<string[]> {
       messages: [
         {
           role: "system",
-          content: `Generate 6 powerful, single-word verbs that could serve as anchor words in poetry. These should be:
-- Action words that can be repeated meaningfully
-- Emotionally resonant
-- Simple but profound
-- Suitable for contemplative poetry
-- One word each, lowercase
-
-Examples: breathe, release, become, hold, listen, remember
-
-Return only the 6 words, one per line.`
+          content: ANCHOR_GENERATION_PROMPT
         },
         {
           role: "user",
@@ -159,25 +140,7 @@ export async function generateSkinnyPoem(whisper: string, anchor: string, feelin
       messages: [
         {
           role: "system",
-          content: `You are a master of Skinny poetry. Create a Skinny poem following this EXACT structure:
-
-STRUCTURE REQUIREMENTS:
-- Line 1: "${whisper}" (exactly as given)
-- Line 2: "${anchor}" (exactly as given)
-- Lines 3-5: Single words only
-- Line 6: "${anchor}" (exactly as given)
-- Lines 7-9: Single words only  
-- Line 10: "${anchor}" (exactly as given)
-- Line 11: "${whisper}" (exactly as given, or slight variation using same words)
-
-CONTENT GOALS:
-- Reflect the user's feeling: "${feeling}"
-- Make the anchor word feel meaningful through repetition
-- Build around a single emotional moment or image
-- Use precise, grounded language
-- Create emotional resonance through rhythm and repetition
-
-Return ONLY the 11-line poem. No explanations, no formatting, no extra text.`
+          content: POEM_GENERATION_PROMPT(whisper, anchor, feeling)
         },
         {
           role: "user",

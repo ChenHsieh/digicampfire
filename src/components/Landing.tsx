@@ -222,7 +222,7 @@ ${selectedWhisper}`;
               <h2 style={{
                 fontSize: '1.5rem',
                 textAlign: 'center',
-                color: '#2D2D37',
+                color: '#E5E5E5',
                 fontFamily: "'EB Garamond', serif",
                 fontWeight: 400
               }}>
@@ -236,11 +236,12 @@ ${selectedWhisper}`;
                 style={{
                   padding: '8px',
                   borderRadius: '50%',
-                  background: 'rgba(254, 254, 254, 0.8)',
-                  border: '1px solid rgba(139, 125, 161, 0.2)',
+                  background: 'rgba(229, 229, 229, 0.1)',
+                  border: '1px solid rgba(139, 125, 161, 0.3)',
                   cursor: loadingWhispers ? 'not-allowed' : 'pointer',
                   opacity: loadingWhispers ? 0.5 : 1,
-                  backdropFilter: 'blur(10px)'
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
                 }}
               >
                 <RefreshCw 
@@ -280,9 +281,9 @@ ${selectedWhisper}`;
                     whileHover={{ scale: 1.01, y: -2 }}
                     animate={selectedWhisper === whisper.poetic ? {
                       background: [
-                        'rgba(244, 194, 194, 0.2)',
-                        'rgba(244, 194, 194, 0.4)',
-                        'rgba(244, 194, 194, 0.2)'
+                        'rgba(244, 194, 194, 0.15)',
+                        'rgba(244, 194, 194, 0.25)',
+                        'rgba(244, 194, 194, 0.15)'
                       ]
                     } : {}}
                     transition={{ 
@@ -292,16 +293,16 @@ ${selectedWhisper}`;
                     onClick={() => handleSelection(whisper.poetic, 'whisper')}
                     style={{
                       padding: '28px 32px',
-                      border: `2px solid ${selectedWhisper === whisper.poetic ? '#8B7DA1' : 'rgba(139, 125, 161, 0.2)'}`,
+                      border: `2px solid ${selectedWhisper === whisper.poetic ? '#8B7DA1' : 'rgba(139, 125, 161, 0.3)'}`,
                       borderRadius: '16px',
                       background: selectedWhisper === whisper.poetic ? 
-                        'rgba(244, 194, 194, 0.15)' : 
-                        'rgba(254, 254, 254, 0.8)',
+                        'rgba(244, 194, 194, 0.1)' : 
+                        'rgba(229, 229, 229, 0.05)',
                       cursor: 'pointer',
                       boxShadow: selectedWhisper === whisper.poetic ? 
-                        '0 8px 32px rgba(139, 125, 161, 0.2)' : 
-                        '0 4px 16px rgba(45, 45, 55, 0.08)',
-                      backdropFilter: 'blur(10px)',
+                        '0 8px 32px rgba(139, 125, 161, 0.3), 0 0 0 1px rgba(139, 125, 161, 0.1)' : 
+                        '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(139, 125, 161, 0.1)',
+                      backdropFilter: 'blur(15px)',
                       transition: 'all 0.3s ease'
                     }}
                   >
@@ -309,7 +310,7 @@ ${selectedWhisper}`;
                     <div style={{
                       fontFamily: "'EB Garamond', serif",
                       fontSize: '1.4rem',
-                      color: '#2D2D37',
+                      color: '#E5E5E5',
                       lineHeight: 1.4,
                       fontWeight: 500,
                       textAlign: 'center',
@@ -320,7 +321,7 @@ ${selectedWhisper}`;
                     
                     {/* Source headline with link */}
                     <div style={{
-                      borderTop: '1px solid rgba(139, 125, 161, 0.15)',
+                      borderTop: '1px solid rgba(139, 125, 161, 0.2)',
                       paddingTop: '16px',
                       display: 'flex',
                       alignItems: 'center',
@@ -349,8 +350,8 @@ ${selectedWhisper}`;
                           gap: '4px',
                           padding: '6px 12px',
                           borderRadius: '20px',
-                          background: 'rgba(139, 125, 161, 0.1)',
-                          border: '1px solid rgba(139, 125, 161, 0.2)',
+                          background: 'rgba(139, 125, 161, 0.15)',
+                          border: '1px solid rgba(139, 125, 161, 0.3)',
                           color: '#8B7DA1',
                           textDecoration: 'none',
                           fontSize: '0.75rem',
@@ -360,11 +361,11 @@ ${selectedWhisper}`;
                           flexShrink: 0
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'rgba(139, 125, 161, 0.2)';
-                          e.currentTarget.style.color = '#2D2D37';
+                          e.currentTarget.style.background = 'rgba(139, 125, 161, 0.25)';
+                          e.currentTarget.style.color = '#E5E5E5';
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'rgba(139, 125, 161, 0.1)';
+                          e.currentTarget.style.background = 'rgba(139, 125, 161, 0.15)';
                           e.currentTarget.style.color = '#8B7DA1';
                         }}
                       >
@@ -392,7 +393,7 @@ ${selectedWhisper}`;
               <h2 style={{
                 fontSize: '1.5rem',
                 textAlign: 'center',
-                color: '#2D2D37',
+                color: '#E5E5E5',
                 fontFamily: "'EB Garamond', serif",
                 fontWeight: 400
               }}>
@@ -406,11 +407,12 @@ ${selectedWhisper}`;
                 style={{
                   padding: '8px',
                   borderRadius: '50%',
-                  background: 'rgba(254, 254, 254, 0.8)',
-                  border: '1px solid rgba(139, 125, 161, 0.2)',
+                  background: 'rgba(229, 229, 229, 0.1)',
+                  border: '1px solid rgba(139, 125, 161, 0.3)',
                   cursor: loadingAnchors ? 'not-allowed' : 'pointer',
                   opacity: loadingAnchors ? 0.5 : 1,
-                  backdropFilter: 'blur(10px)'
+                  backdropFilter: 'blur(10px)',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.3)'
                 }}
               >
                 <RefreshCw 
@@ -450,21 +452,21 @@ ${selectedWhisper}`;
                   }}
                   style={{
                     padding: '16px 24px',
-                    border: `3px solid ${selectedAnchor === word ? '#2D2D37' : 'rgba(45, 45, 55, 0.2)'}`,
+                    border: `3px solid ${selectedAnchor === word ? '#E5E5E5' : 'rgba(139, 125, 161, 0.4)'}`,
                     borderRadius: '50px',
                     background: selectedAnchor === word ? 
-                      'rgba(139, 125, 161, 0.15)' : 
-                      'rgba(254, 254, 254, 0.9)',
+                      'rgba(139, 125, 161, 0.2)' : 
+                      'rgba(229, 229, 229, 0.08)',
                     cursor: 'pointer',
                     boxShadow: selectedAnchor === word ? 
-                      '0 8px 24px rgba(45, 45, 55, 0.2)' : 
-                      '0 4px 12px rgba(45, 45, 55, 0.1)',
-                    backdropFilter: 'blur(10px)',
+                      '0 8px 24px rgba(139, 125, 161, 0.4), 0 0 0 1px rgba(139, 125, 161, 0.2)' : 
+                      '0 4px 12px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(139, 125, 161, 0.1)',
+                    backdropFilter: 'blur(15px)',
                     transition: 'all 0.3s ease',
                     fontFamily: "'Courier Prime', monospace",
                     fontSize: '1rem',
                     fontWeight: 600,
-                    color: '#2D2D37',
+                    color: '#E5E5E5',
                     textTransform: 'lowercase'
                   }}
                 >
@@ -488,7 +490,7 @@ ${selectedWhisper}`;
               fontSize: '1.5rem',
               marginBottom: '24px',
               textAlign: 'center',
-              color: '#2D2D37',
+              color: '#E5E5E5',
               fontFamily: "'EB Garamond', serif",
               fontWeight: 400
             }}>
@@ -513,23 +515,26 @@ ${selectedWhisper}`;
                   width: '100%',
                   minHeight: '120px',
                   padding: '24px',
-                  border: '2px solid rgba(139, 125, 161, 0.2)',
+                  border: '2px solid rgba(139, 125, 161, 0.3)',
                   borderRadius: '12px',
                   fontSize: '1.1rem',
                   lineHeight: 1.6,
                   resize: 'vertical',
-                  background: 'rgba(254, 254, 254, 0.9)',
+                  background: 'rgba(229, 229, 229, 0.05)',
                   fontFamily: "'EB Garamond', serif",
-                  backdropFilter: 'blur(10px)',
-                  color: '#2D2D37',
+                  backdropFilter: 'blur(15px)',
+                  color: '#E5E5E5',
                   outline: 'none',
-                  transition: 'border-color 0.3s ease'
+                  transition: 'border-color 0.3s ease',
+                  boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(139, 125, 161, 0.1)'
                 }}
                 onFocus={(e) => {
                   e.target.style.borderColor = '#8B7DA1';
+                  e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(139, 125, 161, 0.3)';
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = 'rgba(139, 125, 161, 0.2)';
+                  e.target.style.borderColor = 'rgba(139, 125, 161, 0.3)';
+                  e.target.style.boxShadow = '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(139, 125, 161, 0.1)';
                 }}
               />
               
@@ -591,14 +596,14 @@ ${selectedWhisper}`;
             marginBottom: '24px',
             width: '48px',
             height: '48px',
-            border: '3px solid rgba(139, 125, 161, 0.2)',
+            border: '3px solid rgba(139, 125, 161, 0.3)',
             borderTop: '3px solid #8B7DA1',
             borderRadius: '50%'
           }}
         />
         <p style={{
           fontSize: '1.2rem',
-          color: '#2D2D37',
+          color: '#E5E5E5',
           fontFamily: "'EB Garamond', serif",
           textAlign: 'center'
         }}>
@@ -697,7 +702,7 @@ ${selectedWhisper}`;
         <h1 style={{
           fontSize: 'clamp(2.5rem, 5vw, 4rem)',
           marginBottom: '16px',
-          color: '#2D2D37',
+          color: '#E5E5E5',
           fontWeight: 400,
           fontFamily: "'EB Garamond', serif",
           textAlign: 'center'
@@ -762,14 +767,15 @@ ${selectedWhisper}`;
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              background: 'rgba(254, 254, 254, 0.8)',
+              background: 'rgba(229, 229, 229, 0.08)',
               color: '#8B7DA1',
-              border: '1px solid rgba(139, 125, 161, 0.2)',
+              border: '1px solid rgba(139, 125, 161, 0.3)',
               cursor: 'pointer',
-              backdropFilter: 'blur(10px)',
+              backdropFilter: 'blur(15px)',
               opacity: currentStep === 1 ? 0.5 : 1,
               pointerEvents: currentStep === 1 ? 'none' : 'auto',
-              fontFamily: "'Courier Prime', monospace"
+              fontFamily: "'Courier Prime', monospace",
+              boxShadow: '0 4px 16px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(139, 125, 161, 0.1)'
             }}
           >
             <ArrowLeft size={16} />
@@ -790,12 +796,12 @@ ${selectedWhisper}`;
               gap: '8px',
               background: canProceed() ? 
                 'linear-gradient(135deg, #2D2D37 0%, #8B7DA1 100%)' : 
-                'rgba(200, 200, 200, 0.5)',
-              color: '#FEFEFE',
+                'rgba(100, 100, 100, 0.3)',
+              color: '#E5E5E5',
               border: 'none',
               cursor: canProceed() ? 'pointer' : 'not-allowed',
               opacity: canProceed() ? 1 : 0.5,
-              boxShadow: canProceed() ? '0 4px 20px rgba(45, 45, 55, 0.3)' : 'none',
+              boxShadow: canProceed() ? '0 4px 20px rgba(45, 45, 55, 0.4), 0 0 0 1px rgba(139, 125, 161, 0.2)' : 'none',
               fontFamily: "'Courier Prime', monospace"
             }}
           >
