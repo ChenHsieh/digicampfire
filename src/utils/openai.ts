@@ -7,7 +7,7 @@ const openai = new OpenAI({
 
 export async function transformHeadlineToPoetry(headline: string): Promise<string> {
   try {
-    const response = await openai.chat.completions.create({
+    const response = await openai.responses.create({
       model: "gpt-4o",
       input: `You are a poetic summarizer. I will give you a news headline. Your task is to transform it into a short, emotionally ambiguous noun phrase (max 7 words). This phrase should be poetic, symbolic, and open-ended—suitable to serve as both the first and last line of a Skinny poem.
 
