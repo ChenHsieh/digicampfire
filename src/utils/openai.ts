@@ -21,7 +21,7 @@ Guidelines:
 • Steer clear of specific names, places, or temporal references
 • Prioritize symbolic weight, emotional texture, and interpretive openness
 • Imagine the phrase as the title of a surreal painting
-• avoid "whispers"
+• try to use words other than "whispers", "shadow"
 • don't include any quotation marks
 
 Example:
