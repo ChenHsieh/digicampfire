@@ -215,42 +215,31 @@ Return only the 7 enhanced middle lines, one word per line.`
 
 export async function generateSkinnyPoem(whisper: string, anchor: string, feeling: string): Promise<string> {
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-4",
-      messages: [
-        {
-          role: "system",
-          content: `You are writing a Skinny poem with EXACT structure requirements:
-
-STRUCTURE (11 lines total):
-- Line 1: The whisper phrase (can be multiple words)
-- Lines 2-10: SINGLE WORDS ONLY (9 lines, each exactly one word)
-- Line 11: Repeat or rearrange the whisper phrase
-
-ANCHOR WORD PLACEMENT:
-- Line 2: Must be "${anchor}"
-- Line 6: Must be "${anchor}" 
-- Line 10: Must be "${anchor}"
-
-CONTENT GOALS:
-- Build around a single vivid image or emotional situation
-- Use concrete, evocative single words for lines 2-10
-- Echo the user's feeling: "${feeling}"
-- Make the anchor word repetition meaningful
-- Be honest, grounded, and emotionally resonant
-
-Return ONLY the 11-line poem, nothing else.`
-        },
-        {
-          role: "user",
-          content: `Create a Skinny poem with:
+    const response = await openai.responses.create({
+      model: "gpt-4o",
+      input: `Create a Skinny poem with:
 - Whisper (first/last line): "${whisper}"
 - Anchor word (lines 2, 6, 10): "${anchor}"
-- User feeling: "${feeling}"`
-        }
-      ],
-      max_tokens: 150,
-      temperature: 0.7
+- User feeling: "${feeling}"
+
+✍️ FORM:
+Write exactly 11 lines.
+
+1. Line 1: The “whisper” phrase (poetic, metaphorical, or emotionally suggestive)
+2. Lines 2–10: Single word per line only — no phrases
+   - Line 2 = "${anchor}"
+   - Line 6 = "${anchor}"
+   - Line 10 = "${anchor}"
+3. Line 11: Repeat or re-order the exact same words from the whisper (Line 1)
+
+🧠 GOALS:
+- Reflect or contrast the user’s feeling (“${feeling}”) through imagery and word choice
+- Make the anchor word feel meaningful — as echo, emphasis, or irony
+- Build around a single emotional moment, image, or metaphor
+- Use precise, grounded language (not vague or abstract)
+- The poem should feel raw, rhythmic, and emotionally resonant
+
+Return only the 11-line poem. No title, no explanation, no formatting.`
     });
 
     let poem = response.choices[0]?.message?.content?.trim() || createFallbackSkinnyPoem(whisper, anchor, feeling);

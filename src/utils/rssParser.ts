@@ -19,44 +19,22 @@ interface WhisperWithSource {
 
 export async function fetchGuardianHeadlines(): Promise<string[]> {
   try {
-    // Try multiple endpoints for better reliability
+    // Try Netlify function first, fallback to direct fetch for local development
     let response;
-    let lastError;
-    
-    // Try Netlify function first
     try {
       response = await fetch('/.netlify/functions/rss');
-      if (!response.ok) throw new Error(`Netlify function failed: ${response.status}`);
     } catch (error) {
-      lastError = error;
-      console.log('Netlify function failed, trying local proxy...');
-      
-      // Fallback to local development proxy
-      try {
-        response = await fetch('/api/rss');
-        if (!response.ok) throw new Error(`Local proxy failed: ${response.status}`);
-      } catch (localError) {
-        lastError = localError;
-        console.log('Local proxy failed, using fallback data...');
-        throw new Error('All RSS endpoints failed');
-      }
+      // Fallback for local development
+      response = await fetch('/api/rss');
+    }
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch RSS feed');
     }
     
     const xmlText = await response.text();
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-    
-    // Check for XML parsing errors - use fallback instead of throwing
-    const parserError = xmlDoc.querySelector('parsererror');
-    if (parserError) {
-      console.log('RSS XML parsing failed, using fallback data...');
-      return [
-        'Political tensions rise as new policies spark debate',
-        'Technology breakthrough promises to reshape industry',
-        'Climate scientists warn of accelerating environmental changes',
-        'Cultural movements gain momentum across communities'
-      ];
-    }
     
     const items = xmlDoc.querySelectorAll('item');
     const headlines: string[] = [];
@@ -67,10 +45,6 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
       if (titleElement && titleElement.textContent) {
         headlines.push(titleElement.textContent.trim());
       }
-    }
-    
-    if (headlines.length === 0) {
-      throw new Error('No headlines found in RSS feed');
     }
     
     return headlines;
@@ -88,55 +62,22 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
 
 export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSource[]> {
   try {
-    // Try multiple endpoints for better reliability
+    // Try Netlify function first, fallback to direct fetch for local development
     let response;
-    let lastError;
-    
-    // Try Netlify function first
     try {
       response = await fetch('/.netlify/functions/rss');
-      if (!response.ok) throw new Error(`Netlify function failed: ${response.status}`);
     } catch (error) {
-      lastError = error;
-      console.log('Netlify function failed, trying local proxy...');
-      
-      // Fallback to local development proxy
-      try {
-        response = await fetch('/api/rss');
-        if (!response.ok) throw new Error(`Local proxy failed: ${response.status}`);
-      } catch (localError) {
-        lastError = localError;
-        console.log('Local proxy failed, using fallback data...');
-        throw new Error('All RSS endpoints failed');
-      }
+      // Fallback for local development
+      response = await fetch('/api/rss');
+    }
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch RSS feed');
     }
     
     const xmlText = await response.text();
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
-    
-    // Check for XML parsing errors - use fallback instead of throwing
-    const parserError = xmlDoc.querySelector('parsererror');
-    if (parserError) {
-      console.log('RSS XML parsing failed, using fallback data...');
-      return [
-        {
-          poetic: "The weight of unspoken words",
-          headline: "Global tensions continue to shape international discourse",
-          link: "https://www.theguardian.com"
-        },
-        {
-          poetic: "A memory that refuses to fade", 
-          headline: "Historical events continue to influence modern society",
-          link: "https://www.theguardian.com"
-        },
-        {
-          poetic: "The space between what was and what could be",
-          headline: "Future possibilities emerge from current challenges",
-          link: "https://www.theguardian.com"
-        }
-      ];
-    }
     
     const items = xmlDoc.querySelectorAll('item');
     const whispers: WhisperWithSource[] = [];
@@ -167,10 +108,6 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
           });
         }
       }
-    }
-    
-    if (whispers.length === 0) {
-      throw new Error('No whispers generated from RSS feed');
     }
     
     return whispers;
