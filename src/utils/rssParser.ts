@@ -17,19 +17,84 @@ interface WhisperWithSource {
   link: string;
 }
 
+// Multiple CORS proxy options for better reliability
+const CORS_PROXIES = [
+  'https://api.allorigins.win/get?url=',
+  'https://corsproxy.io/?',
+  'https://cors-anywhere.herokuapp.com/',
+  'https://api.codetabs.com/v1/proxy?quest='
+];
+
+async function fetchWithFallback(url: string): Promise<string> {
+  const targetUrl = encodeURIComponent('https://www.theguardian.com/world/rss');
+  
+  for (let i = 0; i < CORS_PROXIES.length; i++) {
+    const proxy = CORS_PROXIES[i];
+    try {
+      console.log(`Attempting to fetch with proxy ${i + 1}/${CORS_PROXIES.length}: ${proxy}`);
+      
+      const response = await fetch(`${proxy}${targetUrl}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/xml, text/xml, */*',
+        },
+        // Add timeout to prevent hanging requests
+        signal: AbortSignal.timeout(10000) // 10 second timeout
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      // Handle different response formats from different proxies
+      let xmlContent = '';
+      if (typeof data === 'string') {
+        xmlContent = data;
+      } else if (data.contents) {
+        xmlContent = data.contents;
+      } else if (data.body) {
+        xmlContent = data.body;
+      } else {
+        throw new Error('Unexpected response format');
+      }
+      
+      if (!xmlContent || xmlContent.length < 100) {
+        throw new Error('Response appears to be empty or too short');
+      }
+      
+      console.log(`Successfully fetched RSS feed using proxy ${i + 1}`);
+      return xmlContent;
+      
+    } catch (error) {
+      console.warn(`Proxy ${i + 1} failed:`, error);
+      
+      // If this is the last proxy, throw the error
+      if (i === CORS_PROXIES.length - 1) {
+        throw new Error(`All CORS proxies failed. Last error: ${error}`);
+      }
+      
+      // Continue to next proxy
+      continue;
+    }
+  }
+  
+  throw new Error('All CORS proxies failed');
+}
+
 export async function fetchGuardianHeadlines(): Promise<string[]> {
   try {
-    // Use a more reliable CORS proxy that works in production
-    const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.theguardian.com/world/rss'));
-    if (!response.ok) {
-      throw new Error('Failed to fetch RSS feed');
-    }
-    
-    const data = await response.json();
-    const xmlText = data.contents;
+    const xmlText = await fetchWithFallback('https://www.theguardian.com/world/rss');
     
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+    
+    // Check for XML parsing errors
+    const parserError = xmlDoc.querySelector('parsererror');
+    if (parserError) {
+      throw new Error('Failed to parse XML response');
+    }
     
     const items = xmlDoc.querySelectorAll('item');
     const headlines: string[] = [];
@@ -40,6 +105,10 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
       if (titleElement && titleElement.textContent) {
         headlines.push(titleElement.textContent.trim());
       }
+    }
+    
+    if (headlines.length === 0) {
+      throw new Error('No headlines found in RSS feed');
     }
     
     return headlines;
@@ -62,18 +131,16 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
 export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSource[]> {
   try {
     console.log('Fetching RSS feed...');
-    // Use a more reliable CORS proxy that works in production
-    const response = await fetch('https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.theguardian.com/world/rss'));
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch RSS feed');
-    }
-    
-    const data = await response.json();
-    const xmlText = data.contents;
+    const xmlText = await fetchWithFallback('https://www.theguardian.com/world/rss');
     
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+    
+    // Check for XML parsing errors
+    const parserError = xmlDoc.querySelector('parsererror');
+    if (parserError) {
+      throw new Error('Failed to parse XML response');
+    }
     
     const items = xmlDoc.querySelectorAll('item');
     const allItems: { headline: string; link: string; pubDate: string }[] = [];
@@ -94,6 +161,10 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
     }
     
     console.log(`Found ${allItems.length} RSS items from The Guardian`);
+    
+    if (allItems.length === 0) {
+      throw new Error('No valid RSS items found');
+    }
     
     // Filter for today's articles (within last 24 hours) or use all if none from today
     const now = new Date();
