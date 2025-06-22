@@ -19,8 +19,15 @@ interface WhisperWithSource {
 
 export async function fetchGuardianHeadlines(): Promise<string[]> {
   try {
-    // Use Vite's proxy to fetch the RSS feed
-    const response = await fetch('https://www.theguardian.com/world/rss');
+    // Try Netlify function first, fallback to direct fetch for local development
+    let response;
+    try {
+      response = await fetch('/.netlify/functions/rss');
+    } catch (error) {
+      // Fallback for local development
+      response = await fetch('/api/rss');
+    }
+    
     if (!response.ok) {
       throw new Error('Failed to fetch RSS feed');
     }
@@ -55,8 +62,14 @@ export async function fetchGuardianHeadlines(): Promise<string[]> {
 
 export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSource[]> {
   try {
-    // Use Vite's proxy to fetch the RSS feed
-    const response = await fetch('/api/rss');
+    // Try Netlify function first, fallback to direct fetch for local development
+    let response;
+    try {
+      response = await fetch('/.netlify/functions/rss');
+    } catch (error) {
+      // Fallback for local development
+      response = await fetch('/api/rss');
+    }
     
     if (!response.ok) {
       throw new Error('Failed to fetch RSS feed');
