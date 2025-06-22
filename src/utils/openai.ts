@@ -23,7 +23,7 @@ Headline: "UN warns of irreversible climate tipping points"
 Poetic phrase: "the edge of unremembered heat"`
     });
 
-    return response.choices[0]?.message?.content?.trim() || headline;
+    return response.output?.[0]?.content?.[0]?.text?.trim() || headline;
   } catch (error) {
     console.error('Error transforming headline:', error);
     // Fallback to original headline if API fails
@@ -232,7 +232,7 @@ Write exactly 11 lines.
 Return only the 11-line poem. No title, no explanation, no formatting.`
     });
 
-    let poem = response.choices[0]?.message?.content?.trim() || createFallbackSkinnyPoem(whisper, anchor, feeling);
+    let poem = response?.output?.[0]?.content?.find(c => c.type === "output_text")?.text?.trim() || createFallbackSkinnyPoem(whisper, anchor, feeling);
 
     // Validate the generated poem
     const validation = await validateSkinnyPoem(poem, anchor);
