@@ -167,7 +167,7 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
           className="text-lg mb-12 max-w-lg mx-auto leading-relaxed text-center italic"
           style={{ color: getSecondaryTextColor() }}
         >
-          A space for strangers to sit by and share one line of feeling
+          Read the world. Write your flame.
         </p>
 
         <AnimatePresence mode="wait">
