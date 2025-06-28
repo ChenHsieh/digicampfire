@@ -319,8 +319,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                 whileTap={{ scale: 0.95 }}
                 className="px-4 py-2 rounded-full cursor-pointer font-['Courier_Prime'] text-sm"
                 style={{
-                  background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
-                  border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)'}`,
+                  background: getCardBackground(),
+                  border: `1px solid ${getCardBorder()}`,
                   color: getSecondaryTextColor()
                 }}
               >
@@ -381,10 +381,10 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                   style={{
                     background: copySuccess ? 
                       (isDarkMode ? 'rgba(34, 197, 94, 0.2)' : 'rgba(34, 197, 94, 0.1)') : 
-                      (isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)'),
+                      getCardBackground(),
                     border: `1px solid ${copySuccess ? 
                       (isDarkMode ? 'rgba(34, 197, 94, 0.4)' : 'rgba(34, 197, 94, 0.3)') : 
-                      (isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)')}`,
+                      getCardBorder()}`,
                     color: copySuccess ? '#059669' : getTextColor()
                   }}
                 >
@@ -399,8 +399,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                 whileTap={{ scale: 0.95 }}
                 className="mt-6 px-4 py-2 rounded-full cursor-pointer font-['Courier_Prime'] text-sm w-full"
                 style={{
-                  background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
-                  border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)'}`,
+                  background: getCardBackground(),
+                  border: `1px solid ${getCardBorder()}`,
                   color: getSecondaryTextColor()
                 }}
               >
@@ -429,9 +429,9 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             className="flex items-center gap-2 px-5 py-3 rounded-3xl cursor-pointer backdrop-blur-md font-['Courier_Prime'] text-sm"
             style={{
               background: showCuratorTweak ? 
-                (isDarkMode ? 'rgba(180, 83, 9, 0.9)' : 'rgba(139, 125, 161, 0.3)') : 
-                (isDarkMode ? 'rgba(180, 83, 9, 0.7)' : 'rgba(139, 125, 161, 0.2)'),
-              border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.5)' : 'rgba(139, 125, 161, 0.4)'}`,
+                getCardBackground(true) : 
+                getCardBackground(false),
+              border: `1px solid ${showCuratorTweak ? getCardBorder(true) : getCardBorder(false)}`,
               color: getTextColor()
             }}
           >
@@ -445,8 +445,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 px-5 py-3 rounded-3xl cursor-pointer backdrop-blur-md font-['Courier_Prime'] text-sm"
             style={{
-              background: isDarkMode ? 'rgba(180, 83, 9, 0.7)' : 'rgba(139, 125, 161, 0.2)',
-              border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.5)' : 'rgba(139, 125, 161, 0.4)'}`,
+              background: getCardBackground(false),
+              border: `1px solid ${getCardBorder(false)}`,
               color: getTextColor()
             }}
           >
