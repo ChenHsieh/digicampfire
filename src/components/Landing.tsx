@@ -32,7 +32,8 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
     getTextColor,
     getSecondaryTextColor,
     getCardBackground,
-    getCardBorder
+    getCardBorder,
+    getHaloTextStyle
   } = useTheme();
 
   const {
@@ -122,6 +123,7 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
             isDarkMode={isDarkMode}
             getTextColor={getTextColor}
             getSecondaryTextColor={getSecondaryTextColor}
+            getHaloTextStyle={getHaloTextStyle}
           />
         );
       
@@ -158,7 +160,10 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
         
         <h1 
           className="text-4xl md:text-6xl mb-4 font-normal font-['EB_Garamond'] text-center"
-          style={{ color: getTextColor() }}
+          style={{ 
+            color: getTextColor(),
+            ...getHaloTextStyle()
+          }}
         >
           Digital Campfire
         </h1>

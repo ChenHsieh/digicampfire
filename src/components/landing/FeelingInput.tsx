@@ -9,6 +9,7 @@ interface FeelingInputProps {
   isDarkMode: boolean;
   getTextColor: () => string;
   getSecondaryTextColor: () => string;
+  getHaloTextStyle: () => { textShadow: string };
 }
 
 const FeelingInput: React.FC<FeelingInputProps> = ({
@@ -18,7 +19,8 @@ const FeelingInput: React.FC<FeelingInputProps> = ({
   feelingPrompts,
   isDarkMode,
   getTextColor,
-  getSecondaryTextColor
+  getSecondaryTextColor,
+  getHaloTextStyle
 }) => {
   return (
     <motion.div
@@ -34,7 +36,8 @@ const FeelingInput: React.FC<FeelingInputProps> = ({
         textAlign: 'center',
         color: getTextColor(),
         fontFamily: "'EB Garamond', serif",
-        fontWeight: 400
+        fontWeight: 400,
+        ...getHaloTextStyle()
       }}>
         How are you feeling now?
       </h2>
