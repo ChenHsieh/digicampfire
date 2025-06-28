@@ -73,7 +73,7 @@ const PrivacyPage: React.FC<PrivacyPageProps> = ({
             fontSize: '2.5rem',
             marginBottom: '32px',
             color: getTextColor(),
-            fontWeight: 400,
+            fontWeight: 500,
             fontFamily: "'EB Garamond', serif",
             textAlign: 'center'
           }}>
@@ -98,7 +98,7 @@ const PrivacyPage: React.FC<PrivacyPageProps> = ({
                 marginBottom: '16px',
                 color: getTextColor(),
                 fontFamily: "'EB Garamond', serif",
-                fontWeight: 500
+                fontWeight: 600
               }}>
                 Your Privacy Matters
               </h2>
@@ -118,7 +118,7 @@ const PrivacyPage: React.FC<PrivacyPageProps> = ({
               marginTop: '32px',
               color: getTextColor(),
               fontFamily: "'EB Garamond', serif",
-              fontWeight: 500
+              fontWeight: 600
             }}>
               Data Storage
             </h2>
@@ -141,7 +141,7 @@ const PrivacyPage: React.FC<PrivacyPageProps> = ({
               marginTop: '32px',
               color: getTextColor(),
               fontFamily: "'EB Garamond', serif",
-              fontWeight: 500
+              fontWeight: 600
             }}>
               AI Processing
             </h2>
@@ -218,7 +218,7 @@ const PrivacyPage: React.FC<PrivacyPageProps> = ({
               marginTop: '32px',
               color: getTextColor(),
               fontFamily: "'EB Garamond', serif",
-              fontWeight: 500
+              fontWeight: 600
             }}>
               News Sources
             </h2>
@@ -234,7 +234,7 @@ const PrivacyPage: React.FC<PrivacyPageProps> = ({
               marginTop: '32px',
               color: getTextColor(),
               fontFamily: "'EB Garamond', serif",
-              fontWeight: 500
+              fontWeight: 600
             }}>
               Sharing Your Poems
             </h2>
@@ -251,7 +251,7 @@ const PrivacyPage: React.FC<PrivacyPageProps> = ({
               marginTop: '32px',
               color: getTextColor(),
               fontFamily: "'EB Garamond', serif",
-              fontWeight: 500
+              fontWeight: 600
             }}>
               Questions?
             </h2>

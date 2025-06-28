@@ -45,7 +45,7 @@ const AnchorSelection: React.FC<AnchorSelectionProps> = ({
           textAlign: 'center',
           color: getTextColor(),
           fontFamily: "'EB Garamond', serif",
-          fontWeight: 400
+          fontWeight: 500
         }}>
           Choose the word that anchors us.
         </h2>

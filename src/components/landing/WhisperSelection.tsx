@@ -51,7 +51,7 @@ const WhisperSelection: React.FC<WhisperSelectionProps> = ({
           textAlign: 'center',
           color: getTextColor(),
           fontFamily: "'EB Garamond', serif",
-          fontWeight: 400
+          fontWeight: 500
         }}>
           Which whisper echoes loudest today?
         </h2>

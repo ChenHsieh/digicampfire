@@ -73,7 +73,7 @@ const AboutPage: React.FC<AboutPageProps> = ({
             fontSize: '2.5rem',
             marginBottom: '32px',
             color: getTextColor(),
-            fontWeight: 400,
+            fontWeight: 500,
             fontFamily: "'EB Garamond', serif",
             textAlign: 'center'
           }}>
@@ -104,7 +104,7 @@ const AboutPage: React.FC<AboutPageProps> = ({
               marginTop: '32px',
               color: getTextColor(),
               fontFamily: "'EB Garamond', serif",
-              fontWeight: 500
+              fontWeight: 600
             }}>
               What is a Skinny Poem?
             </h2>
@@ -171,7 +171,7 @@ const AboutPage: React.FC<AboutPageProps> = ({
               marginBottom: '16px',
               color: getTextColor(),
               fontFamily: "'EB Garamond', serif",
-              fontWeight: 500
+              fontWeight: 600
             }}>
               How It Works
             </h2>

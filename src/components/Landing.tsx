@@ -375,7 +375,7 @@ ${selectedWhisper}`;
           fontSize: 'clamp(2.5rem, 5vw, 4rem)',
           marginBottom: '16px',
           color: getTextColor(),
-          fontWeight: 400,
+          fontWeight: 500,
           fontFamily: "'EB Garamond', serif",
           textAlign: 'center'
         }}>

@@ -43,7 +43,7 @@ export const useTheme = () => {
     `;
   };
 
-  const getTextColor = () => isDarkMode ? '#FEF7ED' : '#2D2D37';
+  const getTextColor = () => isDarkMode ? '#FFFFFF' : '#2D2D37';
   const getSecondaryTextColor = () => isDarkMode ? '#FFC880' : '#8B7DA1';
   const getFooterBackground = () => isDarkMode ? 'rgba(28, 25, 23, 0.9)' : 'rgba(254, 254, 254, 0.8)';
   const getFooterBorder = () => isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.1)';
