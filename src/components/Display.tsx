@@ -66,7 +66,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
   };
 
   const handleCopyToClipboard = async () => {
-    const shareText = `${currentPoem}\n\n— Created at Digital Campfire`;
+    const shareText = `${currentPoem}\n\n— Created at Digital Campfire\nhttps://digicampfire.xyz/`;
     
     try {
       await navigator.clipboard.writeText(shareText);
@@ -84,12 +84,6 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     }
-  };
-
-  const handleShareViaEmail = () => {
-    const subject = encodeURIComponent('A poem from Digital Campfire');
-    const body = encodeURIComponent(`${currentPoem}\n\n— Created at Digital Campfire\n\nCreate your own poem at: ${window.location.origin}`);
-    window.open(`mailto:?subject=${subject}&body=${body}`);
   };
 
   return (
@@ -396,21 +390,6 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                 >
                   {copySuccess ? <Check size={18} /> : <Copy size={18} />}
                   {copySuccess ? 'Copied to clipboard!' : 'Copy to clipboard'}
-                </motion.button>
-                
-                <motion.button
-                  onClick={handleShareViaEmail}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center gap-3 p-4 rounded-xl cursor-pointer font-['Courier_Prime'] text-sm w-full justify-start"
-                  style={{
-                    background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
-                    border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)'}`,
-                    color: getTextColor()
-                  }}
-                >
-                  <Share2 size={18} />
-                  Share via email
                 </motion.button>
               </div>
               
