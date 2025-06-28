@@ -1,14 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Sun, Moon, Volume2, VolumeX } from 'lucide-react';
+import { Sun, Moon } from 'lucide-react';
 
 type AppState = 'landing' | 'display' | 'about' | 'privacy';
 
 interface AppFooterProps {
   isDarkMode: boolean;
-  isSoundOn: boolean;
   toggleDarkMode: () => void;
-  toggleSound: () => void;
   getFooterBackground: () => string;
   getFooterBorder: () => string;
   getLinkColor: () => string;
@@ -18,9 +16,7 @@ interface AppFooterProps {
 
 const AppFooter: React.FC<AppFooterProps> = ({
   isDarkMode,
-  isSoundOn,
   toggleDarkMode,
-  toggleSound,
   getFooterBackground,
   getFooterBorder,
   getLinkColor,
@@ -104,11 +100,10 @@ const AppFooter: React.FC<AppFooterProps> = ({
         </button>
       </div>
 
-      {/* Right side - Theme and Sound toggles */}
+      {/* Right side - Theme toggle only */}
       <div style={{
         display: 'flex',
-        alignItems: 'center',
-        gap: '16px'
+        alignItems: 'center'
       }}>
         {/* Dark/Light mode toggle */}
         <motion.button
@@ -134,37 +129,6 @@ const AppFooter: React.FC<AppFooterProps> = ({
             <Sun size={18} color="#FB923C" />
           ) : (
             <Moon size={18} color="#8B7DA1" />
-          )}
-        </motion.button>
-
-        {/* Sound toggle */}
-        <motion.button
-          onClick={toggleSound}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '36px',
-            height: '36px',
-            borderRadius: '50%',
-            background: isSoundOn ? 
-              (isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.15)') : 
-              (isDarkMode ? 'rgba(220, 38, 38, 0.2)' : 'rgba(244, 194, 194, 0.15)'),
-            border: `1px solid ${isSoundOn ? 
-              (isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)') : 
-              (isDarkMode ? 'rgba(220, 38, 38, 0.4)' : 'rgba(244, 194, 194, 0.3)')}`,
-            cursor: 'pointer',
-            transition: 'all 0.3s ease',
-            backdropFilter: 'blur(10px)'
-          }}
-          title={isSoundOn ? 'Turn sound off' : 'Turn sound on'}
-        >
-          {isSoundOn ? (
-            <Volume2 size={18} color={isDarkMode ? '#B45309' : '#8B7DA1'} />
-          ) : (
-            <VolumeX size={18} color={isDarkMode ? '#DC2626' : '#F4C2C2'} />
           )}
         </motion.button>
       </div>

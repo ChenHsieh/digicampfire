@@ -1,15 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
-import { createCampfireNoiseGenerator, NoiseGenerator } from '../utils/noiseGenerator';
+import { useState, useEffect } from 'react';
 
 export const useTheme = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isSoundOn, setIsSoundOn] = useState(true);
-  const noiseGeneratorRef = useRef<NoiseGenerator | null>(null);
 
   // Load preferences from localStorage on mount, with system preference fallback
   useEffect(() => {
     const savedDarkMode = localStorage.getItem('digitalCampfire_darkMode');
-    const savedSoundOn = localStorage.getItem('digitalCampfire_soundOn');
     
     if (savedDarkMode !== null) {
       setIsDarkMode(JSON.parse(savedDarkMode));
@@ -18,54 +14,15 @@ export const useTheme = () => {
       const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
       setIsDarkMode(systemPrefersDark);
     }
-    
-    if (savedSoundOn !== null) {
-      setIsSoundOn(JSON.parse(savedSoundOn));
-    }
   }, []);
-
-  // Initialize campfire noise generator
-  useEffect(() => {
-    // Create the noise generator
-    noiseGeneratorRef.current = createCampfireNoiseGenerator();
-
-    // Cleanup function
-    return () => {
-      if (noiseGeneratorRef.current) {
-        noiseGeneratorRef.current.cleanup();
-        noiseGeneratorRef.current = null;
-      }
-    };
-  }, []);
-
-  // Control sound playback based on isSoundOn state
-  useEffect(() => {
-    if (noiseGeneratorRef.current) {
-      if (isSoundOn) {
-        // Start the noise generator
-        noiseGeneratorRef.current.start();
-      } else {
-        // Stop the noise generator
-        noiseGeneratorRef.current.stop();
-      }
-    }
-  }, [isSoundOn]);
 
   // Save preferences to localStorage when they change
   useEffect(() => {
     localStorage.setItem('digitalCampfire_darkMode', JSON.stringify(isDarkMode));
   }, [isDarkMode]);
 
-  useEffect(() => {
-    localStorage.setItem('digitalCampfire_soundOn', JSON.stringify(isSoundOn));
-  }, [isSoundOn]);
-
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
-  };
-
-  const toggleSound = () => {
-    setIsSoundOn(!isSoundOn);
   };
 
   // Dynamic styles based on dark mode - campfire themed
@@ -139,9 +96,7 @@ export const useTheme = () => {
 
   return {
     isDarkMode,
-    isSoundOn,
     toggleDarkMode,
-    toggleSound,
     getBackgroundStyle,
     getTextColor,
     getSecondaryTextColor,

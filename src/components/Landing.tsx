@@ -18,10 +18,9 @@ interface WhisperWithSource {
 interface LandingProps {
   onComplete: (poem: { whisper: string; anchor: string; feeling: string; text: string }) => void;
   isDarkMode: boolean;
-  isSoundOn: boolean;
 }
 
-const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode, isSoundOn }) => {
+const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedWhisper, setSelectedWhisper] = useState<string>('');
   const [selectedAnchor, setSelectedAnchor] = useState<string>('');
