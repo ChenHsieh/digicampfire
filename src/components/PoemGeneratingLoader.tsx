@@ -4,11 +4,13 @@ import { motion } from 'framer-motion';
 interface PoemGeneratingLoaderProps {
   isDarkMode: boolean;
   getTextColor: () => string;
+  getHaloTextStyle: () => { textShadow: string };
 }
 
 const PoemGeneratingLoader: React.FC<PoemGeneratingLoaderProps> = ({
   isDarkMode,
-  getTextColor
+  getTextColor,
+  getHaloTextStyle
 }) => {
   return (
     <div className="min-h-screen flex flex-col justify-center items-center py-10 px-6">
@@ -23,7 +25,10 @@ const PoemGeneratingLoader: React.FC<PoemGeneratingLoaderProps> = ({
       />
       <p 
         className="text-xl font-['EB_Garamond'] text-center"
-        style={{ color: getTextColor() }}
+        style={{ 
+          color: getTextColor(),
+          ...getHaloTextStyle()
+        }}
       >
         The poem is arriving...
       </p>

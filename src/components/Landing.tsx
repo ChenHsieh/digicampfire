@@ -139,6 +139,7 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
       <PoemGeneratingLoader
         isDarkMode={isDarkMode}
         getTextColor={getTextColor}
+        getHaloTextStyle={getHaloTextStyle}
       />
     );
   }
