@@ -1,0 +1,23 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Campfire base -->
+  <ellipse cx="16" cy="28" rx="8" ry="2" fill="#8B4513" opacity="0.6"/>
+  
+  <!-- Logs -->
+  <rect x="8" y="24" width="16" height="3" rx="1.5" fill="#654321"/>
+  <rect x="10" y="21" width="12" height="2.5" rx="1.25" fill="#8B4513"/>
+  
+  <!-- Main flame -->
+  <path d="M16 8C16 8 12 12 12 16C12 20 14 22 16 22C18 22 20 20 20 16C20 12 16 8 16 8Z" fill="#FF6B35"/>
+  
+  <!-- Inner flame -->
+  <path d="M16 10C16 10 14 13 14 16C14 18.5 15 20 16 20C17 20 18 18.5 18 16C18 13 16 10 16 10Z" fill="#FFB347"/>
+  
+  <!-- Core flame -->
+  <path d="M16 12C16 12 15 14 15 16C15 17.5 15.5 18.5 16 18.5C16.5 18.5 17 17.5 17 16C17 14 16 12 16 12Z" fill="#FFF8DC"/>
+  
+  <!-- Sparks -->
+  <circle cx="12" cy="10" r="1" fill="#FF6B35" opacity="0.8"/>
+  <circle cx="20" cy="12" r="0.8" fill="#FFB347" opacity="0.7"/>
+  <circle cx="10" cy="14" r="0.6" fill="#FF6B35" opacity="0.6"/>
+  <circle cx="22" cy="8" r="0.5" fill="#FFB347" opacity="0.5"/>
+</svg>
