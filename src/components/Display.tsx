@@ -91,36 +91,17 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      padding: '40px 0 80px',
-      position: 'relative'
-    }}>
-      <div style={{
-        maxWidth: '700px',
-        margin: '0 auto',
-        padding: '0 24px',
-        width: '100%',
-        position: 'relative'
-      }}>
+    <div className="min-h-screen py-10 pb-20 relative">
+      <div className="max-w-3xl mx-auto px-6 w-full relative">
         <motion.button
           onClick={onBack}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
+          className="flex items-center gap-2 text-sm px-4 py-2 rounded-full mb-10 cursor-pointer backdrop-blur-md font-['Courier_Prime']"
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
             color: getSecondaryTextColor(),
-            fontSize: '0.9rem',
-            padding: '8px 16px',
-            borderRadius: '20px',
-            marginBottom: '40px',
             background: getCardBackground(),
-            border: `1px solid ${getCardBorder()}`,
-            cursor: 'pointer',
-            backdropFilter: 'blur(10px)',
-            fontFamily: "'Courier Prime', monospace"
+            border: `1px solid ${getCardBorder()}`
           }}
         >
           <ArrowLeft size={16} />
@@ -132,49 +113,30 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8 }}
+          className="p-12 rounded-2xl mb-10 relative backdrop-blur-2xl"
           style={{
             background: getPoemBackground(),
-            padding: '48px',
-            borderRadius: '20px',
             boxShadow: getPoemShadow(),
-            border: `1px solid ${getCardBorder()}`,
-            backdropFilter: 'blur(15px)',
-            marginBottom: '40px',
-            position: 'relative'
+            border: `1px solid ${getCardBorder()}`
           }}
         >
           {/* Floating embers effect - warmer in dark mode */}
-          <div style={{
-            position: 'absolute',
-            top: '-20px',
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '4px',
-            height: '4px',
-            background: isDarkMode ? 'rgba(251, 146, 60, 0.9)' : 'rgba(244, 194, 194, 0.6)',
-            borderRadius: '50%',
-            animation: 'float 3s ease-in-out infinite'
-          }} />
+          <div 
+            className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full animate-pulse"
+            style={{
+              background: isDarkMode ? 'rgba(251, 146, 60, 0.9)' : 'rgba(244, 194, 194, 0.6)',
+              animation: 'float 3s ease-in-out infinite'
+            }}
+          />
           
-          <h1 style={{
-            fontSize: '1.8rem',
-            textAlign: 'center',
-            marginBottom: '32px',
-            color: getTextColor(),
-            fontWeight: 400,
-            fontFamily: "'EB Garamond', serif"
-          }}>
+          <h1 className="text-3xl text-center mb-8 font-normal font-['EB_Garamond']" style={{ color: getTextColor() }}>
             Your Verse by the Fire
           </h1>
           
-          <div style={{
-            fontSize: '1.2rem',
-            lineHeight: 1.8,
-            color: getTextColor(),
-            whiteSpace: 'pre-wrap',
-            textAlign: 'center',
-            fontFamily: "'EB Garamond', serif"
-          }}>
+          <div 
+            className="text-xl leading-relaxed whitespace-pre-wrap text-center font-['EB_Garamond']"
+            style={{ color: getTextColor() }}
+          >
             {lines.map((line, index) => (
               <motion.div
                 key={index}
@@ -187,7 +149,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                   duration: 0.8,
                   delay: index * 0.2
                 }}
-                style={{ marginBottom: '12px' }}
+                className="mb-3"
               >
                 {line}
               </motion.div>
@@ -200,95 +162,68 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 1 }}
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-            gap: '20px',
-            marginBottom: '40px'
-          }}
+          className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10"
         >
-          <div style={{
-            background: getCardBackground(),
-            padding: '20px',
-            borderRadius: '12px',
-            border: `1px solid ${getCardBorder()}`,
-            backdropFilter: 'blur(10px)'
-          }}>
-            <div style={{
-              fontSize: '0.8rem',
-              color: getSecondaryTextColor(),
-              marginBottom: '8px',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              fontFamily: "'Courier Prime', monospace"
-            }}>
+          <div 
+            className="p-5 rounded-xl backdrop-blur-md"
+            style={{
+              background: getCardBackground(),
+              border: `1px solid ${getCardBorder()}`
+            }}
+          >
+            <div 
+              className="text-xs mb-2 font-semibold uppercase tracking-wider font-['Courier_Prime']"
+              style={{ color: getSecondaryTextColor() }}
+            >
               Whisper
             </div>
-            <div style={{
-              fontSize: '0.95rem',
-              color: getTextColor(),
-              fontFamily: "'EB Garamond', serif",
-              fontStyle: 'italic'
-            }}>
+            <div 
+              className="text-base font-['EB_Garamond'] italic"
+              style={{ color: getTextColor() }}
+            >
               {poem.whisper}
             </div>
           </div>
           
-          <div style={{
-            background: getCardBackground(),
-            padding: '20px',
-            borderRadius: '12px',
-            border: `1px solid ${getCardBorder()}`,
-            backdropFilter: 'blur(10px)'
-          }}>
-            <div style={{
-              fontSize: '0.8rem',
-              color: getSecondaryTextColor(),
-              marginBottom: '8px',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.5px',
-              fontFamily: "'Courier Prime', monospace"
-            }}>
+          <div 
+            className="p-5 rounded-xl backdrop-blur-md"
+            style={{
+              background: getCardBackground(),
+              border: `1px solid ${getCardBorder()}`
+            }}
+          >
+            <div 
+              className="text-xs mb-2 font-semibold uppercase tracking-wider font-['Courier_Prime']"
+              style={{ color: getSecondaryTextColor() }}
+            >
               Anchor
             </div>
-            <div style={{
-              fontSize: '1.1rem',
-              color: getTextColor(),
-              fontFamily: "'Courier Prime', monospace",
-              fontWeight: 600
-            }}>
+            <div 
+              className="text-lg font-['Courier_Prime'] font-semibold"
+              style={{ color: getTextColor() }}
+            >
               {poem.anchor}
             </div>
           </div>
           
           {poem.feeling && (
-            <div style={{
-              background: getCardBackground(),
-              padding: '20px',
-              borderRadius: '12px',
-              border: `1px solid ${getCardBorder()}`,
-              backdropFilter: 'blur(10px)',
-              gridColumn: 'span 2'
-            }}>
-              <div style={{
-                fontSize: '0.8rem',
-                color: getSecondaryTextColor(),
-                marginBottom: '8px',
-                fontWeight: 600,
-                textTransform: 'uppercase',
-                letterSpacing: '0.5px',
-                fontFamily: "'Courier Prime', monospace"
-              }}>
+            <div 
+              className="p-5 rounded-xl backdrop-blur-md md:col-span-2"
+              style={{
+                background: getCardBackground(),
+                border: `1px solid ${getCardBorder()}`
+              }}
+            >
+              <div 
+                className="text-xs mb-2 font-semibold uppercase tracking-wider font-['Courier_Prime']"
+                style={{ color: getSecondaryTextColor() }}
+              >
                 What you carried
               </div>
-              <div style={{
-                fontSize: '1rem',
-                color: getTextColor(),
-                fontFamily: "'EB Garamond', serif",
-                fontStyle: 'italic'
-              }}>
+              <div 
+                className="text-base font-['EB_Garamond'] italic"
+                style={{ color: getTextColor() }}
+              >
                 "{poem.feeling}"
               </div>
             </div>
@@ -301,56 +236,35 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
+            className="p-6 rounded-2xl mb-10 backdrop-blur-2xl"
             style={{
               background: isDarkMode ? 'rgba(28, 25, 23, 0.9)' : 'rgba(254, 254, 254, 0.9)',
-              padding: '24px',
-              borderRadius: '16px',
-              border: `2px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.2)'}`,
-              backdropFilter: 'blur(15px)',
-              marginBottom: '40px'
+              border: `2px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.2)'}`
             }}
           >
-            <h3 style={{
-              fontSize: '1.2rem',
-              marginBottom: '16px',
-              color: getTextColor(),
-              fontFamily: "'EB Garamond', serif",
-              fontWeight: 500
-            }}>
+            <h3 
+              className="text-xl mb-4 font-['EB_Garamond'] font-medium"
+              style={{ color: getTextColor() }}
+            >
               Small Revisions in the Dusk
             </h3>
-            <p style={{
-              fontSize: '0.9rem',
-              color: getSecondaryTextColor(),
-              marginBottom: '16px',
-              fontStyle: 'italic'
-            }}>
+            <p 
+              className="text-sm mb-4 italic"
+              style={{ color: getSecondaryTextColor() }}
+            >
               Edit carefully - changes will be validated against Skinny poem structure
             </p>
             <textarea
               value={editedPoem}
               onChange={(e) => setEditedPoem(e.target.value)}
+              className="w-full min-h-[200px] p-4 rounded-lg text-base leading-relaxed resize-y font-['EB_Garamond'] outline-none"
               style={{
-                width: '100%',
-                minHeight: '200px',
-                padding: '16px',
                 border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.5)' : 'rgba(139, 125, 161, 0.3)'}`,
-                borderRadius: '8px',
-                fontSize: '1rem',
-                lineHeight: 1.6,
-                resize: 'vertical',
                 background: isDarkMode ? 'rgba(28, 25, 23, 0.8)' : 'rgba(254, 254, 254, 0.8)',
-                fontFamily: "'EB Garamond', serif",
-                color: getTextColor(),
-                outline: 'none'
+                color: getTextColor()
               }}
             />
-            <div style={{
-              display: 'flex',
-              gap: '12px',
-              marginTop: '16px',
-              justifyContent: 'flex-end'
-            }}>
+            <div className="flex gap-3 mt-4 justify-end">
               <motion.button
                 onClick={() => {
                   setShowCuratorTweak(false);
@@ -358,15 +272,11 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                 }}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 rounded-full cursor-pointer font-['Courier_Prime'] text-sm"
                 style={{
-                  padding: '8px 16px',
-                  borderRadius: '20px',
                   background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
                   border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)'}`,
-                  color: getSecondaryTextColor(),
-                  cursor: 'pointer',
-                  fontFamily: "'Courier Prime', monospace",
-                  fontSize: '0.9rem'
+                  color: getSecondaryTextColor()
                 }}
               >
                 Cancel
@@ -375,15 +285,9 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                 onClick={handleSaveTweak}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className="px-4 py-2 rounded-full border-none text-white cursor-pointer font-['Courier_Prime'] text-sm"
                 style={{
-                  padding: '8px 16px',
-                  borderRadius: '20px',
-                  background: isDarkMode ? 'linear-gradient(135deg, #1C1917 0%, #B45309 100%)' : 'linear-gradient(135deg, #2D2D37 0%, #8B7DA1 100%)',
-                  border: 'none',
-                  color: '#FEFEFE',
-                  cursor: 'pointer',
-                  fontFamily: "'Courier Prime', monospace",
-                  fontSize: '0.9rem'
+                  background: isDarkMode ? 'linear-gradient(135deg, #1C1917 0%, #B45309 100%)' : 'linear-gradient(135deg, #2D2D37 0%, #8B7DA1 100%)'
                 }}
               >
                 Save Changes
@@ -398,19 +302,9 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
+            className="fixed inset-0 flex items-center justify-center z-[1000] p-5 backdrop-blur-md"
             style={{
-              position: 'fixed',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(45, 45, 55, 0.8)',
-              backdropFilter: 'blur(10px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              zIndex: 1000,
-              padding: '20px'
+              background: isDarkMode ? 'rgba(0, 0, 0, 0.8)' : 'rgba(45, 45, 55, 0.8)'
             }}
             onClick={() => setShowShareOptions(false)}
           >
@@ -418,57 +312,35 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
               initial={{ opacity: 0, scale: 0.9, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.3 }}
+              className="p-8 rounded-2xl backdrop-blur-2xl max-w-sm w-full"
               style={{
                 background: isDarkMode ? 'rgba(28, 25, 23, 0.95)' : 'rgba(254, 254, 254, 0.95)',
-                padding: '32px',
-                borderRadius: '20px',
                 border: `1px solid ${getCardBorder()}`,
-                backdropFilter: 'blur(20px)',
-                maxWidth: '400px',
-                width: '100%',
                 boxShadow: isDarkMode ? '0 20px 60px rgba(0, 0, 0, 0.5)' : '0 20px 60px rgba(45, 45, 55, 0.3)'
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 style={{
-                fontSize: '1.4rem',
-                marginBottom: '24px',
-                color: getTextColor(),
-                fontFamily: "'EB Garamond', serif",
-                fontWeight: 500,
-                textAlign: 'center'
-              }}>
+              <h3 
+                className="text-2xl mb-6 font-['EB_Garamond'] font-medium text-center"
+                style={{ color: getTextColor() }}
+              >
                 Share Your Poem
               </h3>
               
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px'
-              }}>
+              <div className="flex flex-col gap-4">
                 <motion.button
                   onClick={handleCopyToClipboard}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-3 p-4 rounded-xl cursor-pointer font-['Courier_Prime'] text-sm w-full justify-start transition-all duration-300"
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '16px 20px',
-                    borderRadius: '12px',
                     background: copySuccess ? 
                       (isDarkMode ? 'rgba(34, 197, 94, 0.2)' : 'rgba(34, 197, 94, 0.1)') : 
                       (isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)'),
                     border: `1px solid ${copySuccess ? 
                       (isDarkMode ? 'rgba(34, 197, 94, 0.4)' : 'rgba(34, 197, 94, 0.3)') : 
                       (isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)')}`,
-                    color: copySuccess ? '#059669' : getTextColor(),
-                    cursor: 'pointer',
-                    fontFamily: "'Courier Prime', monospace",
-                    fontSize: '0.95rem',
-                    width: '100%',
-                    justifyContent: 'flex-start',
-                    transition: 'all 0.3s ease'
+                    color: copySuccess ? '#059669' : getTextColor()
                   }}
                 >
                   {copySuccess ? <Check size={18} /> : <Copy size={18} />}
@@ -479,20 +351,11 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                   onClick={handleShareViaEmail}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-3 p-4 rounded-xl cursor-pointer font-['Courier_Prime'] text-sm w-full justify-start"
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '16px 20px',
-                    borderRadius: '12px',
                     background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
                     border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)'}`,
-                    color: getTextColor(),
-                    cursor: 'pointer',
-                    fontFamily: "'Courier Prime', monospace",
-                    fontSize: '0.95rem',
-                    width: '100%',
-                    justifyContent: 'flex-start'
+                    color: getTextColor()
                   }}
                 >
                   <Share2 size={18} />
@@ -504,17 +367,11 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                 onClick={() => setShowShareOptions(false)}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                className="mt-6 px-4 py-2 rounded-full cursor-pointer font-['Courier_Prime'] text-sm w-full"
                 style={{
-                  marginTop: '24px',
-                  padding: '8px 16px',
-                  borderRadius: '20px',
                   background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
                   border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)'}`,
-                  color: getSecondaryTextColor(),
-                  cursor: 'pointer',
-                  fontFamily: "'Courier Prime', monospace",
-                  fontSize: '0.9rem',
-                  width: '100%'
+                  color: getSecondaryTextColor()
                 }}
               >
                 Close
@@ -528,12 +385,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 1.4 }}
-          style={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            gap: '16px',
-            flexWrap: 'wrap'
-          }}
+          className="flex justify-center gap-4 flex-wrap"
         >
           <motion.button
             onClick={() => {
@@ -544,21 +396,13 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-2 px-5 py-3 rounded-3xl cursor-pointer backdrop-blur-md font-['Courier_Prime'] text-sm"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '12px 20px',
-              borderRadius: '25px',
               background: showCuratorTweak ? 
                 (isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)') : 
                 (isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'),
               border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.5)' : 'rgba(139, 125, 161, 0.4)'}`,
-              color: getTextColor(),
-              cursor: 'pointer',
-              backdropFilter: 'blur(10px)',
-              fontFamily: "'Courier Prime', monospace",
-              fontSize: '0.9rem'
+              color: getTextColor()
             }}
           >
             <Edit3 size={16} />
@@ -569,19 +413,11 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             onClick={() => setShowShareOptions(true)}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-2 px-5 py-3 rounded-3xl cursor-pointer backdrop-blur-md font-['Courier_Prime'] text-sm"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '12px 20px',
-              borderRadius: '25px',
               background: isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)',
               border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.5)' : 'rgba(139, 125, 161, 0.4)'}`,
-              color: getTextColor(),
-              cursor: 'pointer',
-              backdropFilter: 'blur(10px)',
-              fontFamily: "'Courier Prime', monospace",
-              fontSize: '0.9rem'
+              color: getTextColor()
             }}
           >
             <Share2 size={16} />
@@ -593,14 +429,12 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 1.8 }}
-          style={{ textAlign: 'center', marginTop: '40px' }}
+          className="text-center mt-10"
         >
-          <p style={{
-            color: getSecondaryTextColor(),
-            fontSize: '0.9rem',
-            fontStyle: 'italic',
-            fontFamily: "'EB Garamond', serif"
-          }}>
+          <p 
+            className="text-sm italic font-['EB_Garamond']"
+            style={{ color: getSecondaryTextColor() }}
+          >
             Thank you for sharing your light with us
           </p>
         </motion.div>

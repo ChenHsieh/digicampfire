@@ -283,32 +283,20 @@ ${selectedWhisper}`;
 
   if (isGenerating) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: '40px 24px'
-      }}>
+      <div className="min-h-screen flex flex-col justify-center items-center py-10 px-6">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          className="mb-6 w-12 h-12 rounded-full"
           style={{ 
-            marginBottom: '24px',
-            width: '48px',
-            height: '48px',
             border: `3px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
-            borderTop: `3px solid ${isDarkMode ? '#FDBA74' : '#8B7DA1'}`,
-            borderRadius: '50%'
+            borderTop: `3px solid ${isDarkMode ? '#FDBA74' : '#8B7DA1'}`
           }}
         />
-        <p style={{
-          fontSize: '1.2rem',
-          color: getTextColor(),
-          fontFamily: "'EB Garamond', serif",
-          textAlign: 'center'
-        }}>
+        <p 
+          className="text-xl font-['EB_Garamond'] text-center"
+          style={{ color: getTextColor() }}
+        >
           The poem is arriving...
         </p>
       </div>
@@ -316,39 +304,23 @@ ${selectedWhisper}`;
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '40px 24px'
-    }}>
+    <div className="min-h-screen flex flex-col justify-center items-center py-10 px-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        style={{ maxWidth: '800px', width: '100%' }}
+        className="max-w-4xl w-full"
       >
         {/* Responsive Campfire Orb - enhanced for dark mode */}
         <div 
           ref={orbRef}
           onMouseEnter={() => setIsOrbHovered(true)}
           onMouseLeave={() => setIsOrbHovered(false)}
+          className="w-40 h-40 rounded-full mx-auto mb-12 flex items-center justify-center cursor-pointer relative transition-all duration-300"
           style={{
-            width: '160px',
-            height: '160px',
             background: getOrbBackground(),
-            borderRadius: '50%',
-            margin: '0 auto 48px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
             boxShadow: getOrbShadow(isOrbHovered),
-            transform: `translate(${mousePosition.x}px, ${mousePosition.y}px) scale(${isOrbHovered ? 1.1 : 1})`,
-            transition: 'transform 0.3s ease, box-shadow 0.3s ease',
-            cursor: 'pointer',
-            position: 'relative'
+            transform: `translate(${mousePosition.x}px, ${mousePosition.y}px) scale(${isOrbHovered ? 1.1 : 1})`
           }}
         >
           {/* Inner flame effect - more intense in dark mode */}
@@ -362,56 +334,33 @@ ${selectedWhisper}`;
               repeat: Infinity,
               ease: "easeInOut"
             }}
-            style={{
-              width: '80px',
-              height: '80px',
-              background: getInnerFlameBackground(),
-              borderRadius: '50%'
-            }} 
+            className="w-20 h-20 rounded-full"
+            style={{ background: getInnerFlameBackground() }}
           />
         </div>
         
-        <h1 style={{
-          fontSize: 'clamp(2.5rem, 5vw, 4rem)',
-          marginBottom: '16px',
-          color: getTextColor(),
-          fontWeight: 500,
-          fontFamily: "'EB Garamond', serif",
-          textAlign: 'center'
-        }}>
+        <h1 
+          className="text-4xl md:text-6xl mb-4 font-normal font-['EB_Garamond'] text-center"
+          style={{ color: getTextColor() }}
+        >
           Digital Campfire
         </h1>
         
-        <p style={{
-          fontSize: '1.1rem',
-          color: getSecondaryTextColor(),
-          marginBottom: '48px',
-          maxWidth: '500px',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          lineHeight: 1.6,
-          textAlign: 'center',
-          fontStyle: 'italic'
-        }}>
+        <p 
+          className="text-lg mb-12 max-w-lg mx-auto leading-relaxed text-center italic"
+          style={{ color: getSecondaryTextColor() }}
+        >
           A space for strangers to sit by and share one line of feeling
         </p>
 
         {/* Step indicator */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '12px',
-          marginBottom: '40px'
-        }}>
+        <div className="flex justify-center gap-3 mb-10">
           {[1, 2, 3].map((step) => (
             <div
               key={step}
+              className="w-2 h-2 rounded-full transition-all duration-300"
               style={{
-                width: '8px',
-                height: '8px',
-                borderRadius: '50%',
-                background: currentStep >= step ? (isDarkMode ? '#FDBA74' : '#8B7DA1') : (isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)'),
-                transition: 'all 0.3s ease'
+                background: currentStep >= step ? (isDarkMode ? '#FDBA74' : '#8B7DA1') : (isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)')
               }}
             />
           ))}
@@ -422,31 +371,19 @@ ${selectedWhisper}`;
         </AnimatePresence>
 
         {/* Navigation */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '40px'
-        }}>
+        <div className="flex justify-between items-center mt-10">
           <motion.button
             onClick={handleBack}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
+            className="px-5 py-3 rounded-3xl font-medium flex items-center gap-2 backdrop-blur-md font-['Courier_Prime'] transition-opacity duration-300"
             style={{
-              padding: '12px 20px',
-              borderRadius: '25px',
-              fontWeight: 500,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
               background: getButtonBackground(),
               color: getSecondaryTextColor(),
               border: `1px solid ${getButtonBorder()}`,
-              cursor: 'pointer',
-              backdropFilter: 'blur(10px)',
+              cursor: currentStep === 1 ? 'not-allowed' : 'pointer',
               opacity: currentStep === 1 ? 0.5 : 1,
-              pointerEvents: currentStep === 1 ? 'none' : 'auto',
-              fontFamily: "'Courier Prime', monospace"
+              pointerEvents: currentStep === 1 ? 'none' : 'auto'
             }}
           >
             <ArrowLeft size={16} />
@@ -458,22 +395,14 @@ ${selectedWhisper}`;
             disabled={!canProceed()}
             whileHover={{ scale: canProceed() ? 1.05 : 1 }}
             whileTap={{ scale: canProceed() ? 0.95 : 1 }}
+            className="px-5 py-3 rounded-3xl font-medium flex items-center gap-2 border-none text-white font-['Courier_Prime'] transition-all duration-300"
             style={{
-              padding: '12px 20px',
-              borderRadius: '25px',
-              fontWeight: 500,
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
               background: canProceed() ? 
                 (isDarkMode ? 'linear-gradient(135deg, #1C1917 0%, #B45309 100%)' : 'linear-gradient(135deg, #2D2D37 0%, #8B7DA1 100%)') : 
                 (isDarkMode ? 'rgba(100, 100, 100, 0.5)' : 'rgba(200, 200, 200, 0.5)'),
-              color: '#FEFEFE',
-              border: 'none',
               cursor: canProceed() ? 'pointer' : 'not-allowed',
               opacity: canProceed() ? 1 : 0.5,
-              boxShadow: canProceed() ? (isDarkMode ? '0 4px 20px rgba(180, 83, 9, 0.4)' : '0 4px 20px rgba(45, 45, 55, 0.3)') : 'none',
-              fontFamily: "'Courier Prime', monospace"
+              boxShadow: canProceed() ? (isDarkMode ? '0 4px 20px rgba(180, 83, 9, 0.4)' : '0 4px 20px rgba(45, 45, 55, 0.3)') : 'none'
             }}
           >
             {currentStep === 3 ? (
