@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import { createCampfireNoiseGenerator, NoiseGenerator } from '../utils/noiseGenerator';
 
 export const useTheme = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSoundOn, setIsSoundOn] = useState(true);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const noiseGeneratorRef = useRef<NoiseGenerator | null>(null);
 
   // Load preferences from localStorage on mount, with system preference fallback
   useEffect(() => {
@@ -23,34 +24,29 @@ export const useTheme = () => {
     }
   }, []);
 
-  // Initialize campfire sound
+  // Initialize campfire noise generator
   useEffect(() => {
-    // Create audio element for campfire sound
-    const audio = new Audio('/campfire-sound.mp3');
-    audio.loop = true;
-    audio.volume = 0.3; // Keep it subtle
-    audioRef.current = audio;
+    // Create the noise generator
+    noiseGeneratorRef.current = createCampfireNoiseGenerator();
 
     // Cleanup function
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
+      if (noiseGeneratorRef.current) {
+        noiseGeneratorRef.current.cleanup();
+        noiseGeneratorRef.current = null;
       }
     };
   }, []);
 
   // Control sound playback based on isSoundOn state
   useEffect(() => {
-    if (audioRef.current) {
+    if (noiseGeneratorRef.current) {
       if (isSoundOn) {
-        // Use a promise to handle potential autoplay restrictions
-        audioRef.current.play().catch(error => {
-          console.log('Audio autoplay prevented:', error);
-          // This is normal behavior in many browsers
-        });
+        // Start the noise generator
+        noiseGeneratorRef.current.start();
       } else {
-        audioRef.current.pause();
+        // Stop the noise generator
+        noiseGeneratorRef.current.stop();
       }
     }
   }, [isSoundOn]);
