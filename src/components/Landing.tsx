@@ -203,25 +203,25 @@ ${selectedWhisper}`;
     }, 800);
   };
 
-  // Dynamic styles based on dark mode
+  // Dynamic styles based on dark mode - campfire themed
   const getCardBackground = (isSelected: boolean) => {
     if (isDarkMode) {
-      return isSelected ? 'rgba(139, 125, 161, 0.25)' : 'rgba(45, 45, 55, 0.8)';
+      return isSelected ? 'rgba(180, 83, 9, 0.25)' : 'rgba(28, 25, 23, 0.8)';
     }
     return isSelected ? 'rgba(244, 194, 194, 0.15)' : 'rgba(254, 254, 254, 0.8)';
   };
 
   const getCardBorder = (isSelected: boolean) => {
     if (isDarkMode) {
-      return isSelected ? '#B8A8C8' : 'rgba(139, 125, 161, 0.3)';
+      return isSelected ? '#FDBA74' : 'rgba(180, 83, 9, 0.3)';
     }
     return isSelected ? '#8B7DA1' : 'rgba(139, 125, 161, 0.2)';
   };
 
-  const getTextColor = () => isDarkMode ? '#E5E5E5' : '#2D2D37';
-  const getSecondaryTextColor = () => isDarkMode ? '#B8A8C8' : '#8B7DA1';
-  const getButtonBackground = () => isDarkMode ? 'rgba(45, 45, 55, 0.8)' : 'rgba(254, 254, 254, 0.8)';
-  const getButtonBorder = () => isDarkMode ? 'rgba(139, 125, 161, 0.3)' : 'rgba(139, 125, 161, 0.2)';
+  const getTextColor = () => isDarkMode ? '#FEF7ED' : '#2D2D37';
+  const getSecondaryTextColor = () => isDarkMode ? '#FDBA74' : '#8B7DA1';
+  const getButtonBackground = () => isDarkMode ? 'rgba(28, 25, 23, 0.8)' : 'rgba(254, 254, 254, 0.8)';
+  const getButtonBorder = () => isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)';
 
   const renderStep = () => {
     switch (currentStep) {
@@ -297,7 +297,7 @@ ${selectedWhisper}`;
                     animate={selectedWhisper === whisper.poetic ? {
                       background: [
                         getCardBackground(true),
-                        isDarkMode ? 'rgba(139, 125, 161, 0.4)' : 'rgba(244, 194, 194, 0.4)',
+                        isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(244, 194, 194, 0.4)',
                         getCardBackground(true)
                       ]
                     } : {}}
@@ -313,8 +313,8 @@ ${selectedWhisper}`;
                       background: getCardBackground(selectedWhisper === whisper.poetic),
                       cursor: 'pointer',
                       boxShadow: selectedWhisper === whisper.poetic ? 
-                        (isDarkMode ? '0 8px 32px rgba(139, 125, 161, 0.3)' : '0 8px 32px rgba(139, 125, 161, 0.2)') : 
-                        (isDarkMode ? '0 4px 16px rgba(0, 0, 0, 0.2)' : '0 4px 16px rgba(45, 45, 55, 0.08)'),
+                        (isDarkMode ? '0 8px 32px rgba(251, 146, 60, 0.3)' : '0 8px 32px rgba(139, 125, 161, 0.2)') : 
+                        (isDarkMode ? '0 4px 16px rgba(0, 0, 0, 0.3)' : '0 4px 16px rgba(45, 45, 55, 0.08)'),
                       backdropFilter: 'blur(10px)',
                       transition: 'all 0.3s ease'
                     }}
@@ -334,7 +334,7 @@ ${selectedWhisper}`;
                     
                     {/* Source headline with link */}
                     <div style={{
-                      borderTop: `1px solid ${isDarkMode ? 'rgba(139, 125, 161, 0.25)' : 'rgba(139, 125, 161, 0.15)'}`,
+                      borderTop: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.25)' : 'rgba(139, 125, 161, 0.15)'}`,
                       paddingTop: '16px',
                       display: 'flex',
                       alignItems: 'center',
@@ -363,8 +363,8 @@ ${selectedWhisper}`;
                           gap: '4px',
                           padding: '6px 12px',
                           borderRadius: '20px',
-                          background: isDarkMode ? 'rgba(139, 125, 161, 0.2)' : 'rgba(139, 125, 161, 0.1)',
-                          border: `1px solid ${isDarkMode ? 'rgba(139, 125, 161, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
+                          background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
+                          border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
                           color: getSecondaryTextColor(),
                           textDecoration: 'none',
                           fontSize: '0.75rem',
@@ -374,11 +374,11 @@ ${selectedWhisper}`;
                           flexShrink: 0
                         }}
                         onMouseEnter={(e) => {
-                          e.currentTarget.style.background = isDarkMode ? 'rgba(139, 125, 161, 0.3)' : 'rgba(139, 125, 161, 0.2)';
+                          e.currentTarget.style.background = isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)';
                           e.currentTarget.style.color = getTextColor();
                         }}
                         onMouseLeave={(e) => {
-                          e.currentTarget.style.background = isDarkMode ? 'rgba(139, 125, 161, 0.2)' : 'rgba(139, 125, 161, 0.1)';
+                          e.currentTarget.style.background = isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)';
                           e.currentTarget.style.color = getSecondaryTextColor();
                         }}
                       >
@@ -454,7 +454,7 @@ ${selectedWhisper}`;
                   animate={selectedAnchor === word ? {
                     background: [
                       getCardBackground(true),
-                      isDarkMode ? 'rgba(139, 125, 161, 0.4)' : 'rgba(139, 125, 161, 0.4)',
+                      isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.4)',
                       getCardBackground(true)
                     ]
                   } : {}}
@@ -464,13 +464,13 @@ ${selectedWhisper}`;
                   }}
                   style={{
                     padding: '16px 24px',
-                    border: `3px solid ${selectedAnchor === word ? getTextColor() : (isDarkMode ? 'rgba(139, 125, 161, 0.3)' : 'rgba(45, 45, 55, 0.2)')}`,
+                    border: `3px solid ${selectedAnchor === word ? getTextColor() : (isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(45, 45, 55, 0.2)')}`,
                     borderRadius: '50px',
                     background: getCardBackground(selectedAnchor === word),
                     cursor: 'pointer',
                     boxShadow: selectedAnchor === word ? 
-                      (isDarkMode ? '0 8px 24px rgba(139, 125, 161, 0.3)' : '0 8px 24px rgba(45, 45, 55, 0.2)') : 
-                      (isDarkMode ? '0 4px 12px rgba(0, 0, 0, 0.2)' : '0 4px 12px rgba(45, 45, 55, 0.1)'),
+                      (isDarkMode ? '0 8px 24px rgba(251, 146, 60, 0.3)' : '0 8px 24px rgba(45, 45, 55, 0.2)') : 
+                      (isDarkMode ? '0 4px 12px rgba(0, 0, 0, 0.3)' : '0 4px 12px rgba(45, 45, 55, 0.1)'),
                     backdropFilter: 'blur(10px)',
                     transition: 'all 0.3s ease',
                     fontFamily: "'Courier Prime', monospace",
@@ -525,12 +525,12 @@ ${selectedWhisper}`;
                   width: '100%',
                   minHeight: '120px',
                   padding: '24px',
-                  border: `2px solid ${isDarkMode ? 'rgba(139, 125, 161, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
+                  border: `2px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
                   borderRadius: '12px',
                   fontSize: '1.1rem',
                   lineHeight: 1.6,
                   resize: 'vertical',
-                  background: isDarkMode ? 'rgba(45, 45, 55, 0.8)' : 'rgba(254, 254, 254, 0.9)',
+                  background: isDarkMode ? 'rgba(28, 25, 23, 0.8)' : 'rgba(254, 254, 254, 0.9)',
                   fontFamily: "'EB Garamond', serif",
                   backdropFilter: 'blur(10px)',
                   color: getTextColor(),
@@ -538,10 +538,10 @@ ${selectedWhisper}`;
                   transition: 'border-color 0.3s ease'
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = isDarkMode ? '#B8A8C8' : '#8B7DA1';
+                  e.target.style.borderColor = isDarkMode ? '#FDBA74' : '#8B7DA1';
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = isDarkMode ? 'rgba(139, 125, 161, 0.3)' : 'rgba(139, 125, 161, 0.2)';
+                  e.target.style.borderColor = isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)';
                 }}
               />
               
@@ -603,8 +603,8 @@ ${selectedWhisper}`;
             marginBottom: '24px',
             width: '48px',
             height: '48px',
-            border: `3px solid ${isDarkMode ? 'rgba(139, 125, 161, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
-            borderTop: `3px solid ${isDarkMode ? '#B8A8C8' : '#8B7DA1'}`,
+            border: `3px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
+            borderTop: `3px solid ${isDarkMode ? '#FDBA74' : '#8B7DA1'}`,
             borderRadius: '50%'
           }}
         />
@@ -635,7 +635,7 @@ ${selectedWhisper}`;
         transition={{ duration: 0.8 }}
         style={{ maxWidth: '800px', width: '100%' }}
       >
-        {/* Responsive Campfire Orb */}
+        {/* Responsive Campfire Orb - enhanced for dark mode */}
         <div 
           ref={orbRef}
           onMouseEnter={() => setIsOrbHovered(true)}
@@ -644,10 +644,10 @@ ${selectedWhisper}`;
             width: '160px',
             height: '160px',
             background: isDarkMode ? `
-              radial-gradient(circle at 30% 30%, rgba(254, 254, 254, 0.1) 0%, transparent 30%),
-              radial-gradient(circle at 70% 70%, rgba(244, 194, 194, 0.8) 0%, transparent 50%),
-              radial-gradient(circle at 50% 50%, rgba(139, 125, 161, 0.7) 0%, transparent 70%),
-              linear-gradient(135deg, rgba(45, 45, 55, 0.9) 0%, rgba(139, 125, 161, 0.7) 50%, rgba(244, 194, 194, 0.6) 100%)
+              radial-gradient(circle at 30% 30%, rgba(254, 247, 237, 0.1) 0%, transparent 30%),
+              radial-gradient(circle at 70% 70%, rgba(251, 146, 60, 0.8) 0%, transparent 50%),
+              radial-gradient(circle at 50% 50%, rgba(180, 83, 9, 0.7) 0%, transparent 70%),
+              linear-gradient(135deg, rgba(28, 25, 23, 0.9) 0%, rgba(180, 83, 9, 0.7) 50%, rgba(251, 146, 60, 0.6) 100%)
             ` : `
               radial-gradient(circle at 30% 30%, rgba(254, 254, 254, 0.9) 0%, transparent 30%),
               radial-gradient(circle at 70% 70%, rgba(244, 194, 194, 0.7) 0%, transparent 50%),
@@ -660,8 +660,8 @@ ${selectedWhisper}`;
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: `
-              0 0 60px rgba(139, 125, 161, ${isOrbHovered ? (isDarkMode ? 0.7 : 0.6) : (isDarkMode ? 0.5 : 0.4)}),
-              0 0 120px rgba(244, 194, 194, ${isOrbHovered ? (isDarkMode ? 0.5 : 0.4) : (isDarkMode ? 0.3 : 0.2)}),
+              0 0 60px rgba(${isDarkMode ? '251, 146, 60' : '139, 125, 161'}, ${isOrbHovered ? (isDarkMode ? 0.8 : 0.6) : (isDarkMode ? 0.6 : 0.4)}),
+              0 0 120px rgba(${isDarkMode ? '180, 83, 9' : '244, 194, 194'}, ${isOrbHovered ? (isDarkMode ? 0.6 : 0.4) : (isDarkMode ? 0.4 : 0.2)}),
               inset 0 0 60px rgba(254, 254, 254, ${isDarkMode ? 0.05 : 0.1})
             `,
             transform: `translate(${mousePosition.x}px, ${mousePosition.y}px) scale(${isOrbHovered ? 1.1 : 1})`,
@@ -670,7 +670,7 @@ ${selectedWhisper}`;
             position: 'relative'
           }}
         >
-          {/* Inner flame effect */}
+          {/* Inner flame effect - more intense in dark mode */}
           <motion.div 
             animate={{
               scale: [1, 1.2, 1],
@@ -685,7 +685,7 @@ ${selectedWhisper}`;
               width: '80px',
               height: '80px',
               background: isDarkMode ? 
-                'radial-gradient(circle, rgba(244, 194, 194, 0.9) 0%, transparent 70%)' :
+                'radial-gradient(circle, rgba(251, 146, 60, 0.9) 0%, transparent 70%)' :
                 'radial-gradient(circle, rgba(244, 194, 194, 0.8) 0%, transparent 70%)',
               borderRadius: '50%'
             }} 
@@ -731,7 +731,7 @@ ${selectedWhisper}`;
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                background: currentStep >= step ? (isDarkMode ? '#B8A8C8' : '#8B7DA1') : (isDarkMode ? 'rgba(139, 125, 161, 0.4)' : 'rgba(139, 125, 161, 0.3)'),
+                background: currentStep >= step ? (isDarkMode ? '#FDBA74' : '#8B7DA1') : (isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)'),
                 transition: 'all 0.3s ease'
               }}
             />
@@ -787,13 +787,13 @@ ${selectedWhisper}`;
               alignItems: 'center',
               gap: '8px',
               background: canProceed() ? 
-                (isDarkMode ? 'linear-gradient(135deg, #2D2D37 0%, #B8A8C8 100%)' : 'linear-gradient(135deg, #2D2D37 0%, #8B7DA1 100%)') : 
+                (isDarkMode ? 'linear-gradient(135deg, #1C1917 0%, #B45309 100%)' : 'linear-gradient(135deg, #2D2D37 0%, #8B7DA1 100%)') : 
                 (isDarkMode ? 'rgba(100, 100, 100, 0.5)' : 'rgba(200, 200, 200, 0.5)'),
               color: '#FEFEFE',
               border: 'none',
               cursor: canProceed() ? 'pointer' : 'not-allowed',
               opacity: canProceed() ? 1 : 0.5,
-              boxShadow: canProceed() ? (isDarkMode ? '0 4px 20px rgba(45, 45, 55, 0.4)' : '0 4px 20px rgba(45, 45, 55, 0.3)') : 'none',
+              boxShadow: canProceed() ? (isDarkMode ? '0 4px 20px rgba(180, 83, 9, 0.4)' : '0 4px 20px rgba(45, 45, 55, 0.3)') : 'none',
               fontFamily: "'Courier Prime', monospace"
             }}
           >
