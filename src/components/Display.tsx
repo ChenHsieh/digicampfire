@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Share2, Edit3, Copy, Check } from 'lucide-react';
 import { validateSkinnyPoem } from '../utils/openai';
-import { useTheme } from '../hooks/useTheme';
+import { getDisplayStyles } from '../utils/styles/displayStyles';
 
 interface Poem {
   whisper: string;
@@ -14,9 +14,11 @@ interface Poem {
 interface DisplayProps {
   poem: Poem;
   onBack: () => void;
+  isDarkMode: boolean;
+  isSoundOn: boolean;
 }
 
-const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
+const Display: React.FC<DisplayProps> = ({ poem, onBack, isDarkMode, isSoundOn }) => {
   const [visibleLines, setVisibleLines] = useState(0);
   const [showCuratorTweak, setShowCuratorTweak] = useState(false);
   const [editedPoem, setEditedPoem] = useState(poem.text);
@@ -24,18 +26,16 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   
+  const lines = currentPoem.split('\n').filter(line => line.trim() !== '');
+  
   const {
-    isDarkMode,
-    isSoundOn,
     getTextColor,
     getSecondaryTextColor,
     getCardBackground,
     getCardBorder,
     getPoemBackground,
     getPoemShadow
-  } = useTheme();
-  
-  const lines = currentPoem.split('\n').filter(line => line.trim() !== '');
+  } = getDisplayStyles(isDarkMode);
   
   useEffect(() => {
     const timer = setInterval(() => {

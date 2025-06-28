@@ -60,6 +60,8 @@ function App() {
           <Display 
             poem={currentPoem}
             onBack={handleBackToLanding}
+            isDarkMode={isDarkMode}
+            isSoundOn={isSoundOn}
           />
         ) : null;
       case 'about':
