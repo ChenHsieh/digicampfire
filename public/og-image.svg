@@ -1,0 +1,106 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradient definitions for campfire theme -->
+    <radialGradient id="backgroundGradient" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" style="stop-color:#1C1917;stop-opacity:1" />
+      <stop offset="40%" style="stop-color:#292524;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0C0A09;stop-opacity:1" />
+    </radialGradient>
+    
+    <radialGradient id="fireGlow" cx="50%" cy="60%" r="40%">
+      <stop offset="0%" style="stop-color:#FDBA74;stop-opacity:0.8" />
+      <stop offset="30%" style="stop-color:#FB923C;stop-opacity:0.6" />
+      <stop offset="60%" style="stop-color:#B45309;stop-opacity:0.4" />
+      <stop offset="100%" style="stop-color:#92400E;stop-opacity:0.1" />
+    </radialGradient>
+    
+    <radialGradient id="orbGradient" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" style="stop-color:#FEF7ED;stop-opacity:0.9" />
+      <stop offset="30%" style="stop-color:#FDBA74;stop-opacity:0.8" />
+      <stop offset="60%" style="stop-color:#FB923C;stop-opacity:0.7" />
+      <stop offset="100%" style="stop-color:#B45309;stop-opacity:0.6" />
+    </radialGradient>
+    
+    <!-- Text glow filter -->
+    <filter id="textGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Particle animation -->
+    <filter id="particleGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#backgroundGradient)"/>
+  
+  <!-- Fire glow background -->
+  <ellipse cx="600" cy="400" rx="400" ry="200" fill="url(#fireGlow)" opacity="0.6"/>
+  
+  <!-- Floating particles -->
+  <circle cx="200" cy="150" r="2" fill="#FDBA74" opacity="0.7" filter="url(#particleGlow)">
+    <animate attributeName="cy" values="150;130;150" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.7;0.3;0.7" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="1000" cy="200" r="1.5" fill="#FB923C" opacity="0.6" filter="url(#particleGlow)">
+    <animate attributeName="cy" values="200;180;200" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.2;0.6" dur="4s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="150" cy="400" r="1" fill="#FDBA74" opacity="0.5" filter="url(#particleGlow)">
+    <animate attributeName="cy" values="400;385;400" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.5;0.2;0.5" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="1050" cy="450" r="1.5" fill="#FB923C" opacity="0.6" filter="url(#particleGlow)">
+    <animate attributeName="cy" values="450;430;450" dur="3.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.6;0.3;0.6" dur="3.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Central campfire orb -->
+  <circle cx="600" cy="320" r="80" fill="url(#orbGradient)" opacity="0.9">
+    <animate attributeName="r" values="80;85;80" dur="2s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Inner flame -->
+  <circle cx="600" cy="320" r="40" fill="#FDBA74" opacity="0.8">
+    <animate attributeName="r" values="40;45;40" dur="1.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="0.8;0.5;0.8" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Main title with glow effect -->
+  <text x="600" y="180" font-family="serif" font-size="72" font-weight="400" text-anchor="middle" 
+        fill="#FFFFFF" filter="url(#textGlow)">
+    Digital Campfire
+  </text>
+  
+  <!-- Subtitle -->
+  <text x="600" y="220" font-family="serif" font-size="24" font-style="italic" text-anchor="middle" 
+        fill="#FFC880" opacity="0.9">
+    Transform today's headlines into personalized poetry
+  </text>
+  
+  <!-- Decorative elements -->
+  <path d="M 300 480 Q 600 460 900 480" stroke="#FB923C" stroke-width="2" fill="none" opacity="0.6">
+    <animate attributeName="d" values="M 300 480 Q 600 460 900 480;M 300 485 Q 600 465 900 485;M 300 480 Q 600 460 900 480" dur="4s" repeatCount="indefinite"/>
+  </path>
+  
+  <!-- Bottom text -->
+  <text x="600" y="520" font-family="monospace" font-size="18" text-anchor="middle" 
+        fill="#FFC880" opacity="0.8">
+    A space for strangers to sit by and share one line of feeling
+  </text>
+  
+  <!-- Website URL -->
+  <text x="600" y="560" font-family="monospace" font-size="16" text-anchor="middle" 
+        fill="#FDBA74" opacity="0.7">
+    digicampfire.xyz
+  </text>
+</svg>
