@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import { createCampfireNoiseGenerator, NoiseGenerator } from '../utils/noiseGenerator';
 
 export const useTheme = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSoundOn, setIsSoundOn] = useState(true);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const noiseGeneratorRef = useRef<NoiseGenerator | null>(null);
 
   // Load preferences from localStorage on mount, with system preference fallback
   useEffect(() => {
@@ -23,34 +24,29 @@ export const useTheme = () => {
     }
   }, []);
 
-  // Initialize campfire sound
+  // Initialize campfire noise generator
   useEffect(() => {
-    // Create audio element for campfire sound
-    const audio = new Audio('/campfire-sound.mp3');
-    audio.loop = true;
-    audio.volume = 0.3; // Keep it subtle
-    audioRef.current = audio;
+    // Create the noise generator
+    noiseGeneratorRef.current = createCampfireNoiseGenerator();
 
     // Cleanup function
     return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
+      if (noiseGeneratorRef.current) {
+        noiseGeneratorRef.current.cleanup();
+        noiseGeneratorRef.current = null;
       }
     };
   }, []);
 
   // Control sound playback based on isSoundOn state
   useEffect(() => {
-    if (audioRef.current) {
+    if (noiseGeneratorRef.current) {
       if (isSoundOn) {
-        // Use a promise to handle potential autoplay restrictions
-        audioRef.current.play().catch(error => {
-          console.log('Audio autoplay prevented:', error);
-          // This is normal behavior in many browsers
-        });
+        // Start the noise generator
+        noiseGeneratorRef.current.start();
       } else {
-        audioRef.current.pause();
+        // Stop the noise generator
+        noiseGeneratorRef.current.stop();
       }
     }
   }, [isSoundOn]);
@@ -112,6 +108,35 @@ export const useTheme = () => {
     return isSelected ? '#8B7DA1' : 'rgba(139, 125, 161, 0.2)';
   };
 
+  // Display-specific styling functions
+  const getPoemBackground = () => {
+    if (isDarkMode) {
+      return `
+        radial-gradient(circle at center, rgba(180, 83, 9, 0.15) 0%, rgba(28, 25, 23, 0.9) 70%),
+        rgba(28, 25, 23, 0.95)
+      `;
+    }
+    return `
+      radial-gradient(circle at center, rgba(244, 194, 194, 0.2) 0%, rgba(254, 254, 254, 0.9) 70%),
+      rgba(254, 254, 254, 0.95)
+    `;
+  };
+
+  const getPoemShadow = () => {
+    if (isDarkMode) {
+      return `
+        0 0 60px rgba(180, 83, 9, 0.3),
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(251, 146, 60, 0.2)
+      `;
+    }
+    return `
+      0 0 40px rgba(139, 125, 161, 0.2),
+      0 20px 40px rgba(45, 45, 55, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8)
+    `;
+  };
+
   return {
     isDarkMode,
     isSoundOn,
@@ -125,6 +150,8 @@ export const useTheme = () => {
     getLinkColor,
     getLinkHoverColor,
     getCardBackground,
-    getCardBorder
+    getCardBorder,
+    getPoemBackground,
+    getPoemShadow
   };
 };
