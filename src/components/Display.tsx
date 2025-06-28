@@ -603,7 +603,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           }}>
             Thank you for sharing your light with us
           </p>
-        </div>
+        </motion.div>
       </div>
       
       <style>{`
