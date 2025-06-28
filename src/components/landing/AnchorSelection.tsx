@@ -13,8 +13,8 @@ interface AnchorSelectionProps {
   getCardBorder: (isSelected: boolean) => string;
   getTextColor: () => string;
   getSecondaryTextColor: () => string;
-  getAdaptiveButtonBackground: (opacity: number) => string;
-  getAdaptiveButtonBorder: (opacity: number) => string;
+  getButtonBackground: () => string;
+  getButtonBorder: () => string;
 }
 
 const AnchorSelection: React.FC<AnchorSelectionProps> = ({
@@ -28,8 +28,8 @@ const AnchorSelection: React.FC<AnchorSelectionProps> = ({
   getCardBorder,
   getTextColor,
   getSecondaryTextColor,
-  getAdaptiveButtonBackground,
-  getAdaptiveButtonBorder
+  getButtonBackground,
+  getButtonBorder
 }) => {
   return (
     <motion.div
@@ -57,8 +57,8 @@ const AnchorSelection: React.FC<AnchorSelectionProps> = ({
           style={{
             padding: '8px',
             borderRadius: '50%',
-            background: getAdaptiveButtonBackground(0.1),
-            border: `1px solid ${getAdaptiveButtonBorder(0.2)}`,
+            background: getButtonBackground(),
+            border: `1px solid ${getButtonBorder()}`,
             cursor: loadingAnchors ? 'not-allowed' : 'pointer',
             opacity: loadingAnchors ? 0.5 : 1,
             backdropFilter: 'blur(10px)'
@@ -101,7 +101,7 @@ const AnchorSelection: React.FC<AnchorSelectionProps> = ({
             }}
             style={{
               padding: '16px 24px',
-              border: `3px solid ${selectedAnchor === word ? getTextColor() : getAdaptiveButtonBorder(0.3)}`,
+              border: `3px solid ${selectedAnchor === word ? getTextColor() : (isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(45, 45, 55, 0.2)')}`,
               borderRadius: '50px',
               background: getCardBackground(selectedAnchor === word),
               cursor: 'pointer',

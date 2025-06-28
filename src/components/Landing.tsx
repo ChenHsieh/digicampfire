@@ -32,9 +32,7 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
     getTextColor,
     getSecondaryTextColor,
     getCardBackground,
-    getCardBorder,
-    getAdaptiveButtonBackground,
-    getAdaptiveButtonBorder
+    getCardBorder
   } = useTheme();
 
   const {
@@ -63,6 +61,9 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
     loadNewAnchors
   } = usePoemGenerationFlow(onComplete);
 
+  const getButtonBackground = () => isDarkMode ? 'rgba(28, 25, 23, 0.8)' : 'rgba(254, 254, 254, 0.8)';
+  const getButtonBorder = () => isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)';
+
   // Animate prompt rotation
   useEffect(() => {
     if (currentStep === 3) {
@@ -88,8 +89,8 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
             getCardBorder={getCardBorder}
             getTextColor={getTextColor}
             getSecondaryTextColor={getSecondaryTextColor}
-            getAdaptiveButtonBackground={getAdaptiveButtonBackground}
-            getAdaptiveButtonBorder={getAdaptiveButtonBorder}
+            getButtonBackground={getButtonBackground}
+            getButtonBorder={getButtonBorder}
           />
         );
       
@@ -106,8 +107,8 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
             getCardBorder={getCardBorder}
             getTextColor={getTextColor}
             getSecondaryTextColor={getSecondaryTextColor}
-            getAdaptiveButtonBackground={getAdaptiveButtonBackground}
-            getAdaptiveButtonBorder={getAdaptiveButtonBorder}
+            getButtonBackground={getButtonBackground}
+            getButtonBorder={getButtonBorder}
           />
         );
       
@@ -181,9 +182,9 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
             whileTap={{ scale: 0.95 }}
             className="px-5 py-3 rounded-3xl font-medium flex items-center gap-2 backdrop-blur-md font-['Courier_Prime'] transition-opacity duration-300"
             style={{
-              background: getAdaptiveButtonBackground(0.1),
+              background: getButtonBackground(),
               color: getSecondaryTextColor(),
-              border: `1px solid ${getAdaptiveButtonBorder(0.2)}`,
+              border: `1px solid ${getButtonBorder()}`,
               cursor: currentStep === 1 ? 'not-allowed' : 'pointer',
               opacity: currentStep === 1 ? 0.5 : 1,
               pointerEvents: currentStep === 1 ? 'none' : 'auto'

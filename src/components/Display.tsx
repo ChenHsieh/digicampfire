@@ -33,9 +33,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
     getCardBackground,
     getCardBorder,
     getPoemBackground,
-    getPoemShadow,
-    getAdaptiveButtonBackground,
-    getAdaptiveButtonBorder
+    getPoemShadow
   } = useTheme();
   
   const lines = currentPoem.split('\n').filter(line => line.trim() !== '');
@@ -98,8 +96,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           className="flex items-center gap-2 text-sm px-4 py-2 rounded-full mb-10 cursor-pointer backdrop-blur-md font-['Courier_Prime']"
           style={{
             color: getSecondaryTextColor(),
-            background: getAdaptiveButtonBackground(0.1),
-            border: `1px solid ${getAdaptiveButtonBorder(0.2)}`
+            background: getCardBackground(),
+            border: `1px solid ${getCardBorder()}`
           }}
         >
           <ArrowLeft size={16} />
@@ -233,17 +231,17 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                 whileTap={{ scale: 0.9 }}
                 className="flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 font-['Courier_Prime'] flex-shrink-0"
                 style={{
-                  background: getAdaptiveButtonBackground(0.15),
-                  border: `1px solid ${getAdaptiveButtonBorder(0.3)}`,
+                  background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
+                  border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
                   color: getSecondaryTextColor(),
                   textDecoration: 'none'
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = getAdaptiveButtonBackground(0.25);
+                  e.currentTarget.style.background = isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)';
                   e.currentTarget.style.color = getTextColor();
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = getAdaptiveButtonBackground(0.15);
+                  e.currentTarget.style.background = isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)';
                   e.currentTarget.style.color = getSecondaryTextColor();
                 }}
               >
@@ -285,8 +283,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             transition={{ duration: 0.4 }}
             className="p-6 rounded-2xl mb-10 backdrop-blur-2xl"
             style={{
-              background: getCardBackground(),
-              border: `2px solid ${getCardBorder()}`
+              background: isDarkMode ? 'rgba(28, 25, 23, 0.9)' : 'rgba(254, 254, 254, 0.9)',
+              border: `2px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.2)'}`
             }}
           >
             <h3 
@@ -306,8 +304,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
               onChange={(e) => setEditedPoem(e.target.value)}
               className="w-full min-h-[200px] p-4 rounded-lg text-base leading-relaxed resize-y font-['EB_Garamond'] outline-none"
               style={{
-                border: `1px solid ${getAdaptiveButtonBorder(0.5)}`,
-                background: getAdaptiveButtonBackground(0.1),
+                border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.5)' : 'rgba(139, 125, 161, 0.3)'}`,
+                background: isDarkMode ? 'rgba(28, 25, 23, 0.8)' : 'rgba(254, 254, 254, 0.8)',
                 color: getTextColor()
               }}
             />
@@ -321,8 +319,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                 whileTap={{ scale: 0.95 }}
                 className="px-4 py-2 rounded-full cursor-pointer font-['Courier_Prime'] text-sm"
                 style={{
-                  background: getAdaptiveButtonBackground(0.15),
-                  border: `1px solid ${getAdaptiveButtonBorder(0.3)}`,
+                  background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
+                  border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)'}`,
                   color: getSecondaryTextColor()
                 }}
               >
@@ -361,7 +359,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
               transition={{ duration: 0.3 }}
               className="p-8 rounded-2xl backdrop-blur-2xl max-w-sm w-full"
               style={{
-                background: getCardBackground(),
+                background: isDarkMode ? 'rgba(28, 25, 23, 0.95)' : 'rgba(254, 254, 254, 0.95)',
                 border: `1px solid ${getCardBorder()}`,
                 boxShadow: isDarkMode ? '0 20px 60px rgba(0, 0, 0, 0.5)' : '0 20px 60px rgba(45, 45, 55, 0.3)'
               }}
@@ -383,10 +381,10 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                   style={{
                     background: copySuccess ? 
                       (isDarkMode ? 'rgba(34, 197, 94, 0.2)' : 'rgba(34, 197, 94, 0.1)') : 
-                      getAdaptiveButtonBackground(0.15),
+                      (isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)'),
                     border: `1px solid ${copySuccess ? 
                       (isDarkMode ? 'rgba(34, 197, 94, 0.4)' : 'rgba(34, 197, 94, 0.3)') : 
-                      getAdaptiveButtonBorder(0.3)}`,
+                      (isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)')}`,
                     color: copySuccess ? '#059669' : getTextColor()
                   }}
                 >
@@ -401,8 +399,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
                 whileTap={{ scale: 0.95 }}
                 className="mt-6 px-4 py-2 rounded-full cursor-pointer font-['Courier_Prime'] text-sm w-full"
                 style={{
-                  background: getAdaptiveButtonBackground(0.15),
-                  border: `1px solid ${getAdaptiveButtonBorder(0.3)}`,
+                  background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
+                  border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)'}`,
                   color: getSecondaryTextColor()
                 }}
               >
@@ -431,9 +429,9 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             className="flex items-center gap-2 px-5 py-3 rounded-3xl cursor-pointer backdrop-blur-md font-['Courier_Prime'] text-sm"
             style={{
               background: showCuratorTweak ? 
-                getAdaptiveButtonBackground(0.3) : 
-                getAdaptiveButtonBackground(0.2),
-              border: `1px solid ${getAdaptiveButtonBorder(0.4)}`,
+                (isDarkMode ? 'rgba(180, 83, 9, 0.9)' : 'rgba(139, 125, 161, 0.3)') : 
+                (isDarkMode ? 'rgba(180, 83, 9, 0.7)' : 'rgba(139, 125, 161, 0.2)'),
+              border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.5)' : 'rgba(139, 125, 161, 0.4)'}`,
               color: getTextColor()
             }}
           >
@@ -447,8 +445,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 px-5 py-3 rounded-3xl cursor-pointer backdrop-blur-md font-['Courier_Prime'] text-sm"
             style={{
-              background: getAdaptiveButtonBackground(0.2),
-              border: `1px solid ${getAdaptiveButtonBorder(0.4)}`,
+              background: isDarkMode ? 'rgba(180, 83, 9, 0.7)' : 'rgba(139, 125, 161, 0.2)',
+              border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.5)' : 'rgba(139, 125, 161, 0.4)'}`,
               color: getTextColor()
             }}
           >

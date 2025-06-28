@@ -53,23 +53,11 @@ export const useTheme = () => {
   };
 
   const getTextColor = () => isDarkMode ? '#FFFFFF' : '#2D2D37';
-  
-  // Updated adaptive secondary text color - more neutral and works in both modes
-  const getSecondaryTextColor = () => {
-    const baseColor = isDarkMode ? '255, 255, 255' : '45, 45, 55';
-    return `rgba(${baseColor}, 0.7)`;
-  };
-
+  const getSecondaryTextColor = () => isDarkMode ? '#FFC880' : '#8B7DA1';
   const getFooterBackground = () => isDarkMode ? 'rgba(28, 25, 23, 0.9)' : 'rgba(254, 254, 254, 0.8)';
   const getFooterBorder = () => isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.1)';
-  
-  // Updated adaptive link colors
-  const getLinkColor = () => {
-    const baseColor = isDarkMode ? '255, 255, 255' : '45, 45, 55';
-    return `rgba(${baseColor}, 0.8)`;
-  };
-  
-  const getLinkHoverColor = () => getTextColor();
+  const getLinkColor = () => isDarkMode ? '#FFC880' : '#8B7DA1';
+  const getLinkHoverColor = () => isDarkMode ? '#FFD4A3' : '#2D2D37';
 
   // Centralized card styling functions
   const getCardBackground = (isSelected: boolean = false) => {
@@ -84,17 +72,6 @@ export const useTheme = () => {
       return isSelected ? '#FFC880' : 'rgba(180, 83, 9, 0.3)';
     }
     return isSelected ? '#8B7DA1' : 'rgba(139, 125, 161, 0.2)';
-  };
-
-  // New adaptive button styling functions
-  const getAdaptiveButtonBackground = (opacity: number = 0.2) => {
-    const baseColor = isDarkMode ? '255, 255, 255' : '45, 45, 55';
-    return `rgba(${baseColor}, ${opacity})`;
-  };
-
-  const getAdaptiveButtonBorder = (opacity: number = 0.4) => {
-    const baseColor = isDarkMode ? '255, 255, 255' : '45, 45, 55';
-    return `rgba(${baseColor}, ${opacity})`;
   };
 
   // Display-specific styling functions
@@ -139,8 +116,6 @@ export const useTheme = () => {
     getLinkHoverColor,
     getCardBackground,
     getCardBorder,
-    getAdaptiveButtonBackground,
-    getAdaptiveButtonBorder,
     getPoemBackground,
     getPoemShadow
   };
