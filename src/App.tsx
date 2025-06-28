@@ -54,7 +54,9 @@ function App() {
       `,
       fontFamily: "'Courier Prime', monospace",
       position: 'relative',
-      color: '#2D2D37'
+      color: '#2D2D37',
+      display: 'flex',
+      flexDirection: 'column'
     }}>
       {/* Enhanced noise grain overlay */}
       <div style={{
@@ -72,11 +74,72 @@ function App() {
       {/* Bolt Logo - appears on all pages */}
       <BoltLogo />
       
-      <div style={{ position: 'relative', zIndex: 2 }}>
+      {/* Main content area */}
+      <div style={{ position: 'relative', zIndex: 2, flex: 1 }}>
         <AnimatePresence mode="wait">
           {renderCurrentComponent()}
         </AnimatePresence>
       </div>
+
+      {/* Footer with About and Privacy links */}
+      <footer style={{
+        position: 'relative',
+        zIndex: 2,
+        padding: '20px 24px',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: '24px',
+        borderTop: '1px solid rgba(139, 125, 161, 0.1)',
+        background: 'rgba(254, 254, 254, 0.8)',
+        backdropFilter: 'blur(10px)'
+      }}>
+        <a
+          href="/about"
+          style={{
+            color: '#8B7DA1',
+            textDecoration: 'none',
+            fontSize: '0.85rem',
+            fontFamily: "'Courier Prime', monospace",
+            transition: 'color 0.3s ease',
+            cursor: 'pointer'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = '#2D2D37';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = '#8B7DA1';
+          }}
+        >
+          About
+        </a>
+        
+        <div style={{
+          width: '1px',
+          height: '12px',
+          background: 'rgba(139, 125, 161, 0.3)'
+        }} />
+        
+        <a
+          href="/privacy"
+          style={{
+            color: '#8B7DA1',
+            textDecoration: 'none',
+            fontSize: '0.85rem',
+            fontFamily: "'Courier Prime', monospace",
+            transition: 'color 0.3s ease',
+            cursor: 'pointer'
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = '#2D2D37';
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = '#8B7DA1';
+          }}
+        >
+          Privacy
+        </a>
+      </footer>
     </div>
   );
 }
