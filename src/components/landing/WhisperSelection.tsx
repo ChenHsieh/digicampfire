@@ -19,8 +19,8 @@ interface WhisperSelectionProps {
   getCardBorder: (isSelected: boolean) => string;
   getTextColor: () => string;
   getSecondaryTextColor: () => string;
-  getButtonBackground: () => string;
-  getButtonBorder: () => string;
+  getAdaptiveButtonBackground: (opacity: number) => string;
+  getAdaptiveButtonBorder: (opacity: number) => string;
 }
 
 const WhisperSelection: React.FC<WhisperSelectionProps> = ({
@@ -34,8 +34,8 @@ const WhisperSelection: React.FC<WhisperSelectionProps> = ({
   getCardBorder,
   getTextColor,
   getSecondaryTextColor,
-  getButtonBackground,
-  getButtonBorder
+  getAdaptiveButtonBackground,
+  getAdaptiveButtonBorder
 }) => {
   return (
     <motion.div
@@ -63,8 +63,8 @@ const WhisperSelection: React.FC<WhisperSelectionProps> = ({
           style={{
             padding: '8px',
             borderRadius: '50%',
-            background: getButtonBackground(),
-            border: `1px solid ${getButtonBorder()}`,
+            background: getAdaptiveButtonBackground(0.1),
+            border: `1px solid ${getAdaptiveButtonBorder(0.2)}`,
             cursor: loadingWhispers ? 'not-allowed' : 'pointer',
             opacity: loadingWhispers ? 0.5 : 1,
             backdropFilter: 'blur(10px)'
@@ -145,7 +145,7 @@ const WhisperSelection: React.FC<WhisperSelectionProps> = ({
               
               {/* Source headline with link */}
               <div style={{
-                borderTop: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.25)' : 'rgba(139, 125, 161, 0.15)'}`,
+                borderTop: `1px solid ${getAdaptiveButtonBorder(0.25)}`,
                 paddingTop: '16px',
                 display: 'flex',
                 alignItems: 'center',
@@ -174,8 +174,8 @@ const WhisperSelection: React.FC<WhisperSelectionProps> = ({
                     gap: '4px',
                     padding: '6px 12px',
                     borderRadius: '20px',
-                    background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
-                    border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
+                    background: getAdaptiveButtonBackground(0.15),
+                    border: `1px solid ${getAdaptiveButtonBorder(0.3)}`,
                     color: getSecondaryTextColor(),
                     textDecoration: 'none',
                     fontSize: '0.75rem',
@@ -185,11 +185,11 @@ const WhisperSelection: React.FC<WhisperSelectionProps> = ({
                     flexShrink: 0
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)';
+                    e.currentTarget.style.background = getAdaptiveButtonBackground(0.25);
                     e.currentTarget.style.color = getTextColor();
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)';
+                    e.currentTarget.style.background = getAdaptiveButtonBackground(0.15);
                     e.currentTarget.style.color = getSecondaryTextColor();
                   }}
                 >
