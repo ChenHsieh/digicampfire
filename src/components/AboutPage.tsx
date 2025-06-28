@@ -145,12 +145,7 @@ const AboutPage: React.FC<AboutPageProps> = ({
                 The Structure of a Skinny Poem
               </h3>
 
-              <div style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 2fr',
-                gap: '32px',
-                alignItems: 'start'
-              }}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
                 {/* Example Poem */}
                 <div>
                   <h4 style={{
