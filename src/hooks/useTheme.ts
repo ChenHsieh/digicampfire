@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { createCampfireNoiseGenerator, NoiseGenerator } from '../utils/noiseGenerator';
+import { createCampfireMusicGenerator, MusicGenerator } from '../utils/musicGenerator';
 
 export const useTheme = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isSoundOn, setIsSoundOn] = useState(true);
-  const noiseGeneratorRef = useRef<NoiseGenerator | null>(null);
+  const musicGeneratorRef = useRef<MusicGenerator | null>(null);
 
   // Load preferences from localStorage on mount, with system preference fallback
   useEffect(() => {
@@ -24,29 +24,29 @@ export const useTheme = () => {
     }
   }, []);
 
-  // Initialize campfire noise generator
+  // Initialize campfire music generator
   useEffect(() => {
-    // Create the noise generator
-    noiseGeneratorRef.current = createCampfireNoiseGenerator();
+    // Create the music generator
+    musicGeneratorRef.current = createCampfireMusicGenerator();
 
     // Cleanup function
     return () => {
-      if (noiseGeneratorRef.current) {
-        noiseGeneratorRef.current.cleanup();
-        noiseGeneratorRef.current = null;
+      if (musicGeneratorRef.current) {
+        musicGeneratorRef.current.cleanup();
+        musicGeneratorRef.current = null;
       }
     };
   }, []);
 
   // Control sound playback based on isSoundOn state
   useEffect(() => {
-    if (noiseGeneratorRef.current) {
+    if (musicGeneratorRef.current) {
       if (isSoundOn) {
-        // Start the noise generator
-        noiseGeneratorRef.current.start();
+        // Start the music generator
+        musicGeneratorRef.current.start();
       } else {
-        // Stop the noise generator
-        noiseGeneratorRef.current.stop();
+        // Stop the music generator
+        musicGeneratorRef.current.stop();
       }
     }
   }, [isSoundOn]);
