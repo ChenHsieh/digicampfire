@@ -25,6 +25,7 @@ function App() {
     isDarkMode,
     toggleDarkMode,
     getBackgroundStyle,
+    getParticleNoiseStyle,
     getTextColor,
     getFooterBackground,
     getFooterBorder,
@@ -87,6 +88,8 @@ function App() {
     }
   };
 
+  const particleNoiseStyle = getParticleNoiseStyle();
+
   return (
     <div 
       className="min-h-screen font-['Courier_Prime'] relative flex flex-col transition-all duration-500 ease-in-out"
@@ -95,12 +98,12 @@ function App() {
         color: getTextColor()
       }}
     >
-      {/* Enhanced noise grain overlay */}
+      {/* Particle noise overlay */}
       <div 
         className="fixed inset-0 w-full h-full pointer-events-none z-10 transition-opacity duration-500 ease-in-out"
         style={{
           opacity: isDarkMode ? 0.08 : 0.04,
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`
+          ...particleNoiseStyle
         }}
       />
       

@@ -43,6 +43,15 @@ export const useTheme = () => {
     `;
   };
 
+  // Particle noise background for both modes
+  const getParticleNoiseStyle = () => {
+    const particleColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+    return {
+      backgroundImage: `radial-gradient(circle at center, ${particleColor} 1px, transparent 1px)`,
+      backgroundSize: '4px 4px'
+    };
+  };
+
   const getTextColor = () => isDarkMode ? '#FFFFFF' : '#2D2D37';
   const getSecondaryTextColor = () => isDarkMode ? '#FFC880' : '#8B7DA1';
   const getFooterBackground = () => isDarkMode ? 'rgba(28, 25, 23, 0.9)' : 'rgba(254, 254, 254, 0.8)';
@@ -98,6 +107,7 @@ export const useTheme = () => {
     isDarkMode,
     toggleDarkMode,
     getBackgroundStyle,
+    getParticleNoiseStyle,
     getTextColor,
     getSecondaryTextColor,
     getFooterBackground,
