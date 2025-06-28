@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Share2, Edit3, Copy, Check } from 'lucide-react';
+import { ArrowLeft, Share2, Edit3, Copy, Check, ExternalLink } from 'lucide-react';
 import { validateSkinnyPoem } from '../utils/openai';
 import { useTheme } from '../hooks/useTheme';
 
@@ -9,6 +9,8 @@ interface Poem {
   anchor: string;
   feeling: string;
   text: string;
+  headline: string;
+  link: string;
 }
 
 interface DisplayProps {
@@ -203,6 +205,55 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
               style={{ color: getTextColor() }}
             >
               {poem.anchor}
+            </div>
+          </div>
+          
+          {/* News Source Card */}
+          <div 
+            className="p-5 rounded-xl backdrop-blur-md md:col-span-2"
+            style={{
+              background: getCardBackground(),
+              border: `1px solid ${getCardBorder()}`
+            }}
+          >
+            <div 
+              className="text-xs mb-2 font-semibold uppercase tracking-wider font-['Courier_Prime']"
+              style={{ color: getSecondaryTextColor() }}
+            >
+              From Today's News
+            </div>
+            <div className="flex items-center justify-between gap-3">
+              <div 
+                className="text-base font-['EB_Garamond'] flex-1"
+                style={{ color: getTextColor() }}
+              >
+                {poem.headline}
+              </div>
+              <motion.a
+                href={poem.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="flex items-center gap-2 px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 font-['Courier_Prime'] flex-shrink-0"
+                style={{
+                  background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
+                  border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
+                  color: getSecondaryTextColor(),
+                  textDecoration: 'none'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)';
+                  e.currentTarget.style.color = getTextColor();
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)';
+                  e.currentTarget.style.color = getSecondaryTextColor();
+                }}
+              >
+                <ExternalLink size={14} />
+                Read Source
+              </motion.a>
             </div>
           </div>
           

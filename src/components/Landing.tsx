@@ -16,13 +16,13 @@ interface WhisperWithSource {
 }
 
 interface LandingProps {
-  onComplete: (poem: { whisper: string; anchor: string; feeling: string; text: string }) => void;
+  onComplete: (poem: { whisper: string; anchor: string; feeling: string; text: string; headline: string; link: string }) => void;
   isDarkMode: boolean;
 }
 
 const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedWhisper, setSelectedWhisper] = useState<string>('');
+  const [selectedWhisper, setSelectedWhisper] = useState<WhisperWithSource | null>(null);
   const [selectedAnchor, setSelectedAnchor] = useState<string>('');
   const [feeling, setFeeling] = useState<string>('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -164,21 +164,25 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
   };
 
   const handleGenerate = async () => {
+    if (!selectedWhisper) return;
+    
     setIsGenerating(true);
     
     try {
-      const generatedPoem = await generateSkinnyPoem(selectedWhisper, selectedAnchor, feeling);
+      const generatedPoem = await generateSkinnyPoem(selectedWhisper.poetic, selectedAnchor, feeling);
       
       onComplete({
-        whisper: selectedWhisper,
+        whisper: selectedWhisper.poetic,
         anchor: selectedAnchor,
         feeling: feeling,
-        text: generatedPoem
+        text: generatedPoem,
+        headline: selectedWhisper.headline,
+        link: selectedWhisper.link
       });
     } catch (error) {
       console.error('Error generating poem:', error);
       // Fallback poem
-      const fallbackPoem = `${selectedWhisper}
+      const fallbackPoem = `${selectedWhisper.poetic}
 ${selectedAnchor}
 silence
 holds
@@ -188,13 +192,15 @@ cannot
 say
 in
 ${selectedAnchor}
-${selectedWhisper}`;
+${selectedWhisper.poetic}`;
       
       onComplete({
-        whisper: selectedWhisper,
+        whisper: selectedWhisper.poetic,
         anchor: selectedAnchor,
         feeling: feeling,
-        text: fallbackPoem
+        text: fallbackPoem,
+        headline: selectedWhisper.headline,
+        link: selectedWhisper.link
       });
     }
     
@@ -203,18 +209,18 @@ ${selectedWhisper}`;
 
   const canProceed = () => {
     switch (currentStep) {
-      case 1: return selectedWhisper !== '';
+      case 1: return selectedWhisper !== null;
       case 2: return selectedAnchor !== '';
       case 3: return true; // Always allow proceeding from step 3 (feeling is optional)
       default: return false;
     }
   };
 
-  const handleSelection = (value: string, type: 'whisper' | 'anchor') => {
+  const handleSelection = (value: string | WhisperWithSource, type: 'whisper' | 'anchor') => {
     if (type === 'whisper') {
-      setSelectedWhisper(value);
+      setSelectedWhisper(value as WhisperWithSource);
     } else {
-      setSelectedAnchor(value);
+      setSelectedAnchor(value as string);
     }
     
     // Auto-advance after selection with shimmer effect

@@ -10,10 +10,10 @@ interface WhisperWithSource {
 
 interface WhisperSelectionProps {
   whisperOptions: WhisperWithSource[];
-  selectedWhisper: string;
+  selectedWhisper: WhisperWithSource | null;
   loadingWhispers: boolean;
   loadWhispers: () => void;
-  handleSelection: (value: string, type: 'whisper' | 'anchor') => void;
+  handleSelection: (value: WhisperWithSource, type: 'whisper' | 'anchor') => void;
   isDarkMode: boolean;
   getCardBackground: (isSelected: boolean) => string;
   getCardBorder: (isSelected: boolean) => string;
@@ -105,7 +105,7 @@ const WhisperSelection: React.FC<WhisperSelectionProps> = ({
             <motion.div
               key={index}
               whileHover={{ scale: 1.01, y: -2 }}
-              animate={selectedWhisper === whisper.poetic ? {
+              animate={selectedWhisper?.poetic === whisper.poetic ? {
                 background: [
                   getCardBackground(true),
                   isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(244, 194, 194, 0.4)',
@@ -114,16 +114,16 @@ const WhisperSelection: React.FC<WhisperSelectionProps> = ({
               } : {}}
               transition={{ 
                 scale: { duration: 0.2 },
-                background: { duration: 0.6, repeat: selectedWhisper === whisper.poetic ? 2 : 0 }
+                background: { duration: 0.6, repeat: selectedWhisper?.poetic === whisper.poetic ? 2 : 0 }
               }}
-              onClick={() => handleSelection(whisper.poetic, 'whisper')}
+              onClick={() => handleSelection(whisper, 'whisper')}
               style={{
                 padding: '28px 32px',
-                border: `2px solid ${getCardBorder(selectedWhisper === whisper.poetic)}`,
+                border: `2px solid ${getCardBorder(selectedWhisper?.poetic === whisper.poetic)}`,
                 borderRadius: '16px',
-                background: getCardBackground(selectedWhisper === whisper.poetic),
+                background: getCardBackground(selectedWhisper?.poetic === whisper.poetic),
                 cursor: 'pointer',
-                boxShadow: selectedWhisper === whisper.poetic ? 
+                boxShadow: selectedWhisper?.poetic === whisper.poetic ? 
                   (isDarkMode ? '0 8px 32px rgba(251, 146, 60, 0.3)' : '0 8px 32px rgba(139, 125, 161, 0.2)') : 
                   (isDarkMode ? '0 4px 16px rgba(0, 0, 0, 0.3)' : '0 4px 16px rgba(45, 45, 55, 0.08)'),
                 backdropFilter: 'blur(10px)',

@@ -15,6 +15,8 @@ interface Poem {
   anchor: string;
   feeling: string;
   text: string;
+  headline: string;
+  link: string;
 }
 
 function App() {
