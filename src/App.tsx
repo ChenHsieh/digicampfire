@@ -3,10 +3,12 @@ import { AnimatePresence } from 'framer-motion';
 import { useTheme } from './hooks/useTheme';
 import Landing from './components/Landing';
 import Display from './components/Display';
+import AboutPage from './components/AboutPage';
+import PrivacyPage from './components/PrivacyPage';
 import BoltLogo from './components/BoltLogo';
 import AppFooter from './components/common/AppFooter';
 
-type AppState = 'landing' | 'display';
+type AppState = 'landing' | 'display' | 'about' | 'privacy';
 
 interface Poem {
   whisper: string;
@@ -29,7 +31,10 @@ function App() {
     getFooterBackground,
     getFooterBorder,
     getLinkColor,
-    getLinkHoverColor
+    getLinkHoverColor,
+    getCardBackground,
+    getCardBorder,
+    getSecondaryTextColor
   } = useTheme();
 
   const handlePoemComplete = (poem: Poem) => {
@@ -40,6 +45,10 @@ function App() {
   const handleBackToLanding = () => {
     setCurrentState('landing');
     setCurrentPoem(null);
+  };
+
+  const handleNavigateToPage = (page: AppState) => {
+    setCurrentState(page);
   };
 
   const renderCurrentComponent = () => {
@@ -55,6 +64,28 @@ function App() {
             isSoundOn={isSoundOn}
           />
         ) : null;
+      case 'about':
+        return (
+          <AboutPage
+            onBack={handleBackToLanding}
+            isDarkMode={isDarkMode}
+            getTextColor={getTextColor}
+            getSecondaryTextColor={getSecondaryTextColor}
+            getCardBackground={getCardBackground}
+            getCardBorder={getCardBorder}
+          />
+        );
+      case 'privacy':
+        return (
+          <PrivacyPage
+            onBack={handleBackToLanding}
+            isDarkMode={isDarkMode}
+            getTextColor={getTextColor}
+            getSecondaryTextColor={getSecondaryTextColor}
+            getCardBackground={getCardBackground}
+            getCardBorder={getCardBorder}
+          />
+        );
       default:
         return <Landing onComplete={handlePoemComplete} isDarkMode={isDarkMode} isSoundOn={isSoundOn} />;
     }
@@ -105,6 +136,7 @@ function App() {
         getFooterBorder={getFooterBorder}
         getLinkColor={getLinkColor}
         getLinkHoverColor={getLinkHoverColor}
+        onNavigateToPage={handleNavigateToPage}
       />
     </div>
   );

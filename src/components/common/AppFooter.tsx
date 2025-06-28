@@ -2,6 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Sun, Moon, Volume2, VolumeX } from 'lucide-react';
 
+type AppState = 'landing' | 'display' | 'about' | 'privacy';
+
 interface AppFooterProps {
   isDarkMode: boolean;
   isSoundOn: boolean;
@@ -11,6 +13,7 @@ interface AppFooterProps {
   getFooterBorder: () => string;
   getLinkColor: () => string;
   getLinkHoverColor: () => string;
+  onNavigateToPage: (page: AppState) => void;
 }
 
 const AppFooter: React.FC<AppFooterProps> = ({
@@ -21,7 +24,8 @@ const AppFooter: React.FC<AppFooterProps> = ({
   getFooterBackground,
   getFooterBorder,
   getLinkColor,
-  getLinkHoverColor
+  getLinkHoverColor,
+  onNavigateToPage
 }) => {
   return (
     <footer style={{
@@ -42,15 +46,20 @@ const AppFooter: React.FC<AppFooterProps> = ({
         alignItems: 'center',
         gap: '24px'
       }}>
-        <a
-          href="/about"
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            onNavigateToPage('about');
+          }}
           style={{
             color: getLinkColor(),
             textDecoration: 'none',
             fontSize: '0.85rem',
             fontFamily: "'Courier Prime', monospace",
             transition: 'color 0.3s ease',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            background: 'none',
+            border: 'none'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = getLinkHoverColor();
@@ -60,7 +69,7 @@ const AppFooter: React.FC<AppFooterProps> = ({
           }}
         >
           About
-        </a>
+        </button>
         
         <div style={{
           width: '1px',
@@ -69,15 +78,20 @@ const AppFooter: React.FC<AppFooterProps> = ({
           transition: 'background 0.5s ease'
         }} />
         
-        <a
-          href="/privacy"
+        <button
+          onClick={(e) => {
+            e.preventDefault();
+            onNavigateToPage('privacy');
+          }}
           style={{
             color: getLinkColor(),
             textDecoration: 'none',
             fontSize: '0.85rem',
             fontFamily: "'Courier Prime', monospace",
             transition: 'color 0.3s ease',
-            cursor: 'pointer'
+            cursor: 'pointer',
+            background: 'none',
+            border: 'none'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = getLinkHoverColor();
@@ -87,7 +101,7 @@ const AppFooter: React.FC<AppFooterProps> = ({
           }}
         >
           Privacy
-        </a>
+        </button>
       </div>
 
       {/* Right side - Theme and Sound toggles */}
