@@ -19,6 +19,12 @@ const AboutPage: React.FC<AboutPageProps> = ({
   getCardBackground,
   getCardBorder
 }) => {
+  // Color scheme for the poem structure visualization
+  const getWhisperColor = () => isDarkMode ? '#FFC880' : '#8B7DA1';
+  const getAnchorColor = () => isDarkMode ? '#FB923C' : '#6366F1';
+  const getSingleWordColor = () => isDarkMode ? '#A3A3A3' : '#6B7280';
+  const getLineNumberColor = () => isDarkMode ? 'rgba(255, 255, 255, 0.4)' : 'rgba(0, 0, 0, 0.4)';
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -115,10 +121,231 @@ const AboutPage: React.FC<AboutPageProps> = ({
               and focus on single words in the middle lines to create rhythm and meaning through repetition.
             </p>
 
-            <p style={{ marginBottom: '24px' }}>
+            <p style={{ marginBottom: '32px' }}>
               This format encourages brevity and precision, making each word count while creating 
               a meditative, almost mantra-like quality through the repetition of the anchor word.
             </p>
+
+            {/* Skinny Poem Structure Visualization */}
+            <div style={{
+              background: isDarkMode ? 'rgba(28, 25, 23, 0.6)' : 'rgba(254, 254, 254, 0.8)',
+              padding: '32px',
+              borderRadius: '16px',
+              border: `2px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
+              marginBottom: '32px'
+            }}>
+              <h3 style={{
+                fontSize: '1.3rem',
+                marginBottom: '24px',
+                color: getTextColor(),
+                fontFamily: "'EB Garamond', serif",
+                fontWeight: 600,
+                textAlign: 'center'
+              }}>
+                The Structure of a Skinny Poem
+              </h3>
+
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 2fr',
+                gap: '32px',
+                alignItems: 'start'
+              }}>
+                {/* Example Poem */}
+                <div>
+                  <h4 style={{
+                    fontSize: '1.1rem',
+                    marginBottom: '16px',
+                    color: getSecondaryTextColor(),
+                    fontFamily: "'Courier Prime', monospace",
+                    fontWeight: 600
+                  }}>
+                    Example Poem:
+                  </h4>
+                  
+                  <div style={{
+                    background: isDarkMode ? 'rgba(0, 0, 0, 0.3)' : 'rgba(255, 255, 255, 0.5)',
+                    padding: '20px',
+                    borderRadius: '12px',
+                    border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.15)'}`,
+                    fontFamily: "'EB Garamond', serif",
+                    fontSize: '1.1rem',
+                    lineHeight: 1.6,
+                    textAlign: 'center'
+                  }}>
+                    {[
+                      { text: "The weight of unspoken words", type: "whisper", line: 1 },
+                      { text: "breathe", type: "anchor", line: 2 },
+                      { text: "silence", type: "single", line: 3 },
+                      { text: "holds", type: "single", line: 4 },
+                      { text: "what", type: "single", line: 5 },
+                      { text: "breathe", type: "anchor", line: 6 },
+                      { text: "cannot", type: "single", line: 7 },
+                      { text: "say", type: "single", line: 8 },
+                      { text: "yet", type: "single", line: 9 },
+                      { text: "breathe", type: "anchor", line: 10 },
+                      { text: "The weight of unspoken words", type: "whisper", line: 11 }
+                    ].map((item, index) => (
+                      <div key={index} style={{
+                        marginBottom: '8px',
+                        color: item.type === 'whisper' ? getWhisperColor() : 
+                               item.type === 'anchor' ? getAnchorColor() : 
+                               getSingleWordColor(),
+                        fontWeight: item.type === 'anchor' ? 600 : 
+                                   item.type === 'whisper' ? 500 : 400,
+                        fontStyle: item.type === 'whisper' ? 'italic' : 'normal'
+                      }}>
+                        {item.text}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Structure Explanation */}
+                <div>
+                  <h4 style={{
+                    fontSize: '1.1rem',
+                    marginBottom: '16px',
+                    color: getSecondaryTextColor(),
+                    fontFamily: "'Courier Prime', monospace",
+                    fontWeight: 600
+                  }}>
+                    Structure Breakdown:
+                  </h4>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {/* Whisper Lines */}
+                    <div style={{
+                      padding: '12px 16px',
+                      borderRadius: '8px',
+                      background: isDarkMode ? 'rgba(255, 200, 128, 0.1)' : 'rgba(139, 125, 161, 0.1)',
+                      border: `1px solid ${getWhisperColor()}40`
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        marginBottom: '4px'
+                      }}>
+                        <div style={{
+                          width: '12px',
+                          height: '12px',
+                          borderRadius: '50%',
+                          background: getWhisperColor()
+                        }} />
+                        <span style={{
+                          fontFamily: "'Courier Prime', monospace",
+                          fontSize: '0.9rem',
+                          fontWeight: 600,
+                          color: getWhisperColor()
+                        }}>
+                          Whisper Lines
+                        </span>
+                      </div>
+                      <div style={{
+                        fontSize: '0.9rem',
+                        color: getTextColor(),
+                        paddingLeft: '20px'
+                      }}>
+                        Lines 1 & 11 - Same phrase or variation
+                      </div>
+                    </div>
+
+                    {/* Anchor Lines */}
+                    <div style={{
+                      padding: '12px 16px',
+                      borderRadius: '8px',
+                      background: isDarkMode ? 'rgba(251, 146, 60, 0.1)' : 'rgba(99, 102, 241, 0.1)',
+                      border: `1px solid ${getAnchorColor()}40`
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        marginBottom: '4px'
+                      }}>
+                        <div style={{
+                          width: '12px',
+                          height: '12px',
+                          borderRadius: '50%',
+                          background: getAnchorColor()
+                        }} />
+                        <span style={{
+                          fontFamily: "'Courier Prime', monospace",
+                          fontSize: '0.9rem',
+                          fontWeight: 600,
+                          color: getAnchorColor()
+                        }}>
+                          Anchor Word
+                        </span>
+                      </div>
+                      <div style={{
+                        fontSize: '0.9rem',
+                        color: getTextColor(),
+                        paddingLeft: '20px'
+                      }}>
+                        Lines 2, 6, 10 - Same word repeated
+                      </div>
+                    </div>
+
+                    {/* Single Word Lines */}
+                    <div style={{
+                      padding: '12px 16px',
+                      borderRadius: '8px',
+                      background: isDarkMode ? 'rgba(163, 163, 163, 0.1)' : 'rgba(107, 114, 128, 0.1)',
+                      border: `1px solid ${getSingleWordColor()}40`
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        marginBottom: '4px'
+                      }}>
+                        <div style={{
+                          width: '12px',
+                          height: '12px',
+                          borderRadius: '50%',
+                          background: getSingleWordColor()
+                        }} />
+                        <span style={{
+                          fontFamily: "'Courier Prime', monospace",
+                          fontSize: '0.9rem',
+                          fontWeight: 600,
+                          color: getSingleWordColor()
+                        }}>
+                          Single Words
+                        </span>
+                      </div>
+                      <div style={{
+                        fontSize: '0.9rem',
+                        color: getTextColor(),
+                        paddingLeft: '20px'
+                      }}>
+                        Lines 3, 4, 5, 7, 8, 9 - One word each
+                      </div>
+                    </div>
+                  </div>
+
+                  <div style={{
+                    marginTop: '20px',
+                    padding: '16px',
+                    background: isDarkMode ? 'rgba(180, 83, 9, 0.1)' : 'rgba(139, 125, 161, 0.05)',
+                    borderRadius: '8px',
+                    border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)'}`
+                  }}>
+                    <div style={{
+                      fontSize: '0.9rem',
+                      color: getSecondaryTextColor(),
+                      fontStyle: 'italic',
+                      textAlign: 'center'
+                    }}>
+                      The repetition creates rhythm and meditation,<br />
+                      while the single words build meaning through simplicity.
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
             <div style={{
               background: isDarkMode ? 'rgba(180, 83, 9, 0.1)' : 'rgba(139, 125, 161, 0.05)',
