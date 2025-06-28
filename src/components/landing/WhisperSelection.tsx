@@ -21,6 +21,7 @@ interface WhisperSelectionProps {
   getSecondaryTextColor: () => string;
   getButtonBackground: () => string;
   getButtonBorder: () => string;
+  getHaloTextStyle: () => { textShadow: string };
 }
 
 const WhisperSelection: React.FC<WhisperSelectionProps> = ({
@@ -35,7 +36,8 @@ const WhisperSelection: React.FC<WhisperSelectionProps> = ({
   getTextColor,
   getSecondaryTextColor,
   getButtonBackground,
-  getButtonBorder
+  getButtonBorder,
+  getHaloTextStyle
 }) => {
   return (
     <motion.div
@@ -51,7 +53,8 @@ const WhisperSelection: React.FC<WhisperSelectionProps> = ({
           textAlign: 'center',
           color: getTextColor(),
           fontFamily: "'EB Garamond', serif",
-          fontWeight: 500
+          fontWeight: 500,
+          ...getHaloTextStyle()
         }}>
           Which whisper echoes loudest today?
         </h2>

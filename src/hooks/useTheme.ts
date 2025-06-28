@@ -52,15 +52,15 @@ export const useTheme = () => {
     };
   };
 
-  // Bright halo effect for special titles - consistent across both modes
+  // Bright white halo effect for special titles - consistent across both modes
   const getHaloTextStyle = () => {
     return {
       textShadow: `
-        0 0 20px rgba(255, 215, 0, 0.8),
-        0 0 40px rgba(255, 215, 0, 0.6),
-        0 0 60px rgba(255, 215, 0, 0.4),
-        0 0 80px rgba(255, 215, 0, 0.2),
-        0 0 100px rgba(255, 215, 0, 0.1)
+        0 0 20px rgba(255, 255, 255, 0.9),
+        0 0 40px rgba(255, 255, 255, 0.7),
+        0 0 60px rgba(255, 255, 255, 0.5),
+        0 0 80px rgba(255, 255, 255, 0.3),
+        0 0 100px rgba(255, 255, 255, 0.2)
       `
     };
   };

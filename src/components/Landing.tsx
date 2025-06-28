@@ -92,6 +92,7 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
             getSecondaryTextColor={getSecondaryTextColor}
             getButtonBackground={getButtonBackground}
             getButtonBorder={getButtonBorder}
+            getHaloTextStyle={getHaloTextStyle}
           />
         );
       
@@ -110,6 +111,7 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
             getSecondaryTextColor={getSecondaryTextColor}
             getButtonBackground={getButtonBackground}
             getButtonBorder={getButtonBorder}
+            getHaloTextStyle={getHaloTextStyle}
           />
         );
       

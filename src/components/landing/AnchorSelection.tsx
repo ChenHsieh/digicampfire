@@ -15,6 +15,7 @@ interface AnchorSelectionProps {
   getSecondaryTextColor: () => string;
   getButtonBackground: () => string;
   getButtonBorder: () => string;
+  getHaloTextStyle: () => { textShadow: string };
 }
 
 const AnchorSelection: React.FC<AnchorSelectionProps> = ({
@@ -29,7 +30,8 @@ const AnchorSelection: React.FC<AnchorSelectionProps> = ({
   getTextColor,
   getSecondaryTextColor,
   getButtonBackground,
-  getButtonBorder
+  getButtonBorder,
+  getHaloTextStyle
 }) => {
   return (
     <motion.div
@@ -45,7 +47,8 @@ const AnchorSelection: React.FC<AnchorSelectionProps> = ({
           textAlign: 'center',
           color: getTextColor(),
           fontFamily: "'EB Garamond', serif",
-          fontWeight: 500
+          fontWeight: 500,
+          ...getHaloTextStyle()
         }}>
           Choose the word that anchors us.
         </h2>
