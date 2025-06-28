@@ -2,13 +2,9 @@ import React, { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Landing from './components/Landing';
 import Display from './components/Display';
-import Privacy from './components/Privacy';
-import About from './components/About';
 import BoltLogo from './components/BoltLogo';
-import NavigationBubble from './components/NavigationBubble';
-import { useTheme } from './hooks/useTheme';
 
-type AppState = 'landing' | 'display' | 'privacy' | 'about';
+type AppState = 'landing' | 'display';
 
 interface Poem {
   whisper: string;
@@ -20,9 +16,6 @@ interface Poem {
 function App() {
   const [currentState, setCurrentState] = useState<AppState>('landing');
   const [currentPoem, setCurrentPoem] = useState<Poem | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(true);
-  
-  const colors = useTheme(isDarkMode);
 
   const handlePoemComplete = (poem: Poem) => {
     setCurrentPoem(poem);
@@ -34,103 +27,49 @@ function App() {
     setCurrentPoem(null);
   };
 
-  const handleNavigate = (page: AppState) => {
-    setCurrentState(page);
-  };
-
-  const handleThemeToggle = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
   const renderCurrentComponent = () => {
     switch (currentState) {
       case 'landing':
-        return <Landing onComplete={handlePoemComplete} onNavigate={handleNavigate} isDarkMode={isDarkMode} />;
+        return <Landing onComplete={handlePoemComplete} />;
       case 'display':
         return currentPoem ? (
           <Display 
             poem={currentPoem}
             onBack={handleBackToLanding}
-            onNavigate={handleNavigate}
-            isDarkMode={isDarkMode}
           />
         ) : null;
-      case 'privacy':
-        return <Privacy onNavigate={handleNavigate} isDarkMode={isDarkMode} />;
-      case 'about':
-        return <About onNavigate={handleNavigate} isDarkMode={isDarkMode} />;
       default:
-        return <Landing onComplete={handlePoemComplete} onNavigate={handleNavigate} isDarkMode={isDarkMode} />;
-    }
-  };
-
-  const getBackgroundStyle = () => {
-    if (isDarkMode) {
-      return {
-        background: `
-          radial-gradient(circle at 20% 80%, rgba(194, 65, 12, 0.08) 0%, transparent 50%),
-          radial-gradient(circle at 80% 20%, rgba(34, 197, 94, 0.06) 0%, transparent 50%),
-          radial-gradient(circle at 40% 40%, rgba(45, 45, 55, 0.12) 0%, transparent 50%),
-          linear-gradient(135deg, #1a1a1a 0%, #2d2d37 100%)
-        `,
-        color: '#E5E5E5'
-      };
-    } else {
-      return {
-        background: `
-          radial-gradient(circle at 20% 80%, rgba(234, 88, 12, 0.12) 0%, transparent 50%),
-          radial-gradient(circle at 80% 20%, rgba(34, 197, 94, 0.08) 0%, transparent 50%),
-          radial-gradient(circle at 40% 40%, rgba(229, 229, 229, 0.15) 0%, transparent 50%),
-          linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)
-        `,
-        color: '#1a1a1a'
-      };
+        return <Landing onComplete={handlePoemComplete} />;
     }
   };
 
   return (
     <div style={{ 
       minHeight: '100vh', 
-      ...getBackgroundStyle(),
+      background: `
+        radial-gradient(circle at 20% 80%, rgba(139, 125, 161, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(244, 194, 194, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(45, 45, 55, 0.08) 0%, transparent 50%),
+        linear-gradient(135deg, #FEFEFE 0%, #F8F8F8 100%)
+      `,
       fontFamily: "'Courier Prime', monospace",
       position: 'relative',
-      transition: 'all 0.3s ease'
+      color: '#2D2D37'
     }}>
-      {/* Enhanced particle-like noise overlay */}
+      {/* Enhanced noise grain overlay */}
       <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
         height: '100%',
-        opacity: isDarkMode ? 0.12 : 0.08,
+        opacity: 0.04,
         pointerEvents: 'none',
-        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
         zIndex: 1
       }} />
       
-      {/* Additional particle texture overlay */}
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        opacity: isDarkMode ? 0.06 : 0.04,
-        pointerEvents: 'none',
-        backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23${isDarkMode ? 'ffffff' : '000000'}' fill-opacity='0.3'%3E%3Ccircle cx='12' cy='15' r='0.8'/%3E%3Ccircle cx='45' cy='8' r='0.6'/%3E%3Ccircle cx='78' cy='23' r='0.7'/%3E%3Ccircle cx='23' cy='67' r='0.5'/%3E%3Ccircle cx='67' cy='45' r='0.9'/%3E%3Ccircle cx='89' cy='78' r='0.6'/%3E%3Ccircle cx='34' cy='89' r='0.7'/%3E%3Ccircle cx='56' cy='67' r='0.5'/%3E%3Ccircle cx='8' cy='45' r='0.8'/%3E%3Ccircle cx='90' cy='12' r='0.6'/%3E%3Ccircle cx='67' cy='89' r='0.7'/%3E%3Ccircle cx='12' cy='78' r='0.5'/%3E%3C/g%3E%3C/svg%3E")`,
-        zIndex: 1
-      }} />
-      
-      {/* Navigation Bubble */}
-      <NavigationBubble 
-        onNavigate={handleNavigate}
-        currentPage={currentState}
-        isDarkMode={isDarkMode}
-        onThemeToggle={handleThemeToggle}
-      />
-      
-      {/* Bolt Logo */}
+      {/* Bolt Logo - appears on all pages */}
       <BoltLogo />
       
       <div style={{ position: 'relative', zIndex: 2 }}>

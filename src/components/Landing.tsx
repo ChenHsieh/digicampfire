@@ -3,9 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, ArrowRight, RefreshCw, ExternalLink } from 'lucide-react';
 import { fetchPoeticWhispersWithSources } from '../utils/rssParser';
 import { generateSkinnyPoem, generateAnchorWords } from '../utils/openai';
-import { generateRandomOrbColor, getRandomBaseAnchors } from '../utils/helpers';
-import { useTheme } from '../hooks/useTheme';
-import ThemedButton from './ThemedButton';
 
 const baseAnchorWords = [
   "breathe",
@@ -38,11 +35,9 @@ interface WhisperWithSource {
 
 interface LandingProps {
   onComplete: (poem: { whisper: string; anchor: string; feeling: string; text: string }) => void;
-  onNavigate: (page: 'landing' | 'display' | 'privacy' | 'about') => void;
-  isDarkMode: boolean;
 }
 
-const Landing: React.FC<LandingProps> = ({ onComplete, onNavigate, isDarkMode }) => {
+const Landing: React.FC<LandingProps> = ({ onComplete }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedWhisper, setSelectedWhisper] = useState<string>('');
   const [selectedAnchor, setSelectedAnchor] = useState<string>('');
@@ -53,7 +48,6 @@ const Landing: React.FC<LandingProps> = ({ onComplete, onNavigate, isDarkMode })
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [anchorWords, setAnchorWords] = useState(baseAnchorWords);
   const [loadingAnchors, setLoadingAnchors] = useState(false);
-  const [orbColor, setOrbColor] = useState(generateRandomOrbColor());
   const [whisperOptions, setWhisperOptions] = useState<WhisperWithSource[]>([
     {
       poetic: "The weight of unspoken words",
@@ -74,17 +68,14 @@ const Landing: React.FC<LandingProps> = ({ onComplete, onNavigate, isDarkMode })
   const [loadingWhispers, setLoadingWhispers] = useState(false);
   const orbRef = useRef<HTMLDivElement>(null);
 
-  const colors = useTheme(isDarkMode);
-
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (orbRef.current) {
         const rect = orbRef.current.getBoundingClientRect();
         const centerX = rect.left + rect.width / 2;
         const centerY = rect.top + rect.height / 2;
-        // Reduced movement sensitivity from /10 to /30 for more subtle effect
-        const deltaX = (e.clientX - centerX) / 30;
-        const deltaY = (e.clientY - centerY) / 30;
+        const deltaX = (e.clientX - centerX) / 10;
+        const deltaY = (e.clientY - centerY) / 10;
         setMousePosition({ x: deltaX, y: deltaY });
       }
     };
@@ -126,7 +117,9 @@ const Landing: React.FC<LandingProps> = ({ onComplete, onNavigate, isDarkMode })
       setAnchorWords(newAnchors);
     } catch (error) {
       console.error('Failed to generate new anchor words:', error);
-      setAnchorWords(getRandomBaseAnchors());
+      // Rotate through base words if generation fails
+      const shuffled = [...baseAnchorWords].sort(() => Math.random() - 0.5);
+      setAnchorWords(shuffled.slice(0, 6));
     } finally {
       setLoadingAnchors(false);
     }
@@ -208,11 +201,6 @@ ${selectedWhisper}`;
     }, 800);
   };
 
-  const handleOrbHover = () => {
-    setIsOrbHovered(true);
-    setOrbColor(generateRandomOrbColor());
-  };
-
   const renderStep = () => {
     switch (currentStep) {
       case 1:
@@ -228,7 +216,7 @@ ${selectedWhisper}`;
               <h2 style={{
                 fontSize: '1.5rem',
                 textAlign: 'center',
-                color: colors.text,
+                color: '#2D2D37',
                 fontFamily: "'EB Garamond', serif",
                 fontWeight: 400
               }}>
@@ -242,17 +230,16 @@ ${selectedWhisper}`;
                 style={{
                   padding: '8px',
                   borderRadius: '50%',
-                  background: colors.background,
-                  border: `1px solid ${colors.border}`,
+                  background: 'rgba(254, 254, 254, 0.8)',
+                  border: '1px solid rgba(139, 125, 161, 0.2)',
                   cursor: loadingWhispers ? 'not-allowed' : 'pointer',
                   opacity: loadingWhispers ? 0.5 : 1,
-                  backdropFilter: 'blur(10px)',
-                  boxShadow: colors.shadow
+                  backdropFilter: 'blur(10px)'
                 }}
               >
                 <RefreshCw 
                   size={16} 
-                  color={colors.primary}
+                  color="#8B7DA1"
                   style={{
                     animation: loadingWhispers ? 'spin 1s linear infinite' : 'none'
                   }}
@@ -266,7 +253,7 @@ ${selectedWhisper}`;
                 justifyContent: 'center',
                 alignItems: 'center',
                 minHeight: '200px',
-                color: colors.primary,
+                color: '#8B7DA1',
                 fontSize: '1rem',
                 fontStyle: 'italic'
               }}>
@@ -287,9 +274,9 @@ ${selectedWhisper}`;
                     whileHover={{ scale: 1.01, y: -2 }}
                     animate={selectedWhisper === whisper.poetic ? {
                       background: [
-                        `rgba(${isDarkMode ? '194, 65, 12' : '234, 88, 12'}, 0.15)`,
-                        `rgba(${isDarkMode ? '194, 65, 12' : '234, 88, 12'}, 0.25)`,
-                        `rgba(${isDarkMode ? '194, 65, 12' : '234, 88, 12'}, 0.15)`
+                        'rgba(244, 194, 194, 0.2)',
+                        'rgba(244, 194, 194, 0.4)',
+                        'rgba(244, 194, 194, 0.2)'
                       ]
                     } : {}}
                     transition={{ 
@@ -299,24 +286,24 @@ ${selectedWhisper}`;
                     onClick={() => handleSelection(whisper.poetic, 'whisper')}
                     style={{
                       padding: '28px 32px',
-                      border: `2px solid ${selectedWhisper === whisper.poetic ? colors.primary : colors.border}`,
+                      border: `2px solid ${selectedWhisper === whisper.poetic ? '#8B7DA1' : 'rgba(139, 125, 161, 0.2)'}`,
                       borderRadius: '16px',
                       background: selectedWhisper === whisper.poetic ? 
-                        `rgba(${isDarkMode ? '194, 65, 12' : '234, 88, 12'}, 0.1)` : 
-                        colors.background,
+                        'rgba(244, 194, 194, 0.15)' : 
+                        'rgba(254, 254, 254, 0.8)',
                       cursor: 'pointer',
                       boxShadow: selectedWhisper === whisper.poetic ? 
-                        `0 8px 32px rgba(${isDarkMode ? '194, 65, 12' : '234, 88, 12'}, 0.3), 0 0 0 1px rgba(${isDarkMode ? '194, 65, 12' : '234, 88, 12'}, 0.1)` : 
-                        colors.shadow,
-                      backdropFilter: 'blur(15px)',
+                        '0 8px 32px rgba(139, 125, 161, 0.2)' : 
+                        '0 4px 16px rgba(45, 45, 55, 0.08)',
+                      backdropFilter: 'blur(10px)',
                       transition: 'all 0.3s ease'
                     }}
                   >
-                    {/* Main poetic phrase */}
+                    {/* Main poetic phrase - now part of the clickable container */}
                     <div style={{
                       fontFamily: "'EB Garamond', serif",
                       fontSize: '1.4rem',
-                      color: colors.text,
+                      color: '#2D2D37',
                       lineHeight: 1.4,
                       fontWeight: 500,
                       textAlign: 'center',
@@ -327,7 +314,7 @@ ${selectedWhisper}`;
                     
                     {/* Source headline with link */}
                     <div style={{
-                      borderTop: `1px solid ${colors.border}`,
+                      borderTop: '1px solid rgba(139, 125, 161, 0.15)',
                       paddingTop: '16px',
                       display: 'flex',
                       alignItems: 'center',
@@ -336,7 +323,7 @@ ${selectedWhisper}`;
                     }}>
                       <div style={{
                         fontSize: '0.85rem',
-                        color: colors.primary,
+                        color: '#8B7DA1',
                         fontFamily: "'Courier Prime', monospace",
                         lineHeight: 1.3,
                         flex: 1
@@ -349,22 +336,30 @@ ${selectedWhisper}`;
                         rel="noopener noreferrer"
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()} // Prevent triggering the parent click
                         style={{
                           display: 'flex',
                           alignItems: 'center',
                           gap: '4px',
                           padding: '6px 12px',
                           borderRadius: '20px',
-                          background: `rgba(${isDarkMode ? '194, 65, 12' : '234, 88, 12'}, 0.15)`,
-                          border: `1px solid ${colors.border}`,
-                          color: colors.primary,
+                          background: 'rgba(139, 125, 161, 0.1)',
+                          border: '1px solid rgba(139, 125, 161, 0.2)',
+                          color: '#8B7DA1',
                           textDecoration: 'none',
                           fontSize: '0.75rem',
                           fontFamily: "'Courier Prime', monospace",
                           fontWeight: 500,
                           transition: 'all 0.2s ease',
                           flexShrink: 0
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.background = 'rgba(139, 125, 161, 0.2)';
+                          e.currentTarget.style.color = '#2D2D37';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.background = 'rgba(139, 125, 161, 0.1)';
+                          e.currentTarget.style.color = '#8B7DA1';
                         }}
                       >
                         <ExternalLink size={12} />
@@ -391,7 +386,7 @@ ${selectedWhisper}`;
               <h2 style={{
                 fontSize: '1.5rem',
                 textAlign: 'center',
-                color: colors.text,
+                color: '#2D2D37',
                 fontFamily: "'EB Garamond', serif",
                 fontWeight: 400
               }}>
@@ -405,17 +400,16 @@ ${selectedWhisper}`;
                 style={{
                   padding: '8px',
                   borderRadius: '50%',
-                  background: colors.background,
-                  border: `1px solid ${colors.border}`,
+                  background: 'rgba(254, 254, 254, 0.8)',
+                  border: '1px solid rgba(139, 125, 161, 0.2)',
                   cursor: loadingAnchors ? 'not-allowed' : 'pointer',
                   opacity: loadingAnchors ? 0.5 : 1,
-                  backdropFilter: 'blur(10px)',
-                  boxShadow: colors.shadow
+                  backdropFilter: 'blur(10px)'
                 }}
               >
                 <RefreshCw 
                   size={16} 
-                  color={colors.primary}
+                  color="#8B7DA1"
                   style={{
                     animation: loadingAnchors ? 'spin 1s linear infinite' : 'none'
                   }}
@@ -439,9 +433,9 @@ ${selectedWhisper}`;
                   whileTap={{ scale: 0.95 }}
                   animate={selectedAnchor === word ? {
                     background: [
-                      `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.2)`,
-                      `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.4)`,
-                      `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.2)`
+                      'rgba(139, 125, 161, 0.2)',
+                      'rgba(139, 125, 161, 0.4)',
+                      'rgba(139, 125, 161, 0.2)'
                     ]
                   } : {}}
                   transition={{ 
@@ -450,21 +444,21 @@ ${selectedWhisper}`;
                   }}
                   style={{
                     padding: '16px 24px',
-                    border: `3px solid ${selectedAnchor === word ? colors.text : colors.border}`,
+                    border: `3px solid ${selectedAnchor === word ? '#2D2D37' : 'rgba(45, 45, 55, 0.2)'}`,
                     borderRadius: '50px',
                     background: selectedAnchor === word ? 
-                      `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.2)` : 
-                      colors.background,
+                      'rgba(139, 125, 161, 0.15)' : 
+                      'rgba(254, 254, 254, 0.9)',
                     cursor: 'pointer',
                     boxShadow: selectedAnchor === word ? 
-                      `0 8px 24px rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.4), 0 0 0 1px rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.2)` : 
-                      colors.shadow,
-                    backdropFilter: 'blur(15px)',
+                      '0 8px 24px rgba(45, 45, 55, 0.2)' : 
+                      '0 4px 12px rgba(45, 45, 55, 0.1)',
+                    backdropFilter: 'blur(10px)',
                     transition: 'all 0.3s ease',
                     fontFamily: "'Courier Prime', monospace",
                     fontSize: '1rem',
                     fontWeight: 600,
-                    color: colors.text,
+                    color: '#2D2D37',
                     textTransform: 'lowercase'
                   }}
                 >
@@ -488,7 +482,7 @@ ${selectedWhisper}`;
               fontSize: '1.5rem',
               marginBottom: '24px',
               textAlign: 'center',
-              color: colors.text,
+              color: '#2D2D37',
               fontFamily: "'EB Garamond', serif",
               fontWeight: 400
             }}>
@@ -497,7 +491,7 @@ ${selectedWhisper}`;
             
             <p style={{
               textAlign: 'center',
-              color: colors.primary,
+              color: '#8B7DA1',
               fontSize: '1rem',
               marginBottom: '32px',
               fontStyle: 'italic'
@@ -513,24 +507,23 @@ ${selectedWhisper}`;
                   width: '100%',
                   minHeight: '120px',
                   padding: '24px',
-                  border: `2px solid ${colors.border}`,
+                  border: '2px solid rgba(139, 125, 161, 0.2)',
                   borderRadius: '12px',
                   fontSize: '1.1rem',
                   lineHeight: 1.6,
                   resize: 'vertical',
-                  background: colors.background,
+                  background: 'rgba(254, 254, 254, 0.9)',
                   fontFamily: "'EB Garamond', serif",
-                  backdropFilter: 'blur(15px)',
-                  color: colors.text,
+                  backdropFilter: 'blur(10px)',
+                  color: '#2D2D37',
                   outline: 'none',
-                  transition: 'border-color 0.3s ease',
-                  boxShadow: colors.shadow
+                  transition: 'border-color 0.3s ease'
                 }}
                 onFocus={(e) => {
-                  e.target.style.borderColor = colors.primary;
+                  e.target.style.borderColor = '#8B7DA1';
                 }}
                 onBlur={(e) => {
-                  e.target.style.borderColor = colors.border;
+                  e.target.style.borderColor = 'rgba(139, 125, 161, 0.2)';
                 }}
               />
               
@@ -547,7 +540,7 @@ ${selectedWhisper}`;
                     top: '24px',
                     left: '24px',
                     fontSize: '1.1rem',
-                    color: colors.primary,
+                    color: '#8B7DA1',
                     fontFamily: "'EB Garamond', serif",
                     fontStyle: 'italic',
                     pointerEvents: 'none'
@@ -592,14 +585,14 @@ ${selectedWhisper}`;
             marginBottom: '24px',
             width: '48px',
             height: '48px',
-            border: `3px solid ${colors.border}`,
-            borderTop: `3px solid ${colors.primary}`,
+            border: '3px solid rgba(139, 125, 161, 0.2)',
+            borderTop: '3px solid #8B7DA1',
             borderRadius: '50%'
           }}
         />
         <p style={{
           fontSize: '1.2rem',
-          color: colors.text,
+          color: '#2D2D37',
           fontFamily: "'EB Garamond', serif",
           textAlign: 'center'
         }}>
@@ -624,19 +617,19 @@ ${selectedWhisper}`;
         transition={{ duration: 0.8 }}
         style={{ maxWidth: '800px', width: '100%' }}
       >
-        {/* Enhanced Campfire Orb with theme-aware colors */}
+        {/* Responsive Campfire Orb */}
         <div 
           ref={orbRef}
-          onMouseEnter={handleOrbHover}
+          onMouseEnter={() => setIsOrbHovered(true)}
           onMouseLeave={() => setIsOrbHovered(false)}
           style={{
             width: '160px',
             height: '160px',
             background: `
-              radial-gradient(circle at 30% 30%, rgba(254, 254, 254, ${isDarkMode ? '0.9' : '0.7'}) 0%, transparent 30%),
-              radial-gradient(circle at 70% 70%, ${orbColor.secondary} 0%, transparent 50%),
-              radial-gradient(circle at 50% 50%, ${orbColor.primary} 0%, transparent 70%),
-              linear-gradient(135deg, ${orbColor.dark} 0%, ${orbColor.primary} 50%, ${orbColor.secondary} 100%)
+              radial-gradient(circle at 30% 30%, rgba(254, 254, 254, 0.9) 0%, transparent 30%),
+              radial-gradient(circle at 70% 70%, rgba(244, 194, 194, 0.7) 0%, transparent 50%),
+              radial-gradient(circle at 50% 50%, rgba(139, 125, 161, 0.6) 0%, transparent 70%),
+              linear-gradient(135deg, rgba(45, 45, 55, 0.8) 0%, rgba(139, 125, 161, 0.6) 50%, rgba(244, 194, 194, 0.5) 100%)
             `,
             borderRadius: '50%',
             margin: '0 auto 48px',
@@ -644,9 +637,9 @@ ${selectedWhisper}`;
             alignItems: 'center',
             justifyContent: 'center',
             boxShadow: `
-              0 0 60px ${orbColor.primary.replace('0.6', isOrbHovered ? '0.8' : '0.4')},
-              0 0 120px ${orbColor.secondary.replace('0.5', isOrbHovered ? '0.6' : '0.2')},
-              inset 0 0 60px rgba(254, 254, 254, ${isDarkMode ? '0.1' : '0.2'})
+              0 0 60px rgba(139, 125, 161, ${isOrbHovered ? 0.6 : 0.4}),
+              0 0 120px rgba(244, 194, 194, ${isOrbHovered ? 0.4 : 0.2}),
+              inset 0 0 60px rgba(254, 254, 254, 0.1)
             `,
             transform: `translate(${mousePosition.x}px, ${mousePosition.y}px) scale(${isOrbHovered ? 1.1 : 1})`,
             transition: 'transform 0.3s ease, box-shadow 0.3s ease',
@@ -654,42 +647,21 @@ ${selectedWhisper}`;
             position: 'relative'
           }}
         >
-          {/* Enhanced inner flame effect */}
+          {/* Inner flame effect */}
           <motion.div 
             animate={{
-              scale: isOrbHovered ? [1, 1.4, 1] : [1, 1.2, 1],
-              opacity: isOrbHovered ? [0.4, 0.9, 0.4] : [0.3, 0.7, 0.3]
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.7, 0.3]
             }}
             transition={{
-              duration: isOrbHovered ? 1.5 : 2,
+              duration: 2,
               repeat: Infinity,
               ease: "easeInOut"
             }}
             style={{
               width: '80px',
               height: '80px',
-              background: `radial-gradient(circle, ${orbColor.secondary.replace('0.5', '0.8')} 0%, transparent 70%)`,
-              borderRadius: '50%'
-            }} 
-          />
-          
-          {/* Additional pulsing layer */}
-          <motion.div 
-            animate={{
-              scale: isOrbHovered ? [1.2, 1.6, 1.2] : [1.1, 1.3, 1.1],
-              opacity: isOrbHovered ? [0.2, 0.5, 0.2] : [0.1, 0.3, 0.1]
-            }}
-            transition={{
-              duration: isOrbHovered ? 1.8 : 2.5,
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: 0.5
-            }}
-            style={{
-              position: 'absolute',
-              width: '120px',
-              height: '120px',
-              background: `radial-gradient(circle, ${orbColor.primary.replace('0.6', '0.4')} 0%, transparent 60%)`,
+              background: 'radial-gradient(circle, rgba(244, 194, 194, 0.8) 0%, transparent 70%)',
               borderRadius: '50%'
             }} 
           />
@@ -698,7 +670,7 @@ ${selectedWhisper}`;
         <h1 style={{
           fontSize: 'clamp(2.5rem, 5vw, 4rem)',
           marginBottom: '16px',
-          color: colors.text,
+          color: '#2D2D37',
           fontWeight: 400,
           fontFamily: "'EB Garamond', serif",
           textAlign: 'center'
@@ -708,7 +680,7 @@ ${selectedWhisper}`;
         
         <p style={{
           fontSize: '1.1rem',
-          color: colors.primary,
+          color: '#8B7DA1',
           marginBottom: '48px',
           maxWidth: '500px',
           marginLeft: 'auto',
@@ -734,7 +706,7 @@ ${selectedWhisper}`;
                 width: '8px',
                 height: '8px',
                 borderRadius: '50%',
-                background: currentStep >= step ? colors.primary : colors.border,
+                background: currentStep >= step ? '#8B7DA1' : 'rgba(139, 125, 161, 0.3)',
                 transition: 'all 0.3s ease'
               }}
             />
@@ -752,25 +724,63 @@ ${selectedWhisper}`;
           alignItems: 'center',
           marginTop: '40px'
         }}>
-          <ThemedButton
+          <motion.button
             onClick={handleBack}
-            isDarkMode={isDarkMode}
-            variant="outline"
-            disabled={currentStep === 1}
-            icon={<ArrowLeft size={16} />}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              padding: '12px 20px',
+              borderRadius: '25px',
+              fontWeight: 500,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: 'rgba(254, 254, 254, 0.8)',
+              color: '#8B7DA1',
+              border: '1px solid rgba(139, 125, 161, 0.2)',
+              cursor: 'pointer',
+              backdropFilter: 'blur(10px)',
+              opacity: currentStep === 1 ? 0.5 : 1,
+              pointerEvents: currentStep === 1 ? 'none' : 'auto',
+              fontFamily: "'Courier Prime', monospace"
+            }}
           >
+            <ArrowLeft size={16} />
             Back
-          </ThemedButton>
+          </motion.button>
           
-          <ThemedButton
+          <motion.button
             onClick={handleNext}
             disabled={!canProceed()}
-            isDarkMode={isDarkMode}
-            variant="primary"
-            icon={currentStep === 3 ? undefined : <ArrowRight size={16} />}
+            whileHover={{ scale: canProceed() ? 1.05 : 1 }}
+            whileTap={{ scale: canProceed() ? 0.95 : 1 }}
+            style={{
+              padding: '12px 20px',
+              borderRadius: '25px',
+              fontWeight: 500,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: canProceed() ? 
+                'linear-gradient(135deg, #2D2D37 0%, #8B7DA1 100%)' : 
+                'rgba(200, 200, 200, 0.5)',
+              color: '#FEFEFE',
+              border: 'none',
+              cursor: canProceed() ? 'pointer' : 'not-allowed',
+              opacity: canProceed() ? 1 : 0.5,
+              boxShadow: canProceed() ? '0 4px 20px rgba(45, 45, 55, 0.3)' : 'none',
+              fontFamily: "'Courier Prime', monospace"
+            }}
           >
-            {currentStep === 3 ? 'Let the poem arrive' : 'Next'}
-          </ThemedButton>
+            {currentStep === 3 ? (
+              'Let the poem arrive'
+            ) : (
+              <>
+                Next
+                <ArrowRight size={16} />
+              </>
+            )}
+          </motion.button>
         </div>
       </motion.div>
       

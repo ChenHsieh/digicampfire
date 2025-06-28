@@ -1,10 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Edit3, Copy, Check, Download, Image } from 'lucide-react';
+import { ArrowLeft, Share2, Edit3, Copy, Check } from 'lucide-react';
 import { validateSkinnyPoem } from '../utils/openai';
-import { generateRandomOrbColor } from '../utils/helpers';
-import { useTheme } from '../hooks/useTheme';
-import ThemedButton from './ThemedButton';
 
 interface Poem {
   whisper: string;
@@ -16,21 +13,16 @@ interface Poem {
 interface DisplayProps {
   poem: Poem;
   onBack: () => void;
-  onNavigate: (page: 'landing' | 'display' | 'privacy' | 'about') => void;
-  isDarkMode: boolean;
 }
 
-const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode }) => {
+const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
   const [visibleLines, setVisibleLines] = useState(0);
   const [showCuratorTweak, setShowCuratorTweak] = useState(false);
   const [editedPoem, setEditedPoem] = useState(poem.text);
   const [currentPoem, setCurrentPoem] = useState(poem.text);
   const [showShareOptions, setShowShareOptions] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [isGeneratingCard, setIsGeneratingCard] = useState(false);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
   
-  const colors = useTheme(isDarkMode);
   const lines = currentPoem.split('\n').filter(line => line.trim() !== '');
   
   useEffect(() => {
@@ -61,7 +53,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
   };
 
   const handleCopyToClipboard = async () => {
-    const shareText = `${currentPoem}\n\n— Created at Digital Campfire\nCreate your own poem at: https://vibepoem.netlify.app/`;
+    const shareText = `${currentPoem}\n\n— Created at Digital Campfire`;
     
     try {
       await navigator.clipboard.writeText(shareText);
@@ -81,137 +73,10 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
     }
   };
 
-  const generatePictureCard = async () => {
-    setIsGeneratingCard(true);
-    
-    try {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-      
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return;
-      
-      // Set canvas size for Instagram square format
-      canvas.width = 1080;
-      canvas.height = 1080;
-      
-      // Generate orb colors for background
-      const orbColor = generateRandomOrbColor();
-      
-      // Create 30° linear gradient background
-      const gradient = ctx.createLinearGradient(0, 0, Math.cos(30 * Math.PI / 180) * 1080, Math.sin(30 * Math.PI / 180) * 1080);
-      gradient.addColorStop(0, orbColor.primary.replace('0.6', '0.9'));
-      gradient.addColorStop(0.5, orbColor.secondary.replace('0.5', '0.7'));
-      gradient.addColorStop(1, orbColor.dark.replace('0.8', '0.8'));
-      
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, 1080, 1080);
-      
-      // Add particle noise texture overlay
-      ctx.globalAlpha = 0.15;
-      
-      // Create more sophisticated particle noise pattern
-      for (let i = 0; i < 2000; i++) {
-        const x = Math.random() * 1080;
-        const y = Math.random() * 1080;
-        const size = Math.random() * 3 + 0.5;
-        const opacity = Math.random() * 0.8 + 0.2;
-        
-        ctx.globalAlpha = opacity * 0.15;
-        ctx.fillStyle = '#ffffff';
-        ctx.beginPath();
-        ctx.arc(x, y, size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      
-      // Add some larger particles for depth
-      for (let i = 0; i < 300; i++) {
-        const x = Math.random() * 1080;
-        const y = Math.random() * 1080;
-        const size = Math.random() * 2 + 1;
-        const opacity = Math.random() * 0.4 + 0.1;
-        
-        ctx.globalAlpha = opacity * 0.1;
-        ctx.fillStyle = '#000000';
-        ctx.beginPath();
-        ctx.arc(x, y, size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-      
-      ctx.globalAlpha = 1;
-      
-      // Add orb in upper area
-      const orbGradient = ctx.createRadialGradient(540, 250, 0, 540, 250, 100);
-      orbGradient.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-      orbGradient.addColorStop(0.3, orbColor.secondary.replace('0.5', '0.7'));
-      orbGradient.addColorStop(1, orbColor.primary.replace('0.6', '0.3'));
-      
-      ctx.fillStyle = orbGradient;
-      ctx.beginPath();
-      ctx.arc(540, 250, 100, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Add inner glow
-      ctx.globalAlpha = 0.6;
-      ctx.fillStyle = orbColor.secondary.replace('0.5', '0.8');
-      ctx.beginPath();
-      ctx.arc(540, 250, 50, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      
-      // Add poem text - LEFT ALIGNED
-      ctx.fillStyle = '#ffffff';
-      ctx.textAlign = 'left'; // Changed from 'center' to 'left'
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-      ctx.shadowBlur = 6;
-      ctx.shadowOffsetY = 3;
-      
-      // Title - centered
-      ctx.textAlign = 'center';
-      ctx.font = 'bold 36px serif';
-      ctx.fillText('Digital Campfire', 540, 420);
-      
-      // Poem lines - left aligned
-      ctx.textAlign = 'left';
-      ctx.font = '32px serif';
-      const poemLines = currentPoem.split('\n').filter(line => line.trim() !== '');
-      const startY = 480;
-      const lineHeight = 42;
-      const leftMargin = 120; // Left margin for poem text
-      
-      poemLines.forEach((line, index) => {
-        const y = startY + (index * lineHeight);
-        if (y < 920) { // Ensure text doesn't go off canvas
-          ctx.fillText(line.trim(), leftMargin, y);
-        }
-      });
-      
-      // Add website URL at bottom - centered
-      ctx.textAlign = 'center';
-      ctx.font = '22px monospace';
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-      ctx.shadowBlur = 4;
-      ctx.fillText('vibepoem.netlify.app', 540, 1040);
-      
-      // Convert to blob and download
-      canvas.toBlob((blob) => {
-        if (blob) {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = 'digital-campfire-poem.png';
-          document.body.appendChild(a);
-          a.click();
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }
-      }, 'image/png');
-      
-    } catch (error) {
-      console.error('Error generating picture card:', error);
-    } finally {
-      setIsGeneratingCard(false);
-    }
+  const handleShareViaEmail = () => {
+    const subject = encodeURIComponent('A poem from Digital Campfire');
+    const body = encodeURIComponent(`${currentPoem}\n\n— Created at Digital Campfire\n\nCreate your own poem at: ${window.location.origin}`);
+    window.open(`mailto:?subject=${subject}&body=${body}`);
   };
 
   return (
@@ -227,19 +92,29 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
         width: '100%',
         position: 'relative'
       }}>
-        <ThemedButton
+        <motion.button
           onClick={onBack}
-          isDarkMode={isDarkMode}
-          variant="outline"
-          icon={<ArrowLeft size={16} />}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            color: '#8B7DA1',
+            fontSize: '0.9rem',
+            padding: '8px 16px',
+            borderRadius: '20px',
             marginBottom: '40px',
-            marginLeft: 'auto',
-            marginRight: 'auto'
+            background: 'rgba(254, 254, 254, 0.8)',
+            border: '1px solid rgba(139, 125, 161, 0.2)',
+            cursor: 'pointer',
+            backdropFilter: 'blur(10px)',
+            fontFamily: "'Courier Prime', monospace"
           }}
         >
+          <ArrowLeft size={16} />
           Return to the fire
-        </ThemedButton>
+        </motion.button>
         
         {/* Campfire glow for the poem */}
         <motion.div
@@ -248,14 +123,17 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
           transition={{ duration: 0.8 }}
           style={{
             background: `
-              radial-gradient(circle at center, rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.08) 0%, transparent 70%),
-              ${colors.background}
+              radial-gradient(circle at center, rgba(244, 194, 194, 0.1) 0%, transparent 70%),
+              rgba(254, 254, 254, 0.9)
             `,
             padding: '48px',
             borderRadius: '20px',
-            boxShadow: colors.glowShadow,
-            border: `1px solid ${colors.border}`,
-            backdropFilter: 'blur(20px)',
+            boxShadow: `
+              0 0 60px rgba(139, 125, 161, 0.2),
+              0 8px 32px rgba(45, 45, 55, 0.1)
+            `,
+            border: '1px solid rgba(139, 125, 161, 0.15)',
+            backdropFilter: 'blur(15px)',
             marginBottom: '40px',
             position: 'relative'
           }}
@@ -268,7 +146,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
             transform: 'translateX(-50%)',
             width: '4px',
             height: '4px',
-            background: `rgba(${isDarkMode ? '234, 88, 12' : '194, 65, 12'}, 0.6)`,
+            background: 'rgba(244, 194, 194, 0.6)',
             borderRadius: '50%',
             animation: 'float 3s ease-in-out infinite'
           }} />
@@ -276,32 +154,21 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
           <h1 style={{
             fontSize: '1.8rem',
             textAlign: 'center',
-            marginBottom: '16px',
-            color: colors.text,
+            marginBottom: '32px',
+            color: '#2D2D37',
             fontWeight: 400,
             fontFamily: "'EB Garamond', serif"
           }}>
             Your Verse by the Fire
           </h1>
           
-          {/* Divider */}
-          <div style={{
-            width: '60px',
-            height: '2px',
-            background: `linear-gradient(90deg, transparent 0%, ${colors.primary} 50%, transparent 100%)`,
-            margin: '0 auto 32px',
-            borderRadius: '1px'
-          }} />
-          
           <div style={{
             fontSize: '1.2rem',
             lineHeight: 1.8,
-            color: colors.text,
+            color: '#2D2D37',
             whiteSpace: 'pre-wrap',
-            textAlign: 'left', // Changed from center to left
-            fontFamily: "'EB Garamond', serif",
-            maxWidth: '500px',
-            margin: '0 auto'
+            textAlign: 'center',
+            fontFamily: "'EB Garamond', serif"
           }}>
             {lines.map((line, index) => (
               <motion.div
@@ -336,16 +203,15 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
           }}
         >
           <div style={{
-            background: colors.background,
+            background: 'rgba(254, 254, 254, 0.8)',
             padding: '20px',
             borderRadius: '12px',
-            border: `1px solid ${colors.border}`,
-            backdropFilter: 'blur(15px)',
-            boxShadow: colors.shadow
+            border: '1px solid rgba(139, 125, 161, 0.15)',
+            backdropFilter: 'blur(10px)'
           }}>
             <div style={{
               fontSize: '0.8rem',
-              color: colors.primary,
+              color: '#8B7DA1',
               marginBottom: '8px',
               fontWeight: 600,
               textTransform: 'uppercase',
@@ -356,7 +222,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
             </div>
             <div style={{
               fontSize: '0.95rem',
-              color: colors.text,
+              color: '#2D2D37',
               fontFamily: "'EB Garamond', serif",
               fontStyle: 'italic'
             }}>
@@ -365,16 +231,15 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
           </div>
           
           <div style={{
-            background: colors.background,
+            background: 'rgba(254, 254, 254, 0.8)',
             padding: '20px',
             borderRadius: '12px',
-            border: `1px solid ${colors.border}`,
-            backdropFilter: 'blur(15px)',
-            boxShadow: colors.shadow
+            border: '1px solid rgba(139, 125, 161, 0.15)',
+            backdropFilter: 'blur(10px)'
           }}>
             <div style={{
               fontSize: '0.8rem',
-              color: colors.primary,
+              color: '#8B7DA1',
               marginBottom: '8px',
               fontWeight: 600,
               textTransform: 'uppercase',
@@ -385,9 +250,9 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
             </div>
             <div style={{
               fontSize: '1.1rem',
-              color: colors.text,
-              fontFamily: "'EB Garamond', serif",
-              fontStyle: 'italic'
+              color: '#2D2D37',
+              fontFamily: "'Courier Prime', monospace",
+              fontWeight: 600
             }}>
               {poem.anchor}
             </div>
@@ -395,17 +260,16 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
           
           {poem.feeling && (
             <div style={{
-              background: colors.background,
+              background: 'rgba(254, 254, 254, 0.8)',
               padding: '20px',
               borderRadius: '12px',
-              border: `1px solid ${colors.border}`,
-              backdropFilter: 'blur(15px)',
-              gridColumn: 'span 2',
-              boxShadow: colors.shadow
+              border: '1px solid rgba(139, 125, 161, 0.15)',
+              backdropFilter: 'blur(10px)',
+              gridColumn: 'span 2'
             }}>
               <div style={{
                 fontSize: '0.8rem',
-                color: colors.primary,
+                color: '#8B7DA1',
                 marginBottom: '8px',
                 fontWeight: 600,
                 textTransform: 'uppercase',
@@ -416,7 +280,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
               </div>
               <div style={{
                 fontSize: '1rem',
-                color: colors.text,
+                color: '#2D2D37',
                 fontFamily: "'EB Garamond', serif",
                 fontStyle: 'italic'
               }}>
@@ -433,19 +297,18 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
             style={{
-              background: colors.background,
+              background: 'rgba(254, 254, 254, 0.9)',
               padding: '24px',
               borderRadius: '16px',
-              border: `2px solid ${colors.border}`,
-              backdropFilter: 'blur(20px)',
-              marginBottom: '40px',
-              boxShadow: colors.shadow
+              border: '2px solid rgba(139, 125, 161, 0.2)',
+              backdropFilter: 'blur(15px)',
+              marginBottom: '40px'
             }}
           >
             <h3 style={{
               fontSize: '1.2rem',
               marginBottom: '16px',
-              color: colors.text,
+              color: '#2D2D37',
               fontFamily: "'EB Garamond', serif",
               fontWeight: 500
             }}>
@@ -453,7 +316,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
             </h3>
             <p style={{
               fontSize: '0.9rem',
-              color: colors.primary,
+              color: '#8B7DA1',
               marginBottom: '16px',
               fontStyle: 'italic'
             }}>
@@ -466,17 +329,15 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
                 width: '100%',
                 minHeight: '200px',
                 padding: '16px',
-                border: `1px solid ${colors.border}`,
+                border: '1px solid rgba(139, 125, 161, 0.3)',
                 borderRadius: '8px',
                 fontSize: '1rem',
                 lineHeight: 1.6,
                 resize: 'vertical',
-                background: colors.background,
+                background: 'rgba(254, 254, 254, 0.8)',
                 fontFamily: "'EB Garamond', serif",
-                color: colors.text,
-                outline: 'none',
-                backdropFilter: 'blur(10px)',
-                boxShadow: colors.shadow
+                color: '#2D2D37',
+                outline: 'none'
               }}
             />
             <div style={{
@@ -485,25 +346,43 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
               marginTop: '16px',
               justifyContent: 'flex-end'
             }}>
-              <ThemedButton
+              <motion.button
                 onClick={() => {
                   setShowCuratorTweak(false);
-                  setEditedPoem(currentPoem);
+                  setEditedPoem(currentPoem); // Reset to current poem
                 }}
-                isDarkMode={isDarkMode}
-                variant="outline"
-                size="small"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  background: 'rgba(139, 125, 161, 0.1)',
+                  border: '1px solid rgba(139, 125, 161, 0.3)',
+                  color: '#8B7DA1',
+                  cursor: 'pointer',
+                  fontFamily: "'Courier Prime', monospace",
+                  fontSize: '0.9rem'
+                }}
               >
                 Cancel
-              </ThemedButton>
-              <ThemedButton
+              </motion.button>
+              <motion.button
                 onClick={handleSaveTweak}
-                isDarkMode={isDarkMode}
-                variant="primary"
-                size="small"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  background: 'linear-gradient(135deg, #2D2D37 0%, #8B7DA1 100%)',
+                  border: 'none',
+                  color: '#FEFEFE',
+                  cursor: 'pointer',
+                  fontFamily: "'Courier Prime', monospace",
+                  fontSize: '0.9rem'
+                }}
               >
                 Save Changes
-              </ThemedButton>
+              </motion.button>
             </div>
           </motion.div>
         )}
@@ -520,8 +399,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
               left: 0,
               right: 0,
               bottom: 0,
-              background: `rgba(${isDarkMode ? '26, 26, 26' : '248, 250, 252'}, 0.9)`,
-              backdropFilter: 'blur(15px)',
+              background: 'rgba(45, 45, 55, 0.8)',
+              backdropFilter: 'blur(10px)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -535,21 +414,21 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
               animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.3 }}
               style={{
-                background: colors.background,
+                background: 'rgba(254, 254, 254, 0.95)',
                 padding: '32px',
                 borderRadius: '20px',
-                border: `1px solid ${colors.border}`,
-                backdropFilter: 'blur(25px)',
+                border: '1px solid rgba(139, 125, 161, 0.2)',
+                backdropFilter: 'blur(20px)',
                 maxWidth: '400px',
                 width: '100%',
-                boxShadow: colors.shadow
+                boxShadow: '0 20px 60px rgba(45, 45, 55, 0.3)'
               }}
               onClick={(e) => e.stopPropagation()}
             >
               <h3 style={{
                 fontSize: '1.4rem',
                 marginBottom: '24px',
-                color: colors.text,
+                color: '#2D2D37',
                 fontFamily: "'EB Garamond', serif",
                 fontWeight: 500,
                 textAlign: 'center'
@@ -562,48 +441,75 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
                 flexDirection: 'column',
                 gap: '16px'
               }}>
-                <ThemedButton
+                <motion.button
                   onClick={handleCopyToClipboard}
-                  isDarkMode={isDarkMode}
-                  variant="secondary"
-                  icon={copySuccess ? <Check size={18} /> : <Copy size={18} />}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '16px 20px',
+                    borderRadius: '12px',
+                    background: copySuccess ? 'rgba(34, 197, 94, 0.1)' : 'rgba(139, 125, 161, 0.1)',
+                    border: `1px solid ${copySuccess ? 'rgba(34, 197, 94, 0.3)' : 'rgba(139, 125, 161, 0.3)'}`,
+                    color: copySuccess ? '#059669' : '#2D2D37',
+                    cursor: 'pointer',
+                    fontFamily: "'Courier Prime', monospace",
+                    fontSize: '0.95rem',
                     width: '100%',
                     justifyContent: 'flex-start',
-                    background: copySuccess ? 'rgba(34, 197, 94, 0.15)' : undefined,
-                    borderColor: copySuccess ? 'rgba(34, 197, 94, 0.4)' : undefined,
-                    color: copySuccess ? '#22c55e' : undefined
+                    transition: 'all 0.3s ease'
                   }}
                 >
-                  {copySuccess ? 'Copied with link!' : 'Copy text with link'}
-                </ThemedButton>
+                  {copySuccess ? <Check size={18} /> : <Copy size={18} />}
+                  {copySuccess ? 'Copied to clipboard!' : 'Copy to clipboard'}
+                </motion.button>
                 
-                <ThemedButton
-                  onClick={generatePictureCard}
-                  disabled={isGeneratingCard}
-                  isDarkMode={isDarkMode}
-                  variant="secondary"
-                  icon={isGeneratingCard ? <Download size={18} /> : <Image size={18} />}
+                <motion.button
+                  onClick={handleShareViaEmail}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '16px 20px',
+                    borderRadius: '12px',
+                    background: 'rgba(139, 125, 161, 0.1)',
+                    border: '1px solid rgba(139, 125, 161, 0.3)',
+                    color: '#2D2D37',
+                    cursor: 'pointer',
+                    fontFamily: "'Courier Prime', monospace",
+                    fontSize: '0.95rem',
                     width: '100%',
                     justifyContent: 'flex-start'
                   }}
                 >
-                  {isGeneratingCard ? 'Generating card...' : 'Download picture card'}
-                </ThemedButton>
+                  <Share2 size={18} />
+                  Share via email
+                </motion.button>
               </div>
               
-              <ThemedButton
+              <motion.button
                 onClick={() => setShowShareOptions(false)}
-                isDarkMode={isDarkMode}
-                variant="outline"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 style={{
                   marginTop: '24px',
+                  padding: '8px 16px',
+                  borderRadius: '20px',
+                  background: 'rgba(139, 125, 161, 0.1)',
+                  border: '1px solid rgba(139, 125, 161, 0.3)',
+                  color: '#8B7DA1',
+                  cursor: 'pointer',
+                  fontFamily: "'Courier Prime', monospace",
+                  fontSize: '0.9rem',
                   width: '100%'
                 }}
               >
                 Close
-              </ThemedButton>
+              </motion.button>
             </motion.div>
           </motion.div>
         )}
@@ -620,28 +526,56 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
             flexWrap: 'wrap'
           }}
         >
-          <ThemedButton
+          <motion.button
             onClick={() => {
               setShowCuratorTweak(!showCuratorTweak);
               if (!showCuratorTweak) {
-                setEditedPoem(currentPoem);
+                setEditedPoem(currentPoem); // Initialize with current poem
               }
             }}
-            isDarkMode={isDarkMode}
-            variant={showCuratorTweak ? "primary" : "secondary"}
-            icon={<Edit3 size={16} />}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 20px',
+              borderRadius: '25px',
+              background: showCuratorTweak ? 'rgba(139, 125, 161, 0.3)' : 'rgba(139, 125, 161, 0.2)',
+              border: '1px solid rgba(139, 125, 161, 0.4)',
+              color: '#2D2D37',
+              cursor: 'pointer',
+              backdropFilter: 'blur(10px)',
+              fontFamily: "'Courier Prime', monospace",
+              fontSize: '0.9rem'
+            }}
           >
+            <Edit3 size={16} />
             Small revisions in the dusk
-          </ThemedButton>
+          </motion.button>
           
-          <ThemedButton
+          <motion.button
             onClick={() => setShowShareOptions(true)}
-            isDarkMode={isDarkMode}
-            variant="secondary"
-            icon={<Copy size={16} />}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '12px 20px',
+              borderRadius: '25px',
+              background: 'rgba(139, 125, 161, 0.2)',
+              border: '1px solid rgba(139, 125, 161, 0.4)',
+              color: '#2D2D37',
+              cursor: 'pointer',
+              backdropFilter: 'blur(10px)',
+              fontFamily: "'Courier Prime', monospace",
+              fontSize: '0.9rem'
+            }}
           >
+            <Share2 size={16} />
             Offer your spark
-          </ThemedButton>
+          </motion.button>
         </motion.div>
         
         <motion.div
@@ -651,7 +585,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
           style={{ textAlign: 'center', marginTop: '40px' }}
         >
           <p style={{
-            color: colors.primary,
+            color: '#8B7DA1',
             fontSize: '0.9rem',
             fontStyle: 'italic',
             fontFamily: "'EB Garamond', serif"
@@ -660,12 +594,6 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, onNavigate, isDarkMode 
           </p>
         </motion.div>
       </div>
-      
-      {/* Hidden canvas for generating picture cards */}
-      <canvas
-        ref={canvasRef}
-        style={{ display: 'none' }}
-      />
       
       <style>{`
         @keyframes float {
