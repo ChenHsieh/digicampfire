@@ -92,6 +92,27 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode }) => {
       'radial-gradient(circle, rgba(244, 194, 194, 0.8) 0%, transparent 70%)';
   };
 
+  // Ember styling functions
+  const getEmberBackground = (step: number, isActive: boolean) => {
+    if (isActive) {
+      return isDarkMode ? 
+        'radial-gradient(circle, rgba(251, 146, 60, 0.9) 0%, rgba(180, 83, 9, 0.7) 70%, transparent 100%)' :
+        'radial-gradient(circle, rgba(139, 125, 161, 0.8) 0%, rgba(244, 194, 194, 0.6) 70%, transparent 100%)';
+    }
+    return isDarkMode ? 
+      'rgba(100, 100, 100, 0.3)' : 
+      'rgba(200, 200, 200, 0.4)';
+  };
+
+  const getEmberShadow = (step: number, isActive: boolean) => {
+    if (isActive) {
+      return isDarkMode ?
+        `0 0 20px rgba(251, 146, 60, 0.6), 0 0 40px rgba(180, 83, 9, 0.4)` :
+        `0 0 20px rgba(139, 125, 161, 0.5), 0 0 40px rgba(244, 194, 194, 0.3)`;
+    }
+    return 'none';
+  };
+
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (orbRef.current) {
@@ -359,17 +380,103 @@ ${selectedWhisper.poetic}`;
           A space for strangers to sit by and share one line of feeling
         </p>
 
-        {/* Step indicator */}
-        <div className="flex justify-center gap-3 mb-10">
-          {[1, 2, 3].map((step) => (
-            <div
-              key={step}
-              className="w-2 h-2 rounded-full transition-all duration-300"
-              style={{
-                background: currentStep >= step ? (isDarkMode ? '#FDBA74' : '#8B7DA1') : (isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)')
-              }}
-            />
-          ))}
+        {/* Ember Progress Indicator */}
+        <div className="flex justify-center items-center gap-6 mb-10">
+          {[1, 2, 3].map((step) => {
+            const isActive = currentStep >= step;
+            return (
+              <motion.div
+                key={step}
+                className="relative"
+                initial={{ scale: 0.8, opacity: 0.6 }}
+                animate={{ 
+                  scale: isActive ? 1.2 : 0.8,
+                  opacity: isActive ? 1 : 0.6
+                }}
+                transition={{ 
+                  duration: 0.5,
+                  ease: "easeOut"
+                }}
+              >
+                {/* Ember glow effect */}
+                <motion.div
+                  className="w-4 h-4 rounded-full absolute inset-0"
+                  style={{
+                    background: getEmberBackground(step, isActive),
+                    boxShadow: getEmberShadow(step, isActive)
+                  }}
+                  animate={isActive ? {
+                    scale: [1, 1.3, 1],
+                    opacity: [0.8, 1, 0.8]
+                  } : {}}
+                  transition={isActive ? {
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  } : {}}
+                />
+                
+                {/* Ember core */}
+                <div
+                  className="w-4 h-4 rounded-full relative z-10 transition-all duration-500"
+                  style={{
+                    background: isActive ? 
+                      (isDarkMode ? '#FB923C' : '#8B7DA1') : 
+                      (isDarkMode ? 'rgba(100, 100, 100, 0.5)' : 'rgba(200, 200, 200, 0.6)'),
+                    border: `2px solid ${isActive ? 
+                      (isDarkMode ? '#FDBA74' : '#A78BFA') : 
+                      (isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.3)')}`
+                  }}
+                />
+                
+                {/* Floating sparks for active embers */}
+                {isActive && (
+                  <>
+                    <motion.div
+                      className="absolute w-1 h-1 rounded-full"
+                      style={{
+                        background: isDarkMode ? '#FDBA74' : '#A78BFA',
+                        top: '-8px',
+                        left: '50%',
+                        transform: 'translateX(-50%)'
+                      }}
+                      animate={{
+                        y: [-8, -16, -8],
+                        opacity: [0.8, 0.3, 0.8],
+                        scale: [1, 0.5, 1]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: step * 0.5
+                      }}
+                    />
+                    <motion.div
+                      className="absolute w-0.5 h-0.5 rounded-full"
+                      style={{
+                        background: isDarkMode ? '#FB923C' : '#8B7DA1',
+                        top: '-6px',
+                        right: '-6px'
+                      }}
+                      animate={{
+                        y: [-6, -12, -6],
+                        x: [0, 4, 0],
+                        opacity: [0.6, 0.2, 0.6],
+                        scale: [1, 0.3, 1]
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "easeInOut",
+                        delay: step * 0.3
+                      }}
+                    />
+                  </>
+                )}
+              </motion.div>
+            );
+          })}
         </div>
 
         <AnimatePresence mode="wait">
