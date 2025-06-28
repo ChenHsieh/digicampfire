@@ -429,8 +429,8 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             className="flex items-center gap-2 px-5 py-3 rounded-3xl cursor-pointer backdrop-blur-md font-['Courier_Prime'] text-sm"
             style={{
               background: showCuratorTweak ? 
-                (isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)') : 
-                (isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'),
+                (isDarkMode ? 'rgba(180, 83, 9, 0.9)' : 'rgba(139, 125, 161, 0.3)') : 
+                (isDarkMode ? 'rgba(180, 83, 9, 0.7)' : 'rgba(139, 125, 161, 0.2)'),
               border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.5)' : 'rgba(139, 125, 161, 0.4)'}`,
               color: getTextColor()
             }}
@@ -445,7 +445,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 px-5 py-3 rounded-3xl cursor-pointer backdrop-blur-md font-['Courier_Prime'] text-sm"
             style={{
-              background: isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)',
+              background: isDarkMode ? 'rgba(180, 83, 9, 0.7)' : 'rgba(139, 125, 161, 0.2)',
               border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.5)' : 'rgba(139, 125, 161, 0.4)'}`,
               color: getTextColor()
             }}
