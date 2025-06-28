@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Share2, Edit3, Copy, Check } from 'lucide-react';
 import { validateSkinnyPoem } from '../utils/openai';
+import { getDisplayStyles } from '../utils/styles/displayStyles';
 
 interface Poem {
   whisper: string;
@@ -26,6 +27,15 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, isDarkMode, isSoundOn }
   const [copySuccess, setCopySuccess] = useState(false);
   
   const lines = currentPoem.split('\n').filter(line => line.trim() !== '');
+  
+  const {
+    getTextColor,
+    getSecondaryTextColor,
+    getCardBackground,
+    getCardBorder,
+    getPoemBackground,
+    getPoemShadow
+  } = getDisplayStyles(isDarkMode);
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -79,36 +89,6 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack, isDarkMode, isSoundOn }
     const subject = encodeURIComponent('A poem from Digital Campfire');
     const body = encodeURIComponent(`${currentPoem}\n\n— Created at Digital Campfire\n\nCreate your own poem at: ${window.location.origin}`);
     window.open(`mailto:?subject=${subject}&body=${body}`);
-  };
-
-  // Dynamic styles based on dark mode - campfire themed
-  const getTextColor = () => isDarkMode ? '#FEF7ED' : '#2D2D37';
-  const getSecondaryTextColor = () => isDarkMode ? '#FDBA74' : '#8B7DA1';
-  const getCardBackground = () => isDarkMode ? 'rgba(28, 25, 23, 0.8)' : 'rgba(254, 254, 254, 0.8)';
-  const getCardBorder = () => isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.15)';
-  const getPoemBackground = () => {
-    if (isDarkMode) {
-      return `
-        radial-gradient(circle at center, rgba(251, 146, 60, 0.15) 0%, transparent 70%),
-        rgba(28, 25, 23, 0.9)
-      `;
-    }
-    return `
-      radial-gradient(circle at center, rgba(244, 194, 194, 0.1) 0%, transparent 70%),
-      rgba(254, 254, 254, 0.9)
-    `;
-  };
-  const getPoemShadow = () => {
-    if (isDarkMode) {
-      return `
-        0 0 60px rgba(251, 146, 60, 0.2),
-        0 8px 32px rgba(0, 0, 0, 0.4)
-      `;
-    }
-    return `
-      0 0 60px rgba(139, 125, 161, 0.2),
-      0 8px 32px rgba(45, 45, 55, 0.1)
-    `;
   };
 
   return (

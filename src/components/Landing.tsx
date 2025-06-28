@@ -1,31 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, ArrowRight, RefreshCw, ExternalLink } from 'lucide-react';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import { fetchPoeticWhispersWithSources } from '../utils/rssParser';
 import { generateSkinnyPoem, generateAnchorWords } from '../utils/openai';
-
-const baseAnchorWords = [
-  "breathe",
-  "release", 
-  "become",
-  "hold",
-  "listen",
-  "remember",
-  "forgive",
-  "trust",
-  "surrender",
-  "witness"
-];
-
-const feelingPrompts = [
-  "I am holding...",
-  "Today I carry...",
-  "In my chest lives...",
-  "What weighs on me is...",
-  "I cannot shake...",
-  "My heart knows...",
-  "The silence holds..."
-];
+import { baseAnchorWords, feelingPrompts } from '../constants/appConstants';
+import { getLandingStyles } from '../utils/styles/landingStyles';
+import WhisperSelection from './landing/WhisperSelection';
+import AnchorSelection from './landing/AnchorSelection';
+import FeelingInput from './landing/FeelingInput';
 
 interface WhisperWithSource {
   poetic: string;
@@ -69,6 +51,18 @@ const Landing: React.FC<LandingProps> = ({ onComplete, isDarkMode, isSoundOn }) 
   ]);
   const [loadingWhispers, setLoadingWhispers] = useState(false);
   const orbRef = useRef<HTMLDivElement>(null);
+
+  const {
+    getCardBackground,
+    getCardBorder,
+    getTextColor,
+    getSecondaryTextColor,
+    getButtonBackground,
+    getButtonBorder,
+    getOrbBackground,
+    getOrbShadow,
+    getInnerFlameBackground
+  } = getLandingStyles(isDarkMode);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -203,382 +197,55 @@ ${selectedWhisper}`;
     }, 800);
   };
 
-  // Dynamic styles based on dark mode - campfire themed
-  const getCardBackground = (isSelected: boolean) => {
-    if (isDarkMode) {
-      return isSelected ? 'rgba(180, 83, 9, 0.25)' : 'rgba(28, 25, 23, 0.8)';
-    }
-    return isSelected ? 'rgba(244, 194, 194, 0.15)' : 'rgba(254, 254, 254, 0.8)';
-  };
-
-  const getCardBorder = (isSelected: boolean) => {
-    if (isDarkMode) {
-      return isSelected ? '#FDBA74' : 'rgba(180, 83, 9, 0.3)';
-    }
-    return isSelected ? '#8B7DA1' : 'rgba(139, 125, 161, 0.2)';
-  };
-
-  const getTextColor = () => isDarkMode ? '#FEF7ED' : '#2D2D37';
-  const getSecondaryTextColor = () => isDarkMode ? '#FDBA74' : '#8B7DA1';
-  const getButtonBackground = () => isDarkMode ? 'rgba(28, 25, 23, 0.8)' : 'rgba(254, 254, 254, 0.8)';
-  const getButtonBorder = () => isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)';
-
   const renderStep = () => {
     switch (currentStep) {
       case 1:
         return (
-          <motion.div
-            key="step1"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '40px' }}>
-              <h2 style={{
-                fontSize: '1.5rem',
-                textAlign: 'center',
-                color: getTextColor(),
-                fontFamily: "'EB Garamond', serif",
-                fontWeight: 400
-              }}>
-                Which whisper echoes loudest today?
-              </h2>
-              <motion.button
-                onClick={loadWhispers}
-                disabled={loadingWhispers}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                style={{
-                  padding: '8px',
-                  borderRadius: '50%',
-                  background: getButtonBackground(),
-                  border: `1px solid ${getButtonBorder()}`,
-                  cursor: loadingWhispers ? 'not-allowed' : 'pointer',
-                  opacity: loadingWhispers ? 0.5 : 1,
-                  backdropFilter: 'blur(10px)'
-                }}
-              >
-                <RefreshCw 
-                  size={16} 
-                  color={getSecondaryTextColor()}
-                  style={{
-                    animation: loadingWhispers ? 'spin 1s linear infinite' : 'none'
-                  }}
-                />
-              </motion.button>
-            </div>
-            
-            {loadingWhispers ? (
-              <div style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                minHeight: '200px',
-                color: getSecondaryTextColor(),
-                fontSize: '1rem',
-                fontStyle: 'italic'
-              }}>
-                Transforming today's currents into whispers...
-              </div>
-            ) : (
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '24px',
-                marginBottom: '40px',
-                maxWidth: '700px',
-                margin: '0 auto'
-              }}>
-                {whisperOptions.map((whisper, index) => (
-                  <motion.div
-                    key={index}
-                    whileHover={{ scale: 1.01, y: -2 }}
-                    animate={selectedWhisper === whisper.poetic ? {
-                      background: [
-                        getCardBackground(true),
-                        isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(244, 194, 194, 0.4)',
-                        getCardBackground(true)
-                      ]
-                    } : {}}
-                    transition={{ 
-                      scale: { duration: 0.2 },
-                      background: { duration: 0.6, repeat: selectedWhisper === whisper.poetic ? 2 : 0 }
-                    }}
-                    onClick={() => handleSelection(whisper.poetic, 'whisper')}
-                    style={{
-                      padding: '28px 32px',
-                      border: `2px solid ${getCardBorder(selectedWhisper === whisper.poetic)}`,
-                      borderRadius: '16px',
-                      background: getCardBackground(selectedWhisper === whisper.poetic),
-                      cursor: 'pointer',
-                      boxShadow: selectedWhisper === whisper.poetic ? 
-                        (isDarkMode ? '0 8px 32px rgba(251, 146, 60, 0.3)' : '0 8px 32px rgba(139, 125, 161, 0.2)') : 
-                        (isDarkMode ? '0 4px 16px rgba(0, 0, 0, 0.3)' : '0 4px 16px rgba(45, 45, 55, 0.08)'),
-                      backdropFilter: 'blur(10px)',
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
-                    {/* Main poetic phrase */}
-                    <div style={{
-                      fontFamily: "'EB Garamond', serif",
-                      fontSize: '1.4rem',
-                      color: getTextColor(),
-                      lineHeight: 1.4,
-                      fontWeight: 500,
-                      textAlign: 'center',
-                      marginBottom: '16px'
-                    }}>
-                      {whisper.poetic}
-                    </div>
-                    
-                    {/* Source headline with link */}
-                    <div style={{
-                      borderTop: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.25)' : 'rgba(139, 125, 161, 0.15)'}`,
-                      paddingTop: '16px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      gap: '12px'
-                    }}>
-                      <div style={{
-                        fontSize: '0.85rem',
-                        color: getSecondaryTextColor(),
-                        fontFamily: "'Courier Prime', monospace",
-                        lineHeight: 1.3,
-                        flex: 1
-                      }}>
-                        {whisper.headline}
-                      </div>
-                      <motion.a
-                        href={whisper.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={(e) => e.stopPropagation()}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: '4px',
-                          padding: '6px 12px',
-                          borderRadius: '20px',
-                          background: isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)',
-                          border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
-                          color: getSecondaryTextColor(),
-                          textDecoration: 'none',
-                          fontSize: '0.75rem',
-                          fontFamily: "'Courier Prime', monospace",
-                          fontWeight: 500,
-                          transition: 'all 0.2s ease',
-                          flexShrink: 0
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)';
-                          e.currentTarget.style.color = getTextColor();
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)';
-                          e.currentTarget.style.color = getSecondaryTextColor();
-                        }}
-                      >
-                        <ExternalLink size={12} />
-                        Source
-                      </motion.a>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </motion.div>
+          <WhisperSelection
+            whisperOptions={whisperOptions}
+            selectedWhisper={selectedWhisper}
+            loadingWhispers={loadingWhispers}
+            loadWhispers={loadWhispers}
+            handleSelection={handleSelection}
+            isDarkMode={isDarkMode}
+            getCardBackground={getCardBackground}
+            getCardBorder={getCardBorder}
+            getTextColor={getTextColor}
+            getSecondaryTextColor={getSecondaryTextColor}
+            getButtonBackground={getButtonBackground}
+            getButtonBorder={getButtonBorder}
+          />
         );
       
       case 2:
         return (
-          <motion.div
-            key="step2"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.6 }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginBottom: '40px' }}>
-              <h2 style={{
-                fontSize: '1.5rem',
-                textAlign: 'center',
-                color: getTextColor(),
-                fontFamily: "'EB Garamond', serif",
-                fontWeight: 400
-              }}>
-                Choose the word that anchors us.
-              </h2>
-              <motion.button
-                onClick={loadNewAnchors}
-                disabled={loadingAnchors}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                style={{
-                  padding: '8px',
-                  borderRadius: '50%',
-                  background: getButtonBackground(),
-                  border: `1px solid ${getButtonBorder()}`,
-                  cursor: loadingAnchors ? 'not-allowed' : 'pointer',
-                  opacity: loadingAnchors ? 0.5 : 1,
-                  backdropFilter: 'blur(10px)'
-                }}
-              >
-                <RefreshCw 
-                  size={16} 
-                  color={getSecondaryTextColor()}
-                  style={{
-                    animation: loadingAnchors ? 'spin 1s linear infinite' : 'none'
-                  }}
-                />
-              </motion.button>
-            </div>
-            
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-              gap: '20px',
-              marginBottom: '40px',
-              maxWidth: '600px',
-              margin: '0 auto 40px'
-            }}>
-              {anchorWords.slice(0, 6).map((word, index) => (
-                <motion.button
-                  key={`${word}-${index}`}
-                  onClick={() => handleSelection(word, 'anchor')}
-                  whileHover={{ scale: 1.05, rotate: 1 }}
-                  whileTap={{ scale: 0.95 }}
-                  animate={selectedAnchor === word ? {
-                    background: [
-                      getCardBackground(true),
-                      isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.4)',
-                      getCardBackground(true)
-                    ]
-                  } : {}}
-                  transition={{ 
-                    scale: { duration: 0.2 },
-                    background: { duration: 0.6, repeat: selectedAnchor === word ? 2 : 0 }
-                  }}
-                  style={{
-                    padding: '16px 24px',
-                    border: `3px solid ${selectedAnchor === word ? getTextColor() : (isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(45, 45, 55, 0.2)')}`,
-                    borderRadius: '50px',
-                    background: getCardBackground(selectedAnchor === word),
-                    cursor: 'pointer',
-                    boxShadow: selectedAnchor === word ? 
-                      (isDarkMode ? '0 8px 24px rgba(251, 146, 60, 0.3)' : '0 8px 24px rgba(45, 45, 55, 0.2)') : 
-                      (isDarkMode ? '0 4px 12px rgba(0, 0, 0, 0.3)' : '0 4px 12px rgba(45, 45, 55, 0.1)'),
-                    backdropFilter: 'blur(10px)',
-                    transition: 'all 0.3s ease',
-                    fontFamily: "'Courier Prime', monospace",
-                    fontSize: '1rem',
-                    fontWeight: 600,
-                    color: getTextColor(),
-                    textTransform: 'lowercase'
-                  }}
-                >
-                  {word}
-                </motion.button>
-              ))}
-            </div>
-          </motion.div>
+          <AnchorSelection
+            anchorWords={anchorWords}
+            selectedAnchor={selectedAnchor}
+            loadingAnchors={loadingAnchors}
+            loadNewAnchors={loadNewAnchors}
+            handleSelection={handleSelection}
+            isDarkMode={isDarkMode}
+            getCardBackground={getCardBackground}
+            getCardBorder={getCardBorder}
+            getTextColor={getTextColor}
+            getSecondaryTextColor={getSecondaryTextColor}
+            getButtonBackground={getButtonBackground}
+            getButtonBorder={getButtonBorder}
+          />
         );
       
       case 3:
         return (
-          <motion.div
-            key="step3"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h2 style={{
-              fontSize: '1.5rem',
-              marginBottom: '24px',
-              textAlign: 'center',
-              color: getTextColor(),
-              fontFamily: "'EB Garamond', serif",
-              fontWeight: 400
-            }}>
-              How are you feeling now?
-            </h2>
-            
-            <p style={{
-              textAlign: 'center',
-              color: getSecondaryTextColor(),
-              fontSize: '1rem',
-              marginBottom: '32px',
-              fontStyle: 'italic'
-            }}>
-              A sentence, a sigh, a scream — write what you carry. <span style={{ opacity: 0.7 }}>(or skip)</span>
-            </p>
-            
-            <div style={{ position: 'relative' }}>
-              <textarea
-                value={feeling}
-                onChange={(e) => setFeeling(e.target.value)}
-                style={{
-                  width: '100%',
-                  minHeight: '120px',
-                  padding: '24px',
-                  border: `2px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
-                  borderRadius: '12px',
-                  fontSize: '1.1rem',
-                  lineHeight: 1.6,
-                  resize: 'vertical',
-                  background: isDarkMode ? 'rgba(28, 25, 23, 0.8)' : 'rgba(254, 254, 254, 0.9)',
-                  fontFamily: "'EB Garamond', serif",
-                  backdropFilter: 'blur(10px)',
-                  color: getTextColor(),
-                  outline: 'none',
-                  transition: 'border-color 0.3s ease'
-                }}
-                onFocus={(e) => {
-                  e.target.style.borderColor = isDarkMode ? '#FDBA74' : '#8B7DA1';
-                }}
-                onBlur={(e) => {
-                  e.target.style.borderColor = isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)';
-                }}
-              />
-              
-              {/* Animated placeholder when empty */}
-              {feeling === '' && (
-                <motion.div
-                  key={currentPromptIndex}
-                  initial={{ opacity: 0, y: 5 }}
-                  animate={{ opacity: 0.6, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  transition={{ duration: 0.5 }}
-                  style={{
-                    position: 'absolute',
-                    top: '24px',
-                    left: '24px',
-                    fontSize: '1.1rem',
-                    color: getSecondaryTextColor(),
-                    fontFamily: "'EB Garamond', serif",
-                    fontStyle: 'italic',
-                    pointerEvents: 'none'
-                  }}
-                >
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={currentPromptIndex}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 0.6 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.5 }}
-                    >
-                      {feelingPrompts[currentPromptIndex]}
-                    </motion.span>
-                  </AnimatePresence>
-                </motion.div>
-              )}
-            </div>
-          </motion.div>
+          <FeelingInput
+            feeling={feeling}
+            setFeeling={setFeeling}
+            currentPromptIndex={currentPromptIndex}
+            feelingPrompts={feelingPrompts}
+            isDarkMode={isDarkMode}
+            getTextColor={getTextColor}
+            getSecondaryTextColor={getSecondaryTextColor}
+          />
         );
       
       default:
@@ -643,27 +310,13 @@ ${selectedWhisper}`;
           style={{
             width: '160px',
             height: '160px',
-            background: isDarkMode ? `
-              radial-gradient(circle at 30% 30%, rgba(254, 247, 237, 0.1) 0%, transparent 30%),
-              radial-gradient(circle at 70% 70%, rgba(251, 146, 60, 0.8) 0%, transparent 50%),
-              radial-gradient(circle at 50% 50%, rgba(180, 83, 9, 0.7) 0%, transparent 70%),
-              linear-gradient(135deg, rgba(28, 25, 23, 0.9) 0%, rgba(180, 83, 9, 0.7) 50%, rgba(251, 146, 60, 0.6) 100%)
-            ` : `
-              radial-gradient(circle at 30% 30%, rgba(254, 254, 254, 0.9) 0%, transparent 30%),
-              radial-gradient(circle at 70% 70%, rgba(244, 194, 194, 0.7) 0%, transparent 50%),
-              radial-gradient(circle at 50% 50%, rgba(139, 125, 161, 0.6) 0%, transparent 70%),
-              linear-gradient(135deg, rgba(45, 45, 55, 0.8) 0%, rgba(139, 125, 161, 0.6) 50%, rgba(244, 194, 194, 0.5) 100%)
-            `,
+            background: getOrbBackground(),
             borderRadius: '50%',
             margin: '0 auto 48px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            boxShadow: `
-              0 0 60px rgba(${isDarkMode ? '251, 146, 60' : '139, 125, 161'}, ${isOrbHovered ? (isDarkMode ? 0.8 : 0.6) : (isDarkMode ? 0.6 : 0.4)}),
-              0 0 120px rgba(${isDarkMode ? '180, 83, 9' : '244, 194, 194'}, ${isOrbHovered ? (isDarkMode ? 0.6 : 0.4) : (isDarkMode ? 0.4 : 0.2)}),
-              inset 0 0 60px rgba(254, 254, 254, ${isDarkMode ? 0.05 : 0.1})
-            `,
+            boxShadow: getOrbShadow(isOrbHovered),
             transform: `translate(${mousePosition.x}px, ${mousePosition.y}px) scale(${isOrbHovered ? 1.1 : 1})`,
             transition: 'transform 0.3s ease, box-shadow 0.3s ease',
             cursor: 'pointer',
@@ -684,9 +337,7 @@ ${selectedWhisper}`;
             style={{
               width: '80px',
               height: '80px',
-              background: isDarkMode ? 
-                'radial-gradient(circle, rgba(251, 146, 60, 0.9) 0%, transparent 70%)' :
-                'radial-gradient(circle, rgba(244, 194, 194, 0.8) 0%, transparent 70%)',
+              background: getInnerFlameBackground(),
               borderRadius: '50%'
             }} 
           />

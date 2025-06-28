@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Sun, Moon, Volume2, VolumeX } from 'lucide-react';
+import React, { useState } from 'react';
+import { AnimatePresence } from 'framer-motion';
+import { useTheme } from './hooks/useTheme';
 import Landing from './components/Landing';
 import Display from './components/Display';
 import BoltLogo from './components/BoltLogo';
+import AppFooter from './components/common/AppFooter';
 
 type AppState = 'landing' | 'display';
 
@@ -17,38 +18,19 @@ interface Poem {
 function App() {
   const [currentState, setCurrentState] = useState<AppState>('landing');
   const [currentPoem, setCurrentPoem] = useState<Poem | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [isSoundOn, setIsSoundOn] = useState(true);
-
-  // Load preferences from localStorage on mount
-  useEffect(() => {
-    const savedDarkMode = localStorage.getItem('digitalCampfire_darkMode');
-    const savedSoundOn = localStorage.getItem('digitalCampfire_soundOn');
-    
-    if (savedDarkMode !== null) {
-      setIsDarkMode(JSON.parse(savedDarkMode));
-    }
-    if (savedSoundOn !== null) {
-      setIsSoundOn(JSON.parse(savedSoundOn));
-    }
-  }, []);
-
-  // Save preferences to localStorage when they change
-  useEffect(() => {
-    localStorage.setItem('digitalCampfire_darkMode', JSON.stringify(isDarkMode));
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    localStorage.setItem('digitalCampfire_soundOn', JSON.stringify(isSoundOn));
-  }, [isSoundOn]);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
-  const toggleSound = () => {
-    setIsSoundOn(!isSoundOn);
-  };
+  
+  const {
+    isDarkMode,
+    isSoundOn,
+    toggleDarkMode,
+    toggleSound,
+    getBackgroundStyle,
+    getTextColor,
+    getFooterBackground,
+    getFooterBorder,
+    getLinkColor,
+    getLinkHoverColor
+  } = useTheme();
 
   const handlePoemComplete = (poem: Poem) => {
     setCurrentPoem(poem);
@@ -77,30 +59,6 @@ function App() {
         return <Landing onComplete={handlePoemComplete} isDarkMode={isDarkMode} isSoundOn={isSoundOn} />;
     }
   };
-
-  // Dynamic styles based on dark mode - now with campfire warmth
-  const getBackgroundStyle = () => {
-    if (isDarkMode) {
-      return `
-        radial-gradient(circle at 20% 80%, rgba(180, 83, 9, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(220, 38, 38, 0.12) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(92, 51, 23, 0.2) 0%, transparent 50%),
-        linear-gradient(135deg, #1C1917 0%, #292524 50%, #1C1917 100%)
-      `;
-    }
-    return `
-      radial-gradient(circle at 20% 80%, rgba(139, 125, 161, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(244, 194, 194, 0.1) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, rgba(45, 45, 55, 0.08) 0%, transparent 50%),
-      linear-gradient(135deg, #FEFEFE 0%, #F8F8F8 100%)
-    `;
-  };
-
-  const getTextColor = () => isDarkMode ? '#FEF7ED' : '#2D2D37';
-  const getFooterBackground = () => isDarkMode ? 'rgba(28, 25, 23, 0.9)' : 'rgba(254, 254, 254, 0.8)';
-  const getFooterBorder = () => isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.1)';
-  const getLinkColor = () => isDarkMode ? '#FDBA74' : '#8B7DA1';
-  const getLinkHoverColor = () => isDarkMode ? '#FED7AA' : '#2D2D37';
 
   return (
     <div style={{ 
@@ -138,137 +96,16 @@ function App() {
       </div>
 
       {/* Footer with About, Privacy links and toggles */}
-      <footer style={{
-        position: 'relative',
-        zIndex: 2,
-        padding: '20px 24px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        borderTop: `1px solid ${getFooterBorder()}`,
-        background: getFooterBackground(),
-        backdropFilter: 'blur(10px)',
-        transition: 'all 0.5s ease'
-      }}>
-        {/* Left side - About and Privacy links */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '24px'
-        }}>
-          <a
-            href="/about"
-            style={{
-              color: getLinkColor(),
-              textDecoration: 'none',
-              fontSize: '0.85rem',
-              fontFamily: "'Courier Prime', monospace",
-              transition: 'color 0.3s ease',
-              cursor: 'pointer'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = getLinkHoverColor();
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = getLinkColor();
-            }}
-          >
-            About
-          </a>
-          
-          <div style={{
-            width: '1px',
-            height: '12px',
-            background: isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)',
-            transition: 'background 0.5s ease'
-          }} />
-          
-          <a
-            href="/privacy"
-            style={{
-              color: getLinkColor(),
-              textDecoration: 'none',
-              fontSize: '0.85rem',
-              fontFamily: "'Courier Prime', monospace",
-              transition: 'color 0.3s ease',
-              cursor: 'pointer'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = getLinkHoverColor();
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = getLinkColor();
-            }}
-          >
-            Privacy
-          </a>
-        </div>
-
-        {/* Right side - Theme and Sound toggles */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '16px'
-        }}>
-          {/* Dark/Light mode toggle */}
-          <motion.button
-            onClick={toggleDarkMode}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              background: isDarkMode ? 'rgba(251, 146, 60, 0.2)' : 'rgba(139, 125, 161, 0.15)',
-              border: `1px solid ${isDarkMode ? 'rgba(251, 146, 60, 0.4)' : 'rgba(139, 125, 161, 0.3)'}`,
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              backdropFilter: 'blur(10px)'
-            }}
-            title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {isDarkMode ? (
-              <Sun size={18} color="#FB923C" />
-            ) : (
-              <Moon size={18} color="#8B7DA1" />
-            )}
-          </motion.button>
-
-          {/* Sound toggle */}
-          <motion.button
-            onClick={toggleSound}
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              background: isSoundOn ? 
-                (isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.15)') : 
-                (isDarkMode ? 'rgba(220, 38, 38, 0.2)' : 'rgba(244, 194, 194, 0.15)'),
-              border: `1px solid ${isSoundOn ? 
-                (isDarkMode ? 'rgba(180, 83, 9, 0.4)' : 'rgba(139, 125, 161, 0.3)') : 
-                (isDarkMode ? 'rgba(220, 38, 38, 0.4)' : 'rgba(244, 194, 194, 0.3)')}`,
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              backdropFilter: 'blur(10px)'
-            }}
-            title={isSoundOn ? 'Turn sound off' : 'Turn sound on'}
-          >
-            {isSoundOn ? (
-              <Volume2 size={18} color={isDarkMode ? '#B45309' : '#8B7DA1'} />
-            ) : (
-              <VolumeX size={18} color={isDarkMode ? '#DC2626' : '#F4C2C2'} />
-            )}
-          </motion.button>
-        </div>
-      </footer>
+      <AppFooter
+        isDarkMode={isDarkMode}
+        isSoundOn={isSoundOn}
+        toggleDarkMode={toggleDarkMode}
+        toggleSound={toggleSound}
+        getFooterBackground={getFooterBackground}
+        getFooterBorder={getFooterBorder}
+        getLinkColor={getLinkColor}
+        getLinkHoverColor={getLinkHoverColor}
+      />
     </div>
   );
 }
