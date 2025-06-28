@@ -26,7 +26,6 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
   
   const {
     isDarkMode,
-    isSoundOn,
     getTextColor,
     getSecondaryTextColor,
     getCardBackground,
@@ -604,7 +603,7 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           }}>
             Thank you for sharing your light with us
           </p>
-        </motion.div>
+        </div>
       </div>
       
       <style>{`
