@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { fetchPoeticWhispersWithSources } from '../utils/rssParser';
-import { generateSkinnyPoem, generateAnchorWords } from '../utils/openai';
+import { generateSkinnyPoem, generateAnchorWords } from '../utils/apiClient';
 import { baseAnchorWords } from '../constants/appConstants';
 
 interface WhisperWithSource {

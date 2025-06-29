@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Share2, Edit3, Copy, Check, ExternalLink } from 'lucide-react';
-import { validateSkinnyPoem } from '../utils/openai';
+import { validateSkinnyPoem } from '../utils/apiClient';
 import { useTheme } from '../hooks/useTheme';
 
 interface Poem {

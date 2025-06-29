@@ -1,4 +1,4 @@
-import { transformHeadlineToPoetry } from './openai';
+import { transformHeadlineToPoetry } from './apiClient';
 
 interface RSSEntry {
   title: string;
