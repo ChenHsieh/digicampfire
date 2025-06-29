@@ -240,7 +240,7 @@ const PrivacyPage: React.FC<PrivacyPageProps> = ({
             </h2>
 
             <p style={{ marginBottom: '24px' }}>
-              When you choose to share your poem using our sharing features (copy to clipboard or email), 
+              When you choose to share your poem using our sharing features, 
               you have full control over where and how your poem is shared. We don't track or store any 
               information about your sharing activities.
             </p>
