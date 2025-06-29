@@ -110,7 +110,7 @@ export async function transformHeadlineToPoetry(headline: string): Promise<ApiRe
     return result;
   } catch (error) {
     console.error('Error transforming headline:', error);
-    // Fallback logic
+    // Always return a poetic fallback, never the raw headline
     const result: ApiResponse<string> = {
       result: createPoetricFallback(headline),
       source: 'fallback'
@@ -122,7 +122,8 @@ export async function transformHeadlineToPoetry(headline: string): Promise<ApiRe
   }
 }
 
-function createPoetricFallback(headline: string): string {
+// Export this function so it can be used by other modules
+export function createPoetricFallback(headline: string): string {
   const lowerHeadline = headline.toLowerCase();
   
   // Enhanced fallback with more nuanced categorization

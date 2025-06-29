@@ -1,4 +1,4 @@
-import { transformHeadlineToPoetry } from './apiClient';
+import { transformHeadlineToPoetry, createPoetricFallback } from './apiClient';
 
 interface RSSEntry {
   title: string;
@@ -220,9 +220,9 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
         });
       } catch (error) {
         console.error('Error transforming headline:', item.headline, error);
-        // Use original headline if transformation fails
+        // Use poetic fallback instead of original headline
         whispers.push({
-          poetic: item.headline,
+          poetic: createPoetricFallback(item.headline),
           headline: item.headline,
           link: item.link,
           source: 'fallback'
