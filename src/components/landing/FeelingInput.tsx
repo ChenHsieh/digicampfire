@@ -12,6 +12,8 @@ interface FeelingInputProps {
   getHaloTextStyle: () => { textShadow: string };
 }
 
+const FEELING_MAX_LENGTH = 300; // Reasonable limit for feeling input
+
 const FeelingInput: React.FC<FeelingInputProps> = ({
   feeling,
   setFeeling,
@@ -22,6 +24,10 @@ const FeelingInput: React.FC<FeelingInputProps> = ({
   getSecondaryTextColor,
   getHaloTextStyle
 }) => {
+  const remainingChars = FEELING_MAX_LENGTH - feeling.length;
+  const isNearLimit = remainingChars <= 50;
+  const isAtLimit = remainingChars <= 0;
+
   return (
     <motion.div
       key="step3"
@@ -55,12 +61,25 @@ const FeelingInput: React.FC<FeelingInputProps> = ({
       <div style={{ position: 'relative' }}>
         <textarea
           value={feeling}
-          onChange={(e) => setFeeling(e.target.value)}
+          onChange={(e) => {
+            const newValue = e.target.value;
+            if (newValue.length <= FEELING_MAX_LENGTH) {
+              setFeeling(newValue);
+            }
+          }}
+          maxLength={FEELING_MAX_LENGTH}
           style={{
             width: '100%',
             minHeight: '120px',
             padding: '24px',
-            border: `2px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)'}`,
+            paddingBottom: '48px', // Extra space for character counter
+            border: `2px solid ${
+              isAtLimit 
+                ? (isDarkMode ? '#EF4444' : '#DC2626')
+                : isNearLimit 
+                  ? (isDarkMode ? '#F59E0B' : '#D97706')
+                  : (isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)')
+            }`,
             borderRadius: '12px',
             fontSize: '1.1rem',
             lineHeight: 1.6,
@@ -73,12 +92,35 @@ const FeelingInput: React.FC<FeelingInputProps> = ({
             transition: 'border-color 0.3s ease'
           }}
           onFocus={(e) => {
-            e.target.style.borderColor = isDarkMode ? '#FDBA74' : '#8B7DA1';
+            if (!isAtLimit && !isNearLimit) {
+              e.target.style.borderColor = isDarkMode ? '#FDBA74' : '#8B7DA1';
+            }
           }}
           onBlur={(e) => {
-            e.target.style.borderColor = isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)';
+            if (!isAtLimit && !isNearLimit) {
+              e.target.style.borderColor = isDarkMode ? 'rgba(180, 83, 9, 0.3)' : 'rgba(139, 125, 161, 0.2)';
+            }
           }}
+          placeholder="" // We handle placeholder with our animated system
         />
+        
+        {/* Character counter */}
+        <div style={{
+          position: 'absolute',
+          bottom: '12px',
+          right: '16px',
+          fontSize: '0.75rem',
+          fontFamily: "'Courier Prime', monospace",
+          color: isAtLimit 
+            ? (isDarkMode ? '#EF4444' : '#DC2626')
+            : isNearLimit 
+              ? (isDarkMode ? '#F59E0B' : '#D97706')
+              : getSecondaryTextColor(),
+          opacity: feeling.length > 0 ? 0.8 : 0.4,
+          transition: 'all 0.3s ease'
+        }}>
+          {remainingChars} characters remaining
+        </div>
         
         {/* Animated placeholder when empty */}
         {feeling === '' && (
@@ -110,6 +152,30 @@ const FeelingInput: React.FC<FeelingInputProps> = ({
                 {feelingPrompts[currentPromptIndex]}
               </motion.span>
             </AnimatePresence>
+          </motion.div>
+        )}
+        
+        {/* Warning message for character limit */}
+        {isNearLimit && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{
+              position: 'absolute',
+              bottom: '-32px',
+              left: '0',
+              fontSize: '0.8rem',
+              fontFamily: "'Courier Prime', monospace",
+              color: isAtLimit 
+                ? (isDarkMode ? '#EF4444' : '#DC2626')
+                : (isDarkMode ? '#F59E0B' : '#D97706'),
+              fontStyle: 'italic'
+            }}
+          >
+            {isAtLimit 
+              ? 'Character limit reached. Consider condensing your thoughts.'
+              : 'Approaching character limit. Keep it concise for best results.'
+            }
           </motion.div>
         )}
       </div>

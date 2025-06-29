@@ -24,37 +24,46 @@ const BoltLogo: React.FC = () => {
         background: '#000000' // Fallback background
       }}
     >
-      <img
-        src="/black_circle_360x360.png"
-        alt="Powered by Bolt"
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'cover'
-        }}
-        onError={(e) => {
-          // Fallback if image fails to load
-          const target = e.target as HTMLImageElement;
-          target.style.display = 'none';
-          const parent = target.parentElement;
-          if (parent) {
-            parent.innerHTML = `
-              <div style="
-                width: 100%;
-                height: 100%;
-                background: #000000;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: white;
-                font-family: 'Courier Prime', monospace;
-                font-size: 18px;
-                font-weight: bold;
-              ">b</div>
-            `;
-          }
-        }}
-      />
+      <picture>
+        {/* WebP version for modern browsers */}
+        <source 
+          srcSet="/black_circle_360x360.webp" 
+          type="image/webp"
+        />
+        {/* Fallback PNG */}
+        <img
+          src="/black_circle_360x360.png"
+          alt="Powered by Bolt"
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover'
+          }}
+          loading="lazy"
+          onError={(e) => {
+            // Fallback if image fails to load
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            const parent = target.parentElement?.parentElement;
+            if (parent) {
+              parent.innerHTML = `
+                <div style="
+                  width: 100%;
+                  height: 100%;
+                  background: #000000;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  color: white;
+                  font-family: 'Courier Prime', monospace;
+                  font-size: 18px;
+                  font-weight: bold;
+                ">b</div>
+              `;
+            }
+          }}
+        />
+      </picture>
     </motion.a>
   );
 };
