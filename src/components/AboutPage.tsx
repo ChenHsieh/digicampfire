@@ -127,7 +127,7 @@ const AboutPage: React.FC<AboutPageProps> = ({
 
             <p style={{ marginBottom: '32px' }}>
               This format encourages brevity and precision, making each word count while creating 
-              a meditative, almost mantra-like quality through the repetition of the anchor word.
+              a meditative, almost mantra-like quality through the repetition of the anchor word. Made with love by [Chen](https://chenhsieh.xyz).
             </p>
 
             {/* Skinny Poem Structure Visualization */}
