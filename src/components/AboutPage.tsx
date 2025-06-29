@@ -531,6 +531,114 @@ const AboutPage: React.FC<AboutPageProps> = ({
                 </div>
               </div>
 
+              <h3 style={{
+                fontSize: '1.2rem',
+                marginBottom: '16px',
+                marginTop: '32px',
+                color: getTextColor(),
+                fontFamily: "'EB Garamond', serif",
+                fontWeight: 600
+              }}>
+                Intelligent Fallbacks
+              </h3>
+
+              <p style={{ marginBottom: '20px' }}>
+                When OpenAI's API is unavailable or receives unexpected input (like random characters), 
+                our system employs intelligent fallback mechanisms to ensure a consistent creative experience:
+              </p>
+
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                marginBottom: '24px'
+              }}>
+                {/* Headline Transformation Fallback */}
+                <div style={{
+                  padding: '16px',
+                  borderRadius: '8px',
+                  background: isDarkMode ? 'rgba(180, 83, 9, 0.1)' : 'rgba(139, 125, 161, 0.05)',
+                  border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)'}`
+                }}>
+                  <h4 style={{
+                    fontSize: '1rem',
+                    marginBottom: '8px',
+                    color: getTextColor(),
+                    fontFamily: "'Courier Prime', monospace",
+                    fontWeight: 600
+                  }}>
+                    Headline Transformation
+                  </h4>
+                  <p style={{
+                    fontSize: '0.9rem',
+                    color: getTextColor(),
+                    lineHeight: 1.5,
+                    margin: 0
+                  }}>
+                    When news headlines can't be transformed by AI, our system categorizes them by topic 
+                    (climate, politics, technology, etc.) and selects from curated poetic phrases that 
+                    capture the emotional essence of each category.
+                  </p>
+                </div>
+
+                {/* Poem Generation Fallback */}
+                <div style={{
+                  padding: '16px',
+                  borderRadius: '8px',
+                  background: isDarkMode ? 'rgba(180, 83, 9, 0.1)' : 'rgba(139, 125, 161, 0.05)',
+                  border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)'}`
+                }}>
+                  <h4 style={{
+                    fontSize: '1rem',
+                    marginBottom: '8px',
+                    color: getTextColor(),
+                    fontFamily: "'Courier Prime', monospace",
+                    fontWeight: 600
+                  }}>
+                    Poem Generation
+                  </h4>
+                  <p style={{
+                    fontSize: '0.9rem',
+                    color: getTextColor(),
+                    lineHeight: 1.5,
+                    margin: 0
+                  }}>
+                    For poem creation, our fallback intelligently extracts meaningful words from your 
+                    feelings input (filtering out common words like "the", "and", "but"), then combines 
+                    them with curated emotional, action, and descriptive words to create structurally 
+                    sound Skinny poems that maintain coherence even with nonsensical input.
+                  </p>
+                </div>
+
+                {/* Anchor Words Fallback */}
+                <div style={{
+                  padding: '16px',
+                  borderRadius: '8px',
+                  background: isDarkMode ? 'rgba(180, 83, 9, 0.1)' : 'rgba(139, 125, 161, 0.05)',
+                  border: `1px solid ${isDarkMode ? 'rgba(180, 83, 9, 0.2)' : 'rgba(139, 125, 161, 0.1)'}`
+                }}>
+                  <h4 style={{
+                    fontSize: '1rem',
+                    marginBottom: '8px',
+                    color: getTextColor(),
+                    fontFamily: "'Courier Prime', monospace",
+                    fontWeight: 600
+                  }}>
+                    Anchor Word Selection
+                  </h4>
+                  <p style={{
+                    fontSize: '0.9rem',
+                    color: getTextColor(),
+                    lineHeight: 1.5,
+                    margin: 0
+                  }}>
+                    When AI-generated anchor words aren't available, the system draws from an expanded 
+                    collection of contemplative verbs like "breathe", "surrender", "witness", and "nurture" 
+                    - words chosen for their emotional resonance and suitability for repetitive, meditative poetry.
+                  </p>
+                </div>
+              </div>
+
               <div style={{
                 padding: '16px',
                 background: isDarkMode ? 'rgba(180, 83, 9, 0.1)' : 'rgba(139, 125, 161, 0.05)',
@@ -544,7 +652,9 @@ const AboutPage: React.FC<AboutPageProps> = ({
                   textAlign: 'center'
                 }}>
                   These indicators are intentionally subtle - part of the interface's aesthetic 
-                  while providing valuable insight for those who know to look for them.
+                  while providing valuable insight for those who know to look for them. The fallback 
+                  systems ensure that even when you input random characters like "asdfasdfafda", 
+                  you'll still receive a meaningful, structurally correct poem.
                 </div>
               </div>
             </div>
