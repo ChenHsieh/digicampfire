@@ -105,7 +105,7 @@ const AboutPage: React.FC<AboutPageProps> = ({
             <p style={{ marginBottom: '24px' }}>
               The process is simple and meditative: you press a few buttons, weigh in on your feelings, 
               and can edit the poem at the end. It's designed to help you find a moment of reflection 
-              and creativity in the midst of our information-saturated world.
+              and creativity in the midst of our information-saturated world. Made with love by <a href="https://chenhsieh.xyz" target="_blank" rel="noopener noreferrer">Chen</a>.
             </p>
 
             <h2 style={{
@@ -127,7 +127,7 @@ const AboutPage: React.FC<AboutPageProps> = ({
 
             <p style={{ marginBottom: '32px' }}>
               This format encourages brevity and precision, making each word count while creating 
-              a meditative, almost mantra-like quality through the repetition of the anchor word. Made with love by [Chen](https://chenhsieh.xyz).
+              a meditative, almost mantra-like quality through the repetition of the anchor word.
             </p>
 
             {/* Skinny Poem Structure Visualization */}
