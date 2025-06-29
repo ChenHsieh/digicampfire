@@ -7,6 +7,7 @@ interface WhisperWithSource {
   poetic: string;
   headline: string;
   link: string;
+  source: 'openai' | 'fallback';
 }
 
 interface Poem {
@@ -16,6 +17,8 @@ interface Poem {
   text: string;
   headline: string;
   link: string;
+  poemSource: 'openai' | 'fallback';
+  whisperSource: 'openai' | 'fallback';
 }
 
 export const usePoemGenerationFlow = (onComplete: (poem: Poem) => void) => {
@@ -30,17 +33,20 @@ export const usePoemGenerationFlow = (onComplete: (poem: Poem) => void) => {
     {
       poetic: "The weight of unspoken words",
       headline: "Global tensions continue to shape international discourse",
-      link: "https://www.theguardian.com"
+      link: "https://www.theguardian.com",
+      source: 'fallback'
     },
     {
       poetic: "A memory that refuses to fade", 
       headline: "Historical events continue to influence modern society",
-      link: "https://www.theguardian.com"
+      link: "https://www.theguardian.com",
+      source: 'fallback'
     },
     {
       poetic: "The space between what was and what could be",
       headline: "Future possibilities emerge from current challenges",
-      link: "https://www.theguardian.com"
+      link: "https://www.theguardian.com",
+      source: 'fallback'
     }
   ]);
   const [loadingWhispers, setLoadingWhispers] = useState(false);
@@ -64,8 +70,8 @@ export const usePoemGenerationFlow = (onComplete: (poem: Poem) => void) => {
   const loadNewAnchors = async () => {
     setLoadingAnchors(true);
     try {
-      const newAnchors = await generateAnchorWords();
-      setAnchorWords(newAnchors);
+      const anchorResponse = await generateAnchorWords();
+      setAnchorWords(anchorResponse.result);
     } catch (error) {
       console.error('Failed to generate new anchor words:', error);
       // Rotate through base words if generation fails
@@ -96,15 +102,17 @@ export const usePoemGenerationFlow = (onComplete: (poem: Poem) => void) => {
     setIsGenerating(true);
     
     try {
-      const generatedPoem = await generateSkinnyPoem(selectedWhisper.poetic, selectedAnchor, feeling);
+      const poemResponse = await generateSkinnyPoem(selectedWhisper.poetic, selectedAnchor, feeling);
       
       onComplete({
         whisper: selectedWhisper.poetic,
         anchor: selectedAnchor,
         feeling: feeling,
-        text: generatedPoem,
+        text: poemResponse.result,
         headline: selectedWhisper.headline,
-        link: selectedWhisper.link
+        link: selectedWhisper.link,
+        poemSource: poemResponse.source,
+        whisperSource: selectedWhisper.source
       });
     } catch (error) {
       console.error('Error generating poem:', error);
@@ -127,7 +135,9 @@ ${selectedWhisper.poetic}`;
         feeling: feeling,
         text: fallbackPoem,
         headline: selectedWhisper.headline,
-        link: selectedWhisper.link
+        link: selectedWhisper.link,
+        poemSource: 'fallback',
+        whisperSource: selectedWhisper.source
       });
     }
     

@@ -4,11 +4,17 @@ interface WhisperWithSource {
   poetic: string;
   headline: string;
   link: string;
+  source: 'openai' | 'fallback';
+}
+
+interface ApiResponse<T> {
+  result: T;
+  source: 'openai' | 'fallback';
 }
 
 const API_BASE = '/.netlify/functions';
 
-export async function transformHeadlineToPoetry(headline: string): Promise<string> {
+export async function transformHeadlineToPoetry(headline: string): Promise<ApiResponse<string>> {
   try {
     const response = await fetch(`${API_BASE}/transform-headline`, {
       method: 'POST',
@@ -23,11 +29,17 @@ export async function transformHeadlineToPoetry(headline: string): Promise<strin
     }
 
     const data = await response.json();
-    return data.result;
+    return {
+      result: data.result,
+      source: 'openai'
+    };
   } catch (error) {
     console.error('Error transforming headline:', error);
     // Fallback logic
-    return createPoetricFallback(headline);
+    return {
+      result: createPoetricFallback(headline),
+      source: 'fallback'
+    };
   }
 }
 
@@ -216,7 +228,7 @@ function createPoetricFallback(headline: string): string {
   return genericOptions[Math.floor(Math.random() * genericOptions.length)];
 }
 
-export async function generateAnchorWords(): Promise<string[]> {
+export async function generateAnchorWords(): Promise<ApiResponse<string[]>> {
   try {
     const response = await fetch(`${API_BASE}/generate-anchors`, {
       method: 'POST',
@@ -231,10 +243,16 @@ export async function generateAnchorWords(): Promise<string[]> {
     }
 
     const data = await response.json();
-    return data.result;
+    return {
+      result: data.result,
+      source: 'openai'
+    };
   } catch (error) {
     console.error('Error generating anchor words:', error);
-    return getRandomBaseAnchors();
+    return {
+      result: getRandomBaseAnchors(),
+      source: 'fallback'
+    };
   }
 }
 
@@ -249,7 +267,7 @@ function getRandomBaseAnchors(): string[] {
   return shuffled.slice(0, 6);
 }
 
-export async function generateSkinnyPoem(whisper: string, anchor: string, feeling: string): Promise<string> {
+export async function generateSkinnyPoem(whisper: string, anchor: string, feeling: string): Promise<ApiResponse<string>> {
   try {
     const response = await fetch(`${API_BASE}/generate-poem`, {
       method: 'POST',
@@ -264,10 +282,16 @@ export async function generateSkinnyPoem(whisper: string, anchor: string, feelin
     }
 
     const data = await response.json();
-    return data.result;
+    return {
+      result: data.result,
+      source: 'openai'
+    };
   } catch (error) {
     console.error('Error generating Skinny poem:', error);
-    return createFallbackSkinnyPoem(whisper, anchor, feeling);
+    return {
+      result: createFallbackSkinnyPoem(whisper, anchor, feeling),
+      source: 'fallback'
+    };
   }
 }
 
@@ -348,5 +372,6 @@ function clientSideValidation(poem: string, anchor: string): { isValid: boolean;
 
 // Keep backward compatibility
 export async function generatePoem(whisper: string, anchor: string, feeling: string): Promise<string> {
-  return generateSkinnyPoem(whisper, anchor, feeling);
+  const response = await generateSkinnyPoem(whisper, anchor, feeling);
+  return response.result;
 }

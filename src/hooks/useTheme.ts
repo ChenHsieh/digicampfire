@@ -65,6 +65,10 @@ export const useTheme = () => {
     };
   };
 
+  // Source indicator colors - subtle and developer-friendly
+  const getOpenAISuccessColor = () => isDarkMode ? 'rgba(34, 197, 94, 0.6)' : 'rgba(34, 197, 94, 0.4)';
+  const getFallbackColor = () => isDarkMode ? 'rgba(251, 146, 60, 0.6)' : 'rgba(251, 146, 60, 0.4)';
+
   const getTextColor = () => isDarkMode ? '#FFFFFF' : '#2D2D37';
   const getSecondaryTextColor = () => isDarkMode ? '#FFC880' : '#8B7DA1';
   const getFooterBackground = () => isDarkMode ? 'rgba(28, 25, 23, 0.9)' : 'rgba(254, 254, 254, 0.8)';
@@ -131,6 +135,8 @@ export const useTheme = () => {
     getCardBackground,
     getCardBorder,
     getPoemBackground,
-    getPoemShadow
+    getPoemShadow,
+    getOpenAISuccessColor,
+    getFallbackColor
   };
 };

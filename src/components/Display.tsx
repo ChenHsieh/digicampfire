@@ -11,6 +11,8 @@ interface Poem {
   text: string;
   headline: string;
   link: string;
+  poemSource: 'openai' | 'fallback';
+  whisperSource: 'openai' | 'fallback';
 }
 
 interface DisplayProps {
@@ -33,7 +35,9 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
     getCardBackground,
     getCardBorder,
     getPoemBackground,
-    getPoemShadow
+    getPoemShadow,
+    getOpenAISuccessColor,
+    getFallbackColor
   } = useTheme();
   
   const lines = currentPoem.split('\n').filter(line => line.trim() !== '');
@@ -116,6 +120,18 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
             border: `1px solid ${getCardBorder()}`
           }}
         >
+          {/* Source indicator for poem - subtle corner indicator */}
+          <div style={{
+            position: 'absolute',
+            top: '16px',
+            right: '16px',
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            background: poem.poemSource === 'openai' ? getOpenAISuccessColor() : getFallbackColor(),
+            opacity: 0.6
+          }} />
+
           {/* Floating embers effect - warmer in dark mode */}
           <div 
             className="absolute -top-5 left-1/2 transform -translate-x-1/2 w-1 h-1 rounded-full animate-pulse"
@@ -161,12 +177,24 @@ const Display: React.FC<DisplayProps> = ({ poem, onBack }) => {
           className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10"
         >
           <div 
-            className="p-5 rounded-xl backdrop-blur-md"
+            className="p-5 rounded-xl backdrop-blur-md relative"
             style={{
               background: getCardBackground(),
               border: `1px solid ${getCardBorder()}`
             }}
           >
+            {/* Source indicator for whisper */}
+            <div style={{
+              position: 'absolute',
+              top: '12px',
+              right: '12px',
+              width: '6px',
+              height: '6px',
+              borderRadius: '50%',
+              background: poem.whisperSource === 'openai' ? getOpenAISuccessColor() : getFallbackColor(),
+              opacity: 0.6
+            }} />
+
             <div 
               className="text-xs mb-2 font-semibold uppercase tracking-wider font-['Courier_Prime']"
               style={{ color: getSecondaryTextColor() }}

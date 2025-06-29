@@ -1,11 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { RefreshCw, ExternalLink } from 'lucide-react';
+import { useTheme } from '../../hooks/useTheme';
 
 interface WhisperWithSource {
   poetic: string;
   headline: string;
   link: string;
+  source: 'openai' | 'fallback';
 }
 
 interface WhisperSelectionProps {
@@ -39,6 +41,8 @@ const WhisperSelection: React.FC<WhisperSelectionProps> = ({
   getButtonBorder,
   getHaloTextStyle
 }) => {
+  const { getOpenAISuccessColor, getFallbackColor } = useTheme();
+
   return (
     <motion.div
       key="step1"
@@ -130,9 +134,22 @@ const WhisperSelection: React.FC<WhisperSelectionProps> = ({
                   (isDarkMode ? '0 8px 32px rgba(251, 146, 60, 0.3)' : '0 8px 32px rgba(139, 125, 161, 0.2)') : 
                   (isDarkMode ? '0 4px 16px rgba(0, 0, 0, 0.3)' : '0 4px 16px rgba(45, 45, 55, 0.08)'),
                 backdropFilter: 'blur(10px)',
-                transition: 'all 0.3s ease'
+                transition: 'all 0.3s ease',
+                position: 'relative'
               }}
             >
+              {/* Source indicator - subtle dot in top-right corner */}
+              <div style={{
+                position: 'absolute',
+                top: '12px',
+                right: '12px',
+                width: '6px',
+                height: '6px',
+                borderRadius: '50%',
+                background: whisper.source === 'openai' ? getOpenAISuccessColor() : getFallbackColor(),
+                opacity: 0.7
+              }} />
+
               {/* Main poetic phrase */}
               <div style={{
                 fontFamily: "'EB Garamond', serif",

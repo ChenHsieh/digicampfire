@@ -17,6 +17,8 @@ interface Poem {
   text: string;
   headline: string;
   link: string;
+  poemSource: 'openai' | 'fallback';
+  whisperSource: 'openai' | 'fallback';
 }
 
 function App() {

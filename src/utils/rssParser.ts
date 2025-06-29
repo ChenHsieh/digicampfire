@@ -15,6 +15,7 @@ interface WhisperWithSource {
   poetic: string;
   headline: string;
   link: string;
+  source: 'openai' | 'fallback';
 }
 
 // Multiple CORS proxy options for better reliability
@@ -209,12 +210,13 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
     for (const item of selectedItems) {
       try {
         console.log(`Transforming headline: ${item.headline}`);
-        const poeticPhrase = await transformHeadlineToPoetry(item.headline);
-        console.log(`Transformed to: ${poeticPhrase}`);
+        const poeticResponse = await transformHeadlineToPoetry(item.headline);
+        console.log(`Transformed to: ${poeticResponse.result} (source: ${poeticResponse.source})`);
         whispers.push({
-          poetic: poeticPhrase,
+          poetic: poeticResponse.result,
           headline: item.headline,
-          link: item.link
+          link: item.link,
+          source: poeticResponse.source
         });
       } catch (error) {
         console.error('Error transforming headline:', item.headline, error);
@@ -222,7 +224,8 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
         whispers.push({
           poetic: item.headline,
           headline: item.headline,
-          link: item.link
+          link: item.link,
+          source: 'fallback'
         });
       }
     }
@@ -236,32 +239,38 @@ export async function fetchPoeticWhispersWithSources(): Promise<WhisperWithSourc
       {
         poetic: "The weight of unspoken words",
         headline: "Global tensions continue to shape international discourse",
-        link: "https://www.theguardian.com"
+        link: "https://www.theguardian.com",
+        source: 'fallback' as const
       },
       {
         poetic: "A memory that refuses to fade", 
         headline: "Historical events continue to influence modern society",
-        link: "https://www.theguardian.com"
+        link: "https://www.theguardian.com",
+        source: 'fallback' as const
       },
       {
         poetic: "The space between what was and what could be",
         headline: "Future possibilities emerge from current challenges",
-        link: "https://www.theguardian.com"
+        link: "https://www.theguardian.com",
+        source: 'fallback' as const
       },
       {
         poetic: "Echoes of tomorrow's promise",
         headline: "Innovation continues to reshape our daily lives",
-        link: "https://www.theguardian.com"
+        link: "https://www.theguardian.com",
+        source: 'fallback' as const
       },
       {
         poetic: "The silence between heartbeats",
         headline: "Personal stories emerge from global events",
-        link: "https://www.theguardian.com"
+        link: "https://www.theguardian.com",
+        source: 'fallback' as const
       },
       {
         poetic: "Fragments of a changing world",
         headline: "Social movements adapt to modern challenges",
-        link: "https://www.theguardian.com"
+        link: "https://www.theguardian.com",
+        source: 'fallback' as const
       }
     ];
     
