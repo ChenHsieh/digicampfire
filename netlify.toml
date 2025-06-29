@@ -1,0 +1,13 @@
+[build]
+  functions = "netlify/functions"
+  publish = "dist"
+
+[dev]
+  framework = "#static"
+  command = "vite"
+  port = 5173
+  functions = "netlify/functions"
+  publish = "dist"
+  
+# Environment variables for local development
+# Make sure to add your OPENAI_API_KEY to your .env file
