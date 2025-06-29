@@ -25,23 +25,81 @@ CONTENT GOALS:
 Return ONLY the 11-line poem. No explanations, no formatting, no extra text.`;
 
 function createFallbackSkinnyPoem(whisper, anchor, feeling) {
-  const feelingWords = feeling.toLowerCase().split(/\s+/).filter(word => 
-    word.length > 3 && !['the', 'and', 'but', 'for', 'are', 'with', 'this', 'that', 'from', 'they', 'have', 'been'].includes(word)
-  );
+  // Enhanced fallback poem generation with better word extraction
+  const extractMeaningfulWords = (text) => {
+    const stopWords = new Set([
+      'the', 'and', 'but', 'for', 'are', 'with', 'this', 'that', 'from', 
+      'they', 'have', 'been', 'will', 'would', 'could', 'should', 'can',
+      'may', 'might', 'must', 'shall', 'was', 'were', 'is', 'am', 'be',
+      'do', 'does', 'did', 'has', 'had', 'get', 'got', 'go', 'went',
+      'come', 'came', 'see', 'saw', 'know', 'knew', 'think', 'thought',
+      'say', 'said', 'tell', 'told', 'give', 'gave', 'take', 'took',
+      'make', 'made', 'find', 'found', 'want', 'need', 'feel', 'felt',
+      'look', 'looked', 'seem', 'seemed', 'turn', 'turned', 'put', 'set'
+    ]);
+
+    return text.toLowerCase()
+      .replace(/[^\w\s]/g, ' ')
+      .split(/\s+/)
+      .filter(word => 
+        word.length > 2 && 
+        word.length < 12 && 
+        !stopWords.has(word) &&
+        /^[a-z]+$/.test(word)
+      );
+  };
+
+  // Extract words from whisper and feeling
+  const whisperWords = extractMeaningfulWords(whisper);
+  const feelingWords = feeling ? extractMeaningfulWords(feeling) : [];
   
-  const middleWord = feelingWords.length > 0 ? feelingWords[0] : 'silence';
+  // Combine and prioritize words
+  const allWords = [...feelingWords, ...whisperWords];
   
+  // Select words for the poem structure
+  const getWordForPosition = (position) => {
+    const emotionalWords = ['silence', 'shadow', 'light', 'breath', 'heart', 'soul', 'dream', 'hope', 'fear', 'love', 'pain', 'joy', 'peace', 'storm', 'calm'];
+    const actionWords = ['holds', 'carries', 'whispers', 'echoes', 'flows', 'breaks', 'mends', 'grows', 'fades', 'shines', 'trembles', 'settles'];
+    const descriptiveWords = ['gentle', 'fierce', 'quiet', 'deep', 'soft', 'sharp', 'warm', 'cool', 'bright', 'dark', 'heavy', 'light'];
+    
+    // Use extracted words when available, fall back to curated lists
+    if (allWords.length > position && allWords[position]) {
+      return allWords[position];
+    }
+    
+    // Select appropriate word type based on position in poem
+    switch (position % 3) {
+      case 0: return emotionalWords[Math.floor(Math.random() * emotionalWords.length)];
+      case 1: return actionWords[Math.floor(Math.random() * actionWords.length)];
+      case 2: return descriptiveWords[Math.floor(Math.random() * descriptiveWords.length)];
+      default: return emotionalWords[Math.floor(Math.random() * emotionalWords.length)];
+    }
+  };
+
+  // Build the poem with more sophisticated word selection
+  const line3 = getWordForPosition(0);
+  const line4 = getWordForPosition(1);
+  const line5 = getWordForPosition(2);
+  const line7 = getWordForPosition(3);
+  const line8 = getWordForPosition(4);
+  const line9 = getWordForPosition(5);
+
+  // Create slight variation for the final line
+  const finalLine = whisper.includes('the ') ? 
+    whisper.replace('the ', 'this ') : 
+    whisper;
+
   return `${whisper}
 ${anchor}
-silence
-holds
-${middleWord}
+${line3}
+${line4}
+${line5}
 ${anchor}
-cannot
-speak
-yet
+${line7}
+${line8}
+${line9}
 ${anchor}
-${whisper}`;
+${finalLine}`;
 }
 
 async function validateSkinnyPoem(poem, anchor) {
