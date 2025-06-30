@@ -56,9 +56,13 @@ const BoltLogo: React.FC = () => {
                   justify-content: center;
                   color: white;
                   font-family: 'Courier Prime', monospace;
-                  font-size: 18px;
+                  font-size: 8px;
                   font-weight: bold;
-                ">b</div>
+                  text-align: center;
+                  line-height: 1.1;
+                  padding: 4px;
+                  box-sizing: border-box;
+                ">Built with<br/>Bolt.new</div>
               `;
             }
           }}
