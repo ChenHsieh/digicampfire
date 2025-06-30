@@ -4,20 +4,26 @@ import imageminPngquant from 'imagemin-pngquant';
 import imageminMozjpeg from 'imagemin-mozjpeg';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { copyFileSync, mkdirSync, existsSync } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const publicDir = join(__dirname, '../public');
-const distDir = join(__dirname, '../dist');
+const optimizedDir = join(publicDir, 'optimized');
 
 async function optimizeImages() {
   console.log('🖼️  Optimizing images...');
   
   try {
-    // Optimize PNG files
+    // Ensure optimized directory exists
+    if (!existsSync(optimizedDir)) {
+      mkdirSync(optimizedDir, { recursive: true });
+    }
+
+    // Optimize PNG files and create WebP versions
     await imagemin([`${publicDir}/*.png`], {
-      destination: `${publicDir}/optimized`,
+      destination: optimizedDir,
       plugins: [
         imageminPngquant({
           quality: [0.6, 0.8]
@@ -28,9 +34,9 @@ async function optimizeImages() {
       ]
     });
 
-    // Optimize JPEG files
+    // Optimize JPEG files and create WebP versions
     await imagemin([`${publicDir}/*.{jpg,jpeg}`], {
-      destination: `${publicDir}/optimized`,
+      destination: optimizedDir,
       plugins: [
         imageminMozjpeg({
           quality: 80
@@ -41,12 +47,23 @@ async function optimizeImages() {
       ]
     });
 
+    // Copy original PNG files to optimized directory as fallbacks
+    const pngFiles = ['black_circle_360x360.png'];
+    pngFiles.forEach(file => {
+      const srcPath = join(publicDir, file);
+      const destPath = join(optimizedDir, file);
+      if (existsSync(srcPath)) {
+        copyFileSync(srcPath, destPath);
+        console.log(`📋 Copied ${file} to optimized directory`);
+      }
+    });
+
     console.log('✅ Images optimized successfully!');
     console.log('📁 Optimized images saved to public/optimized/');
-    console.log('💡 Consider replacing original images with optimized versions');
     
   } catch (error) {
     console.error('❌ Error optimizing images:', error);
+    process.exit(1); // Exit with error code for build failure
   }
 }
 

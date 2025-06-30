@@ -1,6 +1,6 @@
 [build]
   publish = "dist"
-  command = "npm run build"
+  command = "npm run build:optimize"
 
 [build.environment]
   NODE_VERSION = "18"
@@ -63,25 +63,6 @@
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
-
-# Image optimization redirects for WebP support
-[[redirects]]
-  from = "/*.jpg"
-  to = "/*.webp"
-  status = 200
-  conditions = {Accept = "image/webp"}
-
-[[redirects]]
-  from = "/*.jpeg"
-  to = "/*.webp"
-  status = 200
-  conditions = {Accept = "image/webp"}
-
-[[redirects]]
-  from = "/*.png"
-  to = "/*.webp"
-  status = 200
-  conditions = {Accept = "image/webp"}
 
 # Functions configuration
 [functions]

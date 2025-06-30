@@ -25,9 +25,9 @@ const BoltLogo: React.FC = () => {
       }}
     >
       <picture>
-        {/* WebP version for modern browsers */}
+        {/* WebP version for modern browsers - pointing to optimized directory */}
         <source 
-          srcSet="/black_circle_360x360.webp" 
+          srcSet="/optimized/black_circle_360x360.webp" 
           type="image/webp"
         />
         {/* Fallback PNG */}
